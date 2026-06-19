@@ -1,0 +1,1 @@
+(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[8765],{91755:(e,s,n)=>{Promise.resolve().then(n.bind(n,97959))},97959:(e,s,n)=>{"use strict";n.r(s),n.d(s,{default:()=>h});var t=n(95155);let h=()=>(0,t.jsx)("h2",{children:"My Donations List"})}},e=>{e.O(0,[8441,3794,7358],()=>e(e.s=91755)),_N_E=e.O()}]);

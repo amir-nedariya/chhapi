@@ -1,0 +1,266 @@
+{
+  "version": 3,
+  "pages404": true,
+  "appType": "app",
+  "caseSensitive": false,
+  "basePath": "",
+  "redirects": [
+    {
+      "source": "/:path+/",
+      "destination": "/:path+",
+      "internal": true,
+      "priority": true,
+      "statusCode": 308,
+      "regex": "^(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))/$"
+    }
+  ],
+  "headers": [],
+  "onMatchHeaders": [],
+  "rewrites": {
+    "beforeFiles": [],
+    "afterFiles": [],
+    "fallback": []
+  },
+  "dynamicRoutes": [
+    {
+      "page": "/dashboard/admin/users/[id]",
+      "regex": "^/dashboard/admin/users/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/dashboard/admin/users/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/dashboard/super-admin/usersList/[id]",
+      "regex": "^/dashboard/super\\-admin/usersList/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/dashboard/super\\-admin/usersList/(?<nxtPid>[^/]+?)(?:/)?$"
+    }
+  ],
+  "staticRoutes": [
+    {
+      "page": "/",
+      "regex": "^/(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/(?:/)?$"
+    },
+    {
+      "page": "/_global-error",
+      "regex": "^/_global\\-error(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_global\\-error(?:/)?$"
+    },
+    {
+      "page": "/_not-found",
+      "regex": "^/_not\\-found(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_not\\-found(?:/)?$"
+    },
+    {
+      "page": "/dashboard/admin",
+      "regex": "^/dashboard/admin(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/admin(?:/)?$"
+    },
+    {
+      "page": "/dashboard/admin/createuser",
+      "regex": "^/dashboard/admin/createuser(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/admin/createuser(?:/)?$"
+    },
+    {
+      "page": "/dashboard/admin/donations",
+      "regex": "^/dashboard/admin/donations(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/admin/donations(?:/)?$"
+    },
+    {
+      "page": "/dashboard/admin/fundHistory",
+      "regex": "^/dashboard/admin/fundHistory(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/admin/fundHistory(?:/)?$"
+    },
+    {
+      "page": "/dashboard/admin/fundSummary",
+      "regex": "^/dashboard/admin/fundSummary(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/admin/fundSummary(?:/)?$"
+    },
+    {
+      "page": "/dashboard/admin/GetAllUser",
+      "regex": "^/dashboard/admin/GetAllUser(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/admin/GetAllUser(?:/)?$"
+    },
+    {
+      "page": "/dashboard/admin/monthlyDonationTable",
+      "regex": "^/dashboard/admin/monthlyDonationTable(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/admin/monthlyDonationTable(?:/)?$"
+    },
+    {
+      "page": "/dashboard/admin/MyDonations",
+      "regex": "^/dashboard/admin/MyDonations(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/admin/MyDonations(?:/)?$"
+    },
+    {
+      "page": "/dashboard/admin/settings",
+      "regex": "^/dashboard/admin/settings(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/admin/settings(?:/)?$"
+    },
+    {
+      "page": "/dashboard/super-admin",
+      "regex": "^/dashboard/super\\-admin(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/super\\-admin(?:/)?$"
+    },
+    {
+      "page": "/dashboard/super-admin/admins",
+      "regex": "^/dashboard/super\\-admin/admins(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/super\\-admin/admins(?:/)?$"
+    },
+    {
+      "page": "/dashboard/super-admin/all-donations",
+      "regex": "^/dashboard/super\\-admin/all\\-donations(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/super\\-admin/all\\-donations(?:/)?$"
+    },
+    {
+      "page": "/dashboard/super-admin/createAdmin",
+      "regex": "^/dashboard/super\\-admin/createAdmin(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/super\\-admin/createAdmin(?:/)?$"
+    },
+    {
+      "page": "/dashboard/super-admin/createfund",
+      "regex": "^/dashboard/super\\-admin/createfund(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/super\\-admin/createfund(?:/)?$"
+    },
+    {
+      "page": "/dashboard/super-admin/createuser",
+      "regex": "^/dashboard/super\\-admin/createuser(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/super\\-admin/createuser(?:/)?$"
+    },
+    {
+      "page": "/dashboard/super-admin/fundHistory",
+      "regex": "^/dashboard/super\\-admin/fundHistory(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/super\\-admin/fundHistory(?:/)?$"
+    },
+    {
+      "page": "/dashboard/super-admin/fundSummary",
+      "regex": "^/dashboard/super\\-admin/fundSummary(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/super\\-admin/fundSummary(?:/)?$"
+    },
+    {
+      "page": "/dashboard/super-admin/monthlyDonationTable",
+      "regex": "^/dashboard/super\\-admin/monthlyDonationTable(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/super\\-admin/monthlyDonationTable(?:/)?$"
+    },
+    {
+      "page": "/dashboard/super-admin/pending-donations",
+      "regex": "^/dashboard/super\\-admin/pending\\-donations(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/super\\-admin/pending\\-donations(?:/)?$"
+    },
+    {
+      "page": "/dashboard/super-admin/reports",
+      "regex": "^/dashboard/super\\-admin/reports(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/super\\-admin/reports(?:/)?$"
+    },
+    {
+      "page": "/dashboard/super-admin/Settings",
+      "regex": "^/dashboard/super\\-admin/Settings(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/super\\-admin/Settings(?:/)?$"
+    },
+    {
+      "page": "/dashboard/super-admin/useFund",
+      "regex": "^/dashboard/super\\-admin/useFund(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/super\\-admin/useFund(?:/)?$"
+    },
+    {
+      "page": "/dashboard/super-admin/usersList",
+      "regex": "^/dashboard/super\\-admin/usersList(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/super\\-admin/usersList(?:/)?$"
+    },
+    {
+      "page": "/dashboard/user",
+      "regex": "^/dashboard/user(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/user(?:/)?$"
+    },
+    {
+      "page": "/dashboard/user/all-donations",
+      "regex": "^/dashboard/user/all\\-donations(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/user/all\\-donations(?:/)?$"
+    },
+    {
+      "page": "/dashboard/user/donations",
+      "regex": "^/dashboard/user/donations(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/user/donations(?:/)?$"
+    },
+    {
+      "page": "/dashboard/user/fundHistory",
+      "regex": "^/dashboard/user/fundHistory(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/user/fundHistory(?:/)?$"
+    },
+    {
+      "page": "/dashboard/user/fundSummary",
+      "regex": "^/dashboard/user/fundSummary(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/user/fundSummary(?:/)?$"
+    },
+    {
+      "page": "/dashboard/user/monthlyDonationTable",
+      "regex": "^/dashboard/user/monthlyDonationTable(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/user/monthlyDonationTable(?:/)?$"
+    },
+    {
+      "page": "/dashboard/user/settings",
+      "regex": "^/dashboard/user/settings(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/user/settings(?:/)?$"
+    },
+    {
+      "page": "/login",
+      "regex": "^/login(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/login(?:/)?$"
+    }
+  ],
+  "dataRoutes": [],
+  "rsc": {
+    "header": "rsc",
+    "varyHeader": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+    "prefetchHeader": "next-router-prefetch",
+    "didPostponeHeader": "x-nextjs-postponed",
+    "contentTypeHeader": "text/x-component",
+    "suffix": ".rsc",
+    "prefetchSegmentHeader": "next-router-segment-prefetch",
+    "prefetchSegmentSuffix": ".segment.rsc",
+    "prefetchSegmentDirSuffix": ".segments",
+    "clientParamParsing": false,
+    "dynamicRSCPrerender": false
+  },
+  "rewriteHeaders": {
+    "pathHeader": "x-nextjs-rewritten-path",
+    "queryHeader": "x-nextjs-rewritten-query"
+  }
+}
