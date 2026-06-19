@@ -19,7 +19,7 @@ const SuperAdminLayout = ({ children }) => {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-[#0a0f23] relative">
+    <div className="flex h-screen overflow-hidden bg-slate-50 relative">
       {/* Sidebar */}
       <SuperAdminSidebar
         collapsed={!sidebarOpen && isMobile}
@@ -43,7 +43,6 @@ const SuperAdminLayout = ({ children }) => {
         className={`flex-1 p-6 overflow-y-auto transition-all duration-300 ${
           sidebarOpen && isMobile ? "blur-sm" : ""
         }`}
-        style={{ minHeight: "100vh" }}
       >
         {children}
       </main>

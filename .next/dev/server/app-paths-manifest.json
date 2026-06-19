@@ -1,5 +1,6 @@
 {
   "/_not-found/page": "app/_not-found/page.js",
-  "/dashboard/super-admin/page": "app/dashboard/super-admin/page.js",
-  "/dashboard/super-admin/createuser/page": "app/dashboard/super-admin/createuser/page.js"
+  "/dashboard/super-admin/createuser/page": "app/dashboard/super-admin/createuser/page.js",
+  "/dashboard/super-admin/all-donations/page": "app/dashboard/super-admin/all-donations/page.js",
+  "/dashboard/super-admin/monthlyDonationTable/page": "app/dashboard/super-admin/monthlyDonationTable/page.js"
 }

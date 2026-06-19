@@ -28,7 +28,7 @@ const AdminLayout = ({ children }) => {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#0a0f23] relative">
+    <div className="flex h-screen overflow-hidden bg-slate-50 relative">
       {/* Sidebar */}
       <AdminSidebar
         collapsed={!sidebarOpen && isMobile}
