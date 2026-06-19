@@ -62,38 +62,38 @@ const UserDashboard = () => {
     <div className="p-6 space-y-6">
       {/* ================= HEADER ================= */}
       <div>
-        <h2 className="text-2xl sm:text-3xl font-bold text-white">
+        <h2 className="text-2xl sm:text-3xl font-bold text-slate-800">
           Welcome, {user?.name}
         </h2>
-        <p className="text-white/60 mt-1">
+        <p className="text-slate-500 mt-1">
           Your donation activity overview
         </p>
       </div>
 
       {/* ================= STATS ================= */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <div className="bg-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-6 shadow-lg">
+        <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition">
           <div className="flex items-center gap-3">
-            <div className="p-3 rounded-full bg-white/10">
-              <HandCoins className="text-cyan-400" />
+            <div className="p-3 rounded-full bg-slate-100">
+              <HandCoins className="text-cyan-600" />
             </div>
             <div>
-              <p className="text-white/60 text-sm">Total Donations</p>
-              <p className="text-white font-bold text-xl">
+              <p className="text-slate-500 text-sm font-medium">Total Donations</p>
+              <p className="text-slate-800 font-bold text-xl">
                 {totalDonations}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-6 shadow-lg">
+        <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition">
           <div className="flex items-center gap-3">
-            <div className="p-3 rounded-full bg-white/10">
-              <Wallet className="text-green-400" />
+            <div className="p-3 rounded-full bg-slate-100">
+              <Wallet className="text-green-600" />
             </div>
             <div>
-              <p className="text-white/60 text-sm">Total Amount</p>
-              <p className="text-white font-bold text-xl">
+              <p className="text-slate-500 text-sm font-medium">Total Amount</p>
+              <p className="text-slate-800 font-bold text-xl">
                 ₹{totalAmount}
               </p>
             </div>
@@ -102,17 +102,17 @@ const UserDashboard = () => {
       </div>
 
       {/* ================= MONTHLY TABLE ================= */}
-      <div className="bg-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-6 shadow-lg">
-        <h3 className="text-white font-semibold mb-4">
+      <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+        <h3 className="text-slate-800 font-semibold mb-4">
           Monthly Donation Summary
         </h3>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-sm text-white/80">
+          <table className="w-full text-sm text-slate-700">
             <thead>
-              <tr className="border-b border-white/10">
+              <tr className="border-b border-gray-200 text-slate-500">
                 {monthMap.map((m) => (
-                  <th key={m.key} className="py-2 px-3 text-left">
+                  <th key={m.key} className="py-2 px-3 text-left font-medium">
                     {m.label}
                   </th>
                 ))}
@@ -121,7 +121,7 @@ const UserDashboard = () => {
             <tbody>
               <tr>
                 {monthMap.map((m) => (
-                  <td key={m.key} className="py-2 px-3">
+                  <td key={m.key} className="py-3 px-3 text-slate-800">
                     ₹{monthly?.[m.key] || 0}
                   </td>
                 ))}

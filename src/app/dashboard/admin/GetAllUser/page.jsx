@@ -13,9 +13,9 @@ import { useNavigate } from "react-router-dom";
 const ITEMS_PER_PAGE = 10;
 
 const roleStyles = {
-  USER: "bg-blue-500/20 text-blue-300",
-  ADMIN: "bg-green-500/20 text-green-300",
-  SUPER_ADMIN: "bg-purple-500/20 text-purple-300",
+  USER: "bg-blue-100 text-blue-700 border border-blue-200 font-medium",
+  ADMIN: "bg-emerald-100 text-emerald-700 border border-emerald-200 font-medium",
+  SUPER_ADMIN: "bg-purple-100 text-purple-700 border border-purple-200 font-medium",
 };
 
 const GetAllUser = () => {
@@ -95,8 +95,8 @@ const GetAllUser = () => {
     <div className="p-4 md:p-6">
       {/* HEADER */}
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-white">👥 Users Management</h2>
-        <p className="text-sm text-white/60">Manage users & roles</p>
+        <h2 className="text-2xl font-bold text-slate-800">👥 Users Management</h2>
+        <p className="text-sm text-slate-500">Manage users & roles</p>
       </div>
 
       {/* SEARCH + FILTERS */}
@@ -108,14 +108,14 @@ const GetAllUser = () => {
             setPage(1);
           }}
           placeholder="Search name or mobile..."
-          className="w-full md:w-64 px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+          className="w-full md:w-64 px-4 py-2 rounded-lg bg-white border border-gray-300 text-slate-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 shadow-sm transition"
         />
 
         {/* ROLE FILTER */}
         <select
           value={roleFilter}
           onChange={(e) => setRoleFilter(e.target.value)}
-          className="px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white"
+          className="px-4 py-2 rounded-lg bg-white border border-gray-300 text-slate-800 focus:outline-none focus:ring-2 focus:ring-cyan-500 shadow-sm transition"
         >
           <option value="ALL">All Roles</option>
           <option value="USER">USER</option>
@@ -127,7 +127,7 @@ const GetAllUser = () => {
         <select
           value={createdByFilter}
           onChange={(e) => setCreatedByFilter(e.target.value)}
-          className="px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white"
+          className="px-4 py-2 rounded-lg bg-white border border-gray-300 text-slate-800 focus:outline-none focus:ring-2 focus:ring-cyan-500 shadow-sm transition"
         >
           <option value="ALL">All Creators</option>
           {createdByList.map((name) => (
@@ -139,23 +139,23 @@ const GetAllUser = () => {
       </div>
 
       {/* DESKTOP TABLE */}
-      <div className="hidden md:block overflow-x-auto rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20">
-        <table className="w-full text-sm text-white">
-          <thead className="bg-white/10 text-white/80">
+      <div className="hidden md:block overflow-x-auto rounded-2xl bg-white border border-gray-200 shadow-sm">
+        <table className="w-full text-sm text-slate-800">
+          <thead className="bg-slate-50 text-slate-600 border-b border-gray-200">
             <tr>
-              <th className="p-4 text-left">User</th>
-              <th className="p-4">Mobile</th>
-              <th className="p-4">Role</th>
-              <th className="p-4">Created By</th>
-              <th className="p-4 text-center">Status</th>
-              <th className="p-4 text-center">View</th>
+              <th className="p-4 text-left font-semibold">User</th>
+              <th className="p-4 font-semibold">Mobile</th>
+              <th className="p-4 font-semibold">Role</th>
+              <th className="p-4 font-semibold">Created By</th>
+              <th className="p-4 text-center font-semibold">Status</th>
+              <th className="p-4 text-center font-semibold">View</th>
             </tr>
           </thead>
 
           <tbody>
             {loading && (
               <tr>
-                <td colSpan="6" className="p-6 text-center">
+                <td colSpan="6" className="p-6 text-center text-slate-500">
                   Loading...
                 </td>
               </tr>
@@ -165,15 +165,15 @@ const GetAllUser = () => {
               paginatedUsers.map((u) => (
                 <tr
                   key={u._id}
-                  className="border-t border-white/10 hover:bg-white/5"
+                  className="border-b border-gray-100 hover:bg-slate-50 transition"
                 >
                   <td className="p-4 flex items-center gap-3">
                     <img
-                      src={u.profilePhoto?.url || "/avatar.png"}
-                      className="w-9 h-9 rounded-full border border-white/20"
+                      src={u.profilePhoto?.url || "/avatar.jpeg"}
+                      className="w-9 h-9 rounded-full border border-gray-200 object-cover"
                       alt=""
                     />
-                    <span className="font-medium">{u.name}</span>
+                    <span className="font-medium text-slate-800">{u.name}</span>
                   </td>
 
                   <td className="p-4">{u.mobile}</td>
@@ -182,7 +182,7 @@ const GetAllUser = () => {
                     <span
                       className={`px-3 py-1 rounded-full text-xs font-semibold ${roleStyles[u.role]}`}
                     >
-                      {u.role}
+                      {u.role.replace("_", " ")}
                     </span>
                   </td>
 
@@ -190,20 +190,20 @@ const GetAllUser = () => {
                   <td className="p-4 text-xs">
                     {u.createdByName ? (
                       <>
-                        <p className="font-medium">{u.createdByName}</p>
-                        <p className="text-white/50">{u.createdByRole}</p>
+                        <p className="font-medium text-slate-800">{u.createdByName}</p>
+                        <p className="text-slate-500">{u.createdByRole}</p>
                       </>
                     ) : (
-                      <span className="text-white/50">SYSTEM</span>
+                      <span className="text-slate-500">SYSTEM</span>
                     )}
                   </td>
 
                   <td className="p-4 text-center">
                     <span
-                      className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                      className={`px-3 py-1 rounded-full text-xs font-semibold border ${
                         u.isActive
-                          ? "bg-green-500/20 text-green-300"
-                          : "bg-red-500/20 text-red-300"
+                          ? "bg-green-100 text-green-700 border-green-200"
+                          : "bg-red-100 text-red-700 border-red-200"
                       }`}
                     >
                       {u.isActive ? "ACTIVE" : "INACTIVE"}
@@ -215,13 +215,20 @@ const GetAllUser = () => {
                       onClick={() =>
                         navigate(`/dashboard/admin/users/${u._id}`)
                       }
-                      className="text-cyan-400 hover:text-cyan-300"
+                      className="text-cyan-600 hover:text-cyan-800 hover:scale-110 transition"
                     >
                       <Eye size={18} />
                     </button>
                   </td>
                 </tr>
               ))}
+              {!loading && paginatedUsers.length === 0 && (
+                <tr>
+                  <td colSpan="6" className="p-8 text-center text-slate-500">
+                    No users found.
+                  </td>
+                </tr>
+              )}
           </tbody>
         </table>
       </div>
@@ -231,33 +238,33 @@ const GetAllUser = () => {
         {paginatedUsers.map((u) => (
           <div
             key={u._id}
-            className="rounded-2xl p-4 bg-white/10 backdrop-blur-xl border border-white/20 text-white"
+            className="rounded-2xl p-4 bg-white border border-gray-200 shadow-sm"
           >
             <div className="flex items-center gap-3 mb-3">
               <img
-                src={u.profilePhoto?.url || "/avatar.png"}
-                className="w-10 h-10 rounded-full"
+                src={u.profilePhoto?.url || "/avatar.jpeg"}
+                className="w-10 h-10 rounded-full border border-gray-200 object-cover"
                 alt=""
               />
               <div>
-                <p className="font-semibold">{u.name}</p>
-                <p className="text-xs text-white/60">{u.mobile}</p>
-                <p className="text-xs text-white/50">
-                  Created By: {u.createdByName || "SYSTEM"}
+                <p className="font-semibold text-slate-800">{u.name}</p>
+                <p className="text-xs text-slate-500">{u.mobile}</p>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Created By: <span className="font-medium text-slate-700">{u.createdByName || "SYSTEM"}</span>
                 </p>
               </div>
             </div>
 
-            <div className="flex justify-between items-center text-xs mb-2">
+            <div className="flex justify-between items-center text-xs mb-3 pt-3 border-t border-gray-100">
               <span className={`px-3 py-1 rounded-full ${roleStyles[u.role]}`}>
-                {u.role}
+                {u.role.replace("_", " ")}
               </span>
 
               <span
-                className={`px-3 py-1 rounded-full ${
+                className={`px-3 py-1 rounded-full border font-medium ${
                   u.isActive
-                    ? "bg-green-500/20 text-green-300"
-                    : "bg-red-500/20 text-red-300"
+                    ? "bg-green-100 text-green-700 border-green-200"
+                    : "bg-red-100 text-red-700 border-red-200"
                 }`}
               >
                 {u.isActive ? "ACTIVE" : "INACTIVE"}
@@ -268,7 +275,7 @@ const GetAllUser = () => {
               onClick={() =>
                 navigate(`/dashboard/admin/users/${u._id}`)
               }
-              className="mt-3 w-full py-2 rounded-lg bg-cyan-500/30 hover:bg-cyan-500/50 text-sm font-semibold"
+              className="mt-2 w-full py-2 rounded-lg bg-cyan-50 text-cyan-700 hover:bg-cyan-100 text-sm font-semibold transition"
             >
               View Details
             </button>
@@ -278,23 +285,23 @@ const GetAllUser = () => {
 
       {/* PAGINATION */}
       {totalPages > 1 && (
-        <div className="flex justify-end items-center gap-3 mt-6 text-white">
+        <div className="flex justify-center md:justify-end items-center gap-3 mt-6">
           <button
             onClick={() => setPage((p) => p - 1)}
             disabled={page === 1}
-            className="p-2 rounded-lg bg-white/10 disabled:opacity-40"
+            className="p-2 rounded-lg bg-white border border-gray-300 text-slate-600 hover:bg-slate-50 disabled:opacity-50 transition"
           >
             <ChevronLeft size={18} />
           </button>
 
-          <span className="text-sm">
+          <span className="text-sm text-slate-600 font-medium">
             Page {page} of {totalPages}
           </span>
 
           <button
             onClick={() => setPage((p) => p + 1)}
             disabled={page === totalPages}
-            className="p-2 rounded-lg bg-white/10 disabled:opacity-40"
+            className="p-2 rounded-lg bg-white border border-gray-300 text-slate-600 hover:bg-slate-50 disabled:opacity-50 transition"
           >
             <ChevronRight size={18} />
           </button>

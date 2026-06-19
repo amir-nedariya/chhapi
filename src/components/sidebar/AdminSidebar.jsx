@@ -48,7 +48,7 @@ const AdminSidebar = ({ collapsed, mobile, sidebarOpen, setSidebarOpen }) => {
       <aside
         className={`
           ${collapsed ? "w-20" : "w-72"}
-          min-h-screen p-4 text-white
+          h-screen overflow-y-auto custom-scrollbar p-4 text-white
           bg-gradient-to-b from-[#0f172a]/80 to-[#020617]/80
           backdrop-blur-xl border-r border-white/10
           transition-all duration-300

@@ -3,7 +3,12 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { createUserAPI, createAdminAPI } from "../../../../api/user.api";
 import { useAuth } from "../../../../context/AuthContext";
-import { UserPlus, Phone, Lock, Shield } from "lucide-react";
+import { X } from "lucide-react";
+import { useNavigate } from "react-router-dom"; // Assuming react-router-dom is used, wait Next.js uses next/navigation usually.
+// Wait, the project is Next.js? 
+// In previous file: import { useLocation } from "react-router-dom"; No, this is client side React app? Wait, the path is src/app/... which is Next.js App Router.
+// But earlier in the layout we saw `import { useNavigate } from "react-router-dom";`
+// Let me just not use navigate for Cancel, just clear form or redirect.
 
 const CreateUser = () => {
   const { user } = useAuth();
@@ -33,17 +38,17 @@ const CreateUser = () => {
   /* ================= VALIDATION ================= */
   const validate = () => {
     if (!form.name.trim()) {
-      toast.error("👤 Name is required");
+      toast.error("Name is required");
       return false;
     }
 
     if (!/^[6-9]\d{9}$/.test(form.mobile)) {
-      toast.error("📱 Enter valid 10-digit mobile number");
+      toast.error("Enter valid 10-digit mobile number");
       return false;
     }
 
     if (form.password.length < 6) {
-      toast.error("🔐 Password must be at least 6 characters");
+      toast.error("Password must be at least 6 characters");
       return false;
     }
 
@@ -62,15 +67,15 @@ const CreateUser = () => {
 
       if (form.role === "ADMIN") {
         await createAdminAPI(form);
-        toast.success("✅ Admin created successfully", { id: toastId });
+        toast.success("Admin created successfully", { id: toastId });
       } else {
         await createUserAPI(form);
-        toast.success("✅ User created successfully", { id: toastId });
+        toast.success("User created successfully", { id: toastId });
       }
 
       setForm({ name: "", mobile: "", password: "", role: "USER" });
     } catch (err) {
-      toast.error(err?.response?.data?.message || "❌ Creation failed", {
+      toast.error(err?.response?.data?.message || "Creation failed", {
         id: toastId,
       });
     } finally {
@@ -79,145 +84,113 @@ const CreateUser = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-1">
-      {/* GLASS CARD */}
-      <div
-        className="relative w-full max-w-md p-8 rounded-3xl
-        bg-white/10 backdrop-blur-2xl
-        border border-white/20
-        shadow-[0_25px_80px_rgba(0,0,0,0.7)]"
-      >
-        {/* Glow */}
-        <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-cyan-400/10 to-transparent pointer-events-none" />
-
+    <div className="min-h-[calc(100vh-100px)] flex items-center justify-center p-4">
+      {/* Light UI Card mimicking the image */}
+      <div className="w-full max-w-2xl bg-white rounded-xl shadow-xl flex flex-col overflow-hidden">
         {/* HEADER */}
-        <div className="relative flex items-center gap-3 mb-8">
-          <div className="p-3 rounded-xl bg-cyan-500/20">
-            <UserPlus className="text-cyan-400" size={26} />
-          </div>
-          <div>
-            <h2 className="text-2xl font-semibold text-white">
-              Create {form.role === "ADMIN" ? "Admin" : "User"}
-            </h2>
-            <p className="text-sm text-white/60">
-              {isSuperAdmin ? "Super Admin Access" : "Admin Access"}
-            </p>
-          </div>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+          <h2 className="text-xl font-bold text-[#1e3a8a]">
+            Create {form.role === "ADMIN" ? "Admin" : "User"}
+          </h2>
+          <button className="text-gray-400 hover:text-gray-600 transition">
+            <X size={24} />
+          </button>
         </div>
 
-        {/* FORM */}
-        <form onSubmit={handleSubmit} className="relative space-y-5">
-          {/* NAME */}
-          <div>
-            <label className="block text-xs uppercase tracking-wide text-white/70 mb-1">
-              Full Name
-            </label>
-            <div className="relative">
-              <UserPlus
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40"
-                size={18}
-              />
-              <input
-                type="text"
-                name="name"
-                value={form.name}
-                onChange={handleChange}
-                placeholder="Enter full name"
-                className="w-full pl-10 pr-4 py-3 rounded-xl
-                  bg-white/5 border border-white/20
-                  text-white placeholder-white/40
-                  focus:outline-none focus:ring-2 focus:ring-cyan-400"
-              />
-            </div>
-          </div>
-
-          {/* MOBILE */}
-          <div>
-            <label className="block text-xs uppercase tracking-wide text-white/70 mb-1">
-              Mobile Number
-            </label>
-            <div className="relative">
-              <Phone
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40"
-                size={18}
-              />
-              <input
-                type="text"
-                name="mobile"
-                value={form.mobile}
-                onChange={handleChange}
-                placeholder="10 digit mobile number"
-                className="w-full pl-10 pr-4 py-3 rounded-xl
-                  bg-white/5 border border-white/20
-                  text-white placeholder-white/40
-                  focus:outline-none focus:ring-2 focus:ring-cyan-400"
-              />
-            </div>
-          </div>
-
-          {/* PASSWORD */}
-          <div>
-            <label className="block text-xs uppercase tracking-wide text-white/70 mb-1">
-              Password
-            </label>
-            <div className="relative">
-              <Lock
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40"
-                size={18}
-              />
-              <input
-                type="password"
-                name="password"
-                value={form.password}
-                onChange={handleChange}
-                placeholder="Minimum 6 characters"
-                className="w-full pl-10 pr-4 py-3 rounded-xl
-                  bg-white/5 border border-white/20
-                  text-white placeholder-white/40
-                  focus:outline-none focus:ring-2 focus:ring-cyan-400"
-              />
-            </div>
-          </div>
-
-          {/* ROLE */}
-          {isSuperAdmin && (
-            <div>
-              <label className="block text-xs uppercase tracking-wide text-white/70 mb-1">
-                Role
-              </label>
-              <div className="relative">
-                <Shield
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40"
-                  size={18}
-                />
-                <select
-                  name="role"
-                  value={form.role}
+        {/* FORM / SCROLLABLE CONTENT */}
+        <div className="p-6 max-h-[60vh] overflow-y-auto custom-scrollbar bg-white">
+          <form id="createUserForm" onSubmit={handleSubmit} className="space-y-6">
+            
+            {/* GRID ROW 1 */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* NAME */}
+              <div>
+                <label className="block text-sm font-bold text-[#1e3a8a] mb-2">
+                  Full Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  value={form.name}
                   onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-3 rounded-xl
-                    bg-white/5 border border-white/20
-                    text-white focus:outline-none focus:ring-2 focus:ring-cyan-400"
-                >
-                  <option value="USER">USER</option>
-                  <option value="ADMIN">ADMIN</option>
-                </select>
+                  placeholder="Enter full name"
+                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-gray-800 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
+                />
+              </div>
+
+              {/* MOBILE */}
+              <div>
+                <label className="block text-sm font-bold text-[#1e3a8a] mb-2">
+                  Mobile Number <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="mobile"
+                  value={form.mobile}
+                  onChange={handleChange}
+                  placeholder="10 digit mobile number"
+                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-gray-800 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
+                />
               </div>
             </div>
-          )}
 
-          {/* SUBMIT */}
+            {/* GRID ROW 2 */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* PASSWORD */}
+              <div>
+                <label className="block text-sm font-bold text-[#1e3a8a] mb-2">
+                  Password <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="password"
+                  name="password"
+                  value={form.password}
+                  onChange={handleChange}
+                  placeholder="Minimum 6 characters"
+                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-gray-800 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
+                />
+              </div>
+
+              {/* ROLE */}
+              {isSuperAdmin && (
+                <div>
+                  <label className="block text-sm font-bold text-[#1e3a8a] mb-2">
+                    Role <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    name="role"
+                    value={form.role}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-gray-800 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
+                  >
+                    <option value="USER">USER</option>
+                    <option value="ADMIN">ADMIN</option>
+                  </select>
+                </div>
+              )}
+            </div>
+            
+          </form>
+        </div>
+
+        {/* FOOTER */}
+        <div className="flex items-center justify-end gap-4 px-6 py-4 border-t border-gray-200 bg-white">
+          <button
+            type="button"
+            onClick={() => setForm({ name: "", mobile: "", password: "", role: "USER" })}
+            className="text-gray-500 hover:text-gray-700 font-medium px-4 py-2 transition"
+          >
+            Cancel
+          </button>
           <button
             type="submit"
+            form="createUserForm"
             disabled={loading}
-            className="w-full py-3 rounded-xl font-semibold text-white
-              bg-gradient-to-r from-cyan-500/70 to-blue-500/70
-              hover:from-cyan-500 hover:to-blue-500
-              transition-all duration-300
-              disabled:opacity-60"
+            className="px-6 py-2.5 rounded-lg font-medium text-white bg-[#0284c7] hover:bg-[#0369a1] transition shadow-sm disabled:opacity-70"
           >
-            {loading ? "Creating..." : "Create Account"}
+            {loading ? "Saving..." : "Save User"}
           </button>
-        </form>
+        </div>
       </div>
     </div>
   );
