@@ -28,7 +28,6 @@ const SuperAdminSidebar = ({ collapsed, mobile, sidebarOpen, setSidebarOpen }) =
 
   // 🔹 menu data
   const userMgmtMenu = [
-    { name: "Create User", path: "/dashboard/super-admin/createuser" },
     // { name: "Create Admin", path: "/dashboard/super-admin/createAdmin" },
     { name: "Users List", path: "/dashboard/super-admin/usersList" },
     { name: "Pending Donations", path: "/dashboard/super-admin/pending-donations" },
