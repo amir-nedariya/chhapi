@@ -4,13 +4,16 @@ import { toast } from "react-hot-toast";
 import {
   getPendingDonationsAPI,
   approveDonationAPI,
+  rejectDonationAPI,
 } from "../../../../api/donation.api";
 import {
   CheckCircle,
+  XCircle,
   Filter,
   ChevronLeft,
   ChevronRight,
   Clock,
+  AlertTriangle,
 } from "lucide-react";
 
 const monthNames = [
@@ -30,6 +33,10 @@ const PendingDonations = () => {
   const [selectedMonth, setSelectedMonth] = useState("ALL");
   const [page, setPage] = useState(1);
 
+  const [rejectModalOpen, setRejectModalOpen] = useState(false);
+  const [selectedDonation, setSelectedDonation] = useState(null);
+  const [modalState, setModalState] = useState("idle"); // "idle" | "processing" | "success" | "error"
+
   /* ================= FETCH DATA ================= */
   const fetchPending = async () => {
     try {
@@ -47,7 +54,7 @@ const PendingDonations = () => {
     fetchPending();
   }, []);
 
-  /* ================= APPROVE ================= */
+  /* ================= APPROVE / REJECT ================= */
   const approveDonation = async (id) => {
     try {
       setLoadingId(id);
@@ -58,6 +65,42 @@ const PendingDonations = () => {
       toast.error("❌ Approval failed");
     } finally {
       setLoadingId(null);
+    }
+  };
+
+  const rejectDonation = async (id) => {
+    try {
+      setLoadingId(id);
+      await rejectDonationAPI(id);
+      toast.success("❌ Donation rejected");
+      fetchPending();
+    } catch {
+      toast.error("❌ Rejection failed");
+    } finally {
+      setLoadingId(null);
+    }
+  };
+
+  const confirmRejection = async (id) => {
+    try {
+      setModalState("processing");
+      await rejectDonationAPI(id);
+      setModalState("success");
+      toast.success("❌ Donation rejected");
+      fetchPending();
+      setTimeout(() => {
+        setRejectModalOpen(false);
+        setSelectedDonation(null);
+        setModalState("idle");
+      }, 1500);
+    } catch {
+      setModalState("error");
+      toast.error("❌ Rejection failed");
+      setTimeout(() => {
+        setRejectModalOpen(false);
+        setSelectedDonation(null);
+        setModalState("idle");
+      }, 1500);
     }
   };
 
@@ -181,19 +224,32 @@ const PendingDonations = () => {
                   <td className="p-4 text-center text-slate-700">{d.year}</td>
                   <td className="p-4 text-center text-slate-700">{monthNames[d.month - 1]}</td>
                   <td className="p-4 text-center">
-                    <span className="px-2 py-1 text-xs font-semibold rounded border bg-yellow-50 text-yellow-700 border-yellow-200">
-                      PENDING
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200/60 shadow-sm">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                      Pending
                     </span>
                   </td>
                   <td className="p-4 text-center">
-                    <button
-                      disabled={loadingId === d._id}
-                      onClick={() => approveDonation(d._id)}
-                      className="inline-flex items-center gap-2 px-4 py-2 text-sm text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50 transition shadow-sm"
-                    >
-                      <CheckCircle size={16} />
-                      {loadingId === d._id ? "Approving..." : "Approve"}
-                    </button>
+                    <div className="flex items-center justify-center gap-2">
+                      <button
+                        disabled={loadingId !== null}
+                        onClick={() => approveDonation(d._id)}
+                        title="Approve Donation"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-600 hover:text-white active:bg-emerald-700 border border-emerald-200 hover:border-emerald-600 rounded-lg disabled:opacity-40 transition-all duration-200 shadow-sm hover:shadow active:scale-95 cursor-pointer"
+                      >
+                        <CheckCircle size={14} className="stroke-[2.5]" />
+                        {loadingId === d._id ? "..." : "Approve"}
+                      </button>
+                      <button
+                        disabled={loadingId !== null}
+                        onClick={() => { setSelectedDonation(d); setRejectModalOpen(true); }}
+                        title="Reject Donation"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-rose-700 bg-rose-50 hover:bg-rose-600 hover:text-white active:bg-rose-700 border border-rose-200 hover:border-rose-600 rounded-lg disabled:opacity-40 transition-all duration-200 shadow-sm hover:shadow active:scale-95 cursor-pointer"
+                      >
+                        <XCircle size={14} className="stroke-[2.5]" />
+                        Reject
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))
@@ -213,42 +269,129 @@ const PendingDonations = () => {
             <p className="text-sm text-slate-500 mt-1">
               Collected by: <span className="font-medium text-slate-700">{d.collectedBy?.name}</span> ({d.collectedBy?.role})
             </p>
-            <div className="flex justify-between mt-3 pt-3 border-t border-gray-100 text-sm text-slate-600">
+            <div className="flex justify-between items-center mt-3 pt-3 border-t border-gray-100 text-sm text-slate-600">
               <span className="font-medium">{monthNames[d.month - 1]} {d.year}</span>
-              <span className="px-2 py-1 rounded border bg-yellow-50 text-yellow-700 border-yellow-200 font-semibold text-xs flex items-center">
-                PENDING
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200/60 shadow-sm">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                Pending
               </span>
             </div>
-            <button
-              disabled={loadingId === d._id}
-              onClick={() => approveDonation(d._id)}
-              className="w-full mt-4 flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50 transition shadow-sm"
-            >
-              <CheckCircle size={18} />
-              {loadingId === d._id ? "Approving..." : "Approve Donation"}
-            </button>
+            <div className="flex gap-2.5 mt-4">
+              <button
+                disabled={loadingId !== null}
+                onClick={() => approveDonation(d._id)}
+                className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 rounded-xl disabled:opacity-50 transition-all duration-200 shadow active:scale-95 cursor-pointer"
+              >
+                <CheckCircle size={16} className="stroke-[2.5]" />
+                {loadingId === d._id ? "Approve..." : "Approve"}
+              </button>
+              <button
+                disabled={loadingId !== null}
+                onClick={() => { setSelectedDonation(d); setRejectModalOpen(true); }}
+                className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 text-sm font-semibold text-white bg-rose-600 hover:bg-rose-700 active:bg-rose-800 rounded-xl disabled:opacity-50 transition-all duration-200 shadow active:scale-95 cursor-pointer"
+              >
+                <XCircle size={16} className="stroke-[2.5]" />
+                Reject
+              </button>
+            </div>
           </div>
         ))}
       </div>
 
       {/* ================= PAGINATION ================= */}
-      {totalPages > 1 && (
+      {totalPages >= 1 && (
         <div className="flex justify-center sm:justify-end items-center gap-3 mt-4">
           <button
             disabled={page === 1}
             onClick={() => setPage(page - 1)}
-            className="p-2 rounded-lg bg-white border border-gray-300 text-slate-600 hover:bg-slate-50 disabled:opacity-40 transition shadow-sm"
+            className="p-3 rounded-2xl bg-white border border-gray-150 text-slate-400 hover:bg-slate-50 hover:text-slate-600 disabled:opacity-40 disabled:hover:bg-white disabled:hover:text-slate-400 transition-all duration-200 shadow-sm cursor-pointer"
           >
-            <ChevronLeft size={20} />
+            <ChevronLeft size={18} className="stroke-[2.5]" />
           </button>
-          <span className="text-slate-600 text-sm font-medium">Page {page} of {totalPages}</span>
+          
+          <div className="px-5 py-2 rounded-full border border-slate-100/80 bg-slate-50/40 text-sky-700/90 font-bold text-xs tracking-wider uppercase shadow-sm">
+            PAGE {page} OF {totalPages || 1}
+          </div>
+
           <button
-            disabled={page === totalPages}
+            disabled={page === totalPages || totalPages === 0}
             onClick={() => setPage(page + 1)}
-            className="p-2 rounded-lg bg-white border border-gray-300 text-slate-600 hover:bg-slate-50 disabled:opacity-40 transition shadow-sm"
+            className="p-3 rounded-2xl bg-white border border-gray-150 text-slate-400 hover:bg-slate-50 hover:text-slate-600 disabled:opacity-40 disabled:hover:bg-white disabled:hover:text-slate-400 transition-all duration-200 shadow-sm cursor-pointer"
           >
-            <ChevronRight size={20} />
+            <ChevronRight size={18} className="stroke-[2.5]" />
           </button>
+        </div>
+      )}
+
+      {/* ================= REJECT CONFIRMATION MODAL ================= */}
+      {rejectModalOpen && selectedDonation && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-md transition-opacity duration-300">
+          <div className="bg-white/90 backdrop-blur-lg rounded-[2rem] p-8 shadow-2xl max-w-sm w-full mx-4 border border-white/20 flex flex-col items-center text-center transform scale-100 transition-all duration-300 relative overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            
+            {/* Top color stripe */}
+            <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-rose-500 to-red-600"></div>
+
+            {modalState === "idle" && (
+              <div className="flex flex-col items-center w-full animate-in fade-in zoom-in-95 duration-200">
+                {/* Warning Icon */}
+                <div className="w-16 h-16 bg-rose-50 border border-rose-100 rounded-full flex items-center justify-center text-rose-500 mb-4 animate-bounce">
+                  <AlertTriangle size={32} className="stroke-[2.25]" />
+                </div>
+
+                {/* Title */}
+                <h3 className="text-xl font-extrabold text-slate-800 tracking-tight mb-2">Reject Donation?</h3>
+
+                {/* Description */}
+                <p className="text-sm text-slate-505 leading-relaxed mb-6">
+                  Are you sure you want to reject the donation of <span className="font-extrabold text-slate-700">₹{selectedDonation.amount}</span> from <span className="font-extrabold text-slate-700">{selectedDonation.donor?.name || "N/A"}</span>? This action cannot be undone.
+                </p>
+
+                {/* Action Buttons */}
+                <div className="flex gap-3 w-full">
+                  <button
+                    onClick={() => { setRejectModalOpen(false); setSelectedDonation(null); }}
+                    className="flex-1 py-3 text-sm font-bold text-slate-650 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-2xl active:scale-95 transition-all duration-200 cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => confirmRejection(selectedDonation._id)}
+                    className="flex-1 py-3 text-sm font-bold text-white bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700 active:scale-95 shadow-lg shadow-rose-600/25 hover:shadow-rose-600/35 rounded-2xl transition-all duration-200 cursor-pointer"
+                  >
+                    Yes, Reject
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {modalState === "processing" && (
+              <div className="flex flex-col items-center justify-center py-6 w-full animate-in fade-in duration-200">
+                <div className="w-12 h-12 rounded-full border-4 border-slate-100 border-t-rose-600 animate-spin mb-4"></div>
+                <p className="text-sm font-bold text-slate-700">Rejecting Donation...</p>
+                <p className="text-xs text-slate-400 mt-1">Updating records...</p>
+              </div>
+            )}
+
+            {modalState === "success" && (
+              <div className="flex flex-col items-center justify-center py-6 w-full animate-in fade-in zoom-in-95 duration-200">
+                <div className="w-16 h-16 bg-rose-100 border border-rose-200 rounded-full flex items-center justify-center text-rose-600 mb-4 scale-110 duration-500">
+                  <XCircle size={36} className="stroke-[2.25]" />
+                </div>
+                <p className="text-lg font-extrabold text-slate-800">Donation Rejected</p>
+                <p className="text-xs text-slate-500 mt-1">The transaction has been cancelled.</p>
+              </div>
+            )}
+
+            {modalState === "error" && (
+              <div className="flex flex-col items-center justify-center py-6 w-full animate-in fade-in zoom-in-95 duration-200">
+                <div className="w-16 h-16 bg-amber-50 border border-amber-200 rounded-full flex items-center justify-center text-amber-600 mb-4">
+                  <AlertTriangle size={36} className="stroke-[2.25]" />
+                </div>
+                <p className="text-lg font-bold text-slate-800">Operation Failed</p>
+                <p className="text-xs text-slate-505 mt-1">Please try again later.</p>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
