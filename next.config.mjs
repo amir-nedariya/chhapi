@@ -7,6 +7,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const nextConfig = {
   reactStrictMode: true,
   outputFileTracingRoot: __dirname,
+  devIndicators: false,
   webpack: (config) => {
     config.resolve.alias['react-router-dom'] = path.resolve(__dirname, 'src/polyfills/react-router-dom.jsx');
     return config;

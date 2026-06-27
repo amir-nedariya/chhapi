@@ -2,5 +2,12 @@
   "/page": "app/page.js",
   "/dashboard/super-admin/page": "app/dashboard/super-admin/page.js",
   "/dashboard/super-admin/usersList/page": "app/dashboard/super-admin/usersList/page.js",
-  "/dashboard/super-admin/pending-donations/page": "app/dashboard/super-admin/pending-donations/page.js"
+  "/dashboard/super-admin/pending-donations/page": "app/dashboard/super-admin/pending-donations/page.js",
+  "/dashboard/super-admin/reports/page": "app/dashboard/super-admin/reports/page.js",
+  "/dashboard/super-admin/all-donations/page": "app/dashboard/super-admin/all-donations/page.js",
+  "/dashboard/super-admin/monthlyDonationTable/page": "app/dashboard/super-admin/monthlyDonationTable/page.js",
+  "/dashboard/super-admin/createfund/page": "app/dashboard/super-admin/createfund/page.js",
+  "/dashboard/super-admin/fundSummary/page": "app/dashboard/super-admin/fundSummary/page.js",
+  "/dashboard/super-admin/useFund/page": "app/dashboard/super-admin/useFund/page.js",
+  "/dashboard/super-admin/fundHistory/page": "app/dashboard/super-admin/fundHistory/page.js"
 }

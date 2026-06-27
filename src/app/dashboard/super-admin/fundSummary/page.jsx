@@ -9,6 +9,7 @@ import {
   Calendar,
   ChevronLeft,
   ChevronRight,
+  Filter,
 } from "lucide-react";
 
 /* MONTH NAMES */
@@ -87,169 +88,239 @@ const FundSummary = () => {
 
   /* LOADING */
   if (loading) {
-    return <div className="p-6 text-gray-400">Loading fund summary...</div>;
+    return <div className="min-h-screen bg-[#ecf0f3] p-6 text-slate-500 font-bold">Loading fund summary...</div>;
   }
 
   if (!funds.length) {
-    return <div className="p-6 text-red-400">No fund data available</div>;
+    return (
+      <div className="min-h-screen bg-[#ecf0f3] p-6 flex items-center justify-center">
+        <div 
+          className="p-8 text-center text-rose-600 font-extrabold rounded-3xl w-full max-w-md"
+          style={{ boxShadow: "9px 9px 16px #b8c4d9, -9px -9px 16px #ffffff", backgroundColor: "#ecf0f3" }}
+        >
+          No fund data available
+        </div>
+      </div>
+    );
   }
 
+  // Neumorphic Styling Mappings
+  const cardShadow = {
+    boxShadow: "9px 9px 16px #b8c4d9, -9px -9px 16px #ffffff",
+    backgroundColor: "#ecf0f3",
+  };
+
+  const innerSunken = {
+    boxShadow: "inset 4px 4px 8px #d1d9e6, inset -4px -4px 8px #ffffff",
+    backgroundColor: "#ecf0f3",
+  };
+
   return (
-    <div className="space-y-6">
-
-      {/* HEADER + FILTER */}
-      <div className="flex flex-wrap justify-between items-center gap-4">
-        <h2 className="text-xl font-semibold text-white tracking-wide">
-          Fund Summary
-        </h2>
-
-        <div className="flex gap-3">
-          <FilterSelect value={selectedYear} onChange={setSelectedYear}>
-            <option value="ALL">All Years</option>
-            {[...new Set(funds.map(f => f.year))].map((y) => (
-              <option key={y} value={y}>{y}</option>
-            ))}
-          </FilterSelect>
-
-          <FilterSelect value={selectedMonth} onChange={setSelectedMonth}>
-            <option value="ALL">All Months</option>
-            {monthNames.map((m, i) => (
-              <option key={i} value={i + 1}>{m}</option>
-            ))}
-          </FilterSelect>
-        </div>
-      </div>
-
-      {/* SUMMARY */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <SummaryCard
-          icon={<Wallet size={18} />}
-          label="Total Amount"
-          value={grandTotal.total}
-          color="text-cyan-400"
-        />
-        <SummaryCard
-          icon={<TrendingDown size={18} />}
-          label="Used Amount"
-          value={grandTotal.used}
-          color="text-red-400"
-        />
-        <SummaryCard
-          icon={<Coins size={18} />}
-          label="Remaining Amount"
-          value={grandTotal.remaining}
-          color={
-            grandTotal.remaining > 0
-              ? "text-green-400"
-              : "text-gray-400"
-          }
-        />
-      </div>
-
-      {/* FUND DETAILS */}
-      <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-        <h3 className="text-white font-medium mb-4">Fund Details</h3>
-
-        <div className="space-y-4 text-sm">
-          {paginatedFunds.map((fund) => (
-            <div
-              key={fund._id}
-              className="flex justify-between items-center p-5 rounded-2xl
-                bg-gradient-to-br from-white/5 to-white/0
-                border border-white/10
-                hover:border-cyan-400/30 transition"
-            >
-              <div>
-                <p className="text-white font-semibold">{fund.title}</p>
-                <p className="text-gray-400 text-xs flex items-center gap-1">
-                  <Calendar size={12} />
-                  {monthNames[fund.month - 1]} {fund.year}
-                </p>
-              </div>
-
-              <div className="text-right space-y-1">
-                <p className="text-cyan-400 font-semibold">
-                  ₹{fund.totalAmount.toLocaleString()}
-                </p>
-                <p className="text-red-400 text-xs">
-                  Used ₹{fund.usedAmount.toLocaleString()}
-                </p>
-                <span
-                  className={`inline-block px-3 py-1 rounded-full text-xs font-semibold
-                    ${
-                      fund.remainingAmount > 0
-                        ? "bg-green-500/10 text-green-400"
-                        : "bg-gray-500/10 text-gray-400"
-                    }`}
-                >
-                  Remaining ₹{fund.remainingAmount.toLocaleString()}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* PAGINATION */}
-        {totalPages > 1 && (
-          <div className="flex justify-end items-center gap-3 mt-5">
-            <PaginationButton
-              disabled={page === 1}
-              onClick={() => setPage(p => p - 1)}
-              icon={<ChevronLeft size={16} />}
-            />
-            <span className="text-sm text-gray-400">
-              Page {page} of {totalPages}
-            </span>
-            <PaginationButton
-              disabled={page === totalPages}
-              onClick={() => setPage(p => p + 1)}
-              icon={<ChevronRight size={16} />}
-            />
+    <div className="min-h-screen bg-[#ecf0f3] p-2 sm:p-8 space-y-8 text-slate-800 font-sans">
+      <div className="max-w-6xl mx-auto space-y-8">
+        
+        {/* HEADER + FILTER */}
+        <div className="flex flex-wrap justify-between items-center gap-4 px-2">
+          <div>
+            <h2 className="text-2xl font-extrabold text-slate-800 flex items-center gap-2">
+              <Coins className="text-cyan-600" />
+              Fund Summary
+            </h2>
+            <p className="text-slate-500 text-sm mt-0.5 font-semibold">Overview of budget allocations and remaining balance</p>
           </div>
-        )}
+
+          <div className="flex gap-4 items-center">
+            <div 
+              className="p-2.5 rounded-full flex items-center justify-center"
+              style={{ boxShadow: "4px 4px 8px #b8c4d9, -4px -4px 8px #ffffff", backgroundColor: "#ecf0f3" }}
+            >
+              <Filter size={18} className="text-slate-500" />
+            </div>
+            
+            <FilterSelect value={selectedYear} onChange={setSelectedYear}>
+              <option value="ALL">All Years</option>
+              {[...new Set(funds.map(f => f.year))].map((y) => (
+                <option key={y} value={y}>{y}</option>
+              ))}
+            </FilterSelect>
+
+            <FilterSelect value={selectedMonth} onChange={setSelectedMonth}>
+              <option value="ALL">All Months</option>
+              {monthNames.map((m, i) => (
+                <option key={i} value={i + 1}>{m}</option>
+              ))}
+            </FilterSelect>
+          </div>
+        </div>
+
+        {/* SUMMARY CARDS */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <SummaryCard
+            icon={<Wallet size={22} className="text-cyan-600" />}
+            label="Total Amount"
+            value={grandTotal.total}
+            color="text-cyan-600"
+          />
+          <SummaryCard
+            icon={<TrendingDown size={22} className="text-rose-600" />}
+            label="Used Amount"
+            value={grandTotal.used}
+            color="text-rose-600"
+          />
+          <SummaryCard
+            icon={<Coins size={22} className="text-emerald-600" />}
+            label="Remaining Amount"
+            value={grandTotal.remaining}
+            color={grandTotal.remaining > 0 ? "text-emerald-600" : "text-slate-500"}
+          />
+        </div>
+
+        {/* FUND DETAILS */}
+        <div className="rounded-3xl p-8 space-y-6" style={cardShadow}>
+          <h3 className="text-slate-700 font-extrabold text-lg mb-2">Fund Details</h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+            {paginatedFunds.map((fund) => (
+              <div
+                key={fund._id}
+                className="flex justify-between items-center p-6 rounded-2xl transition duration-300"
+                style={{
+                  boxShadow: "5px 5px 10px #b8c4d9, -5px -5px 10px #ffffff",
+                  backgroundColor: "#ecf0f3"
+                }}
+              >
+                <div>
+                  <p className="text-slate-800 font-extrabold text-base">{fund.title}</p>
+                  <p className="text-slate-500 text-xs flex items-center gap-1.5 mt-2 font-bold">
+                    <Calendar size={13} className="text-slate-400" />
+                    {monthNames[fund.month - 1]} {fund.year}
+                  </p>
+                </div>
+
+                <div className="text-right space-y-1">
+                  <p className="text-cyan-600 font-black text-lg">
+                    ₹{fund.totalAmount.toLocaleString()}
+                  </p>
+                  <p className="text-rose-500 text-xs font-bold">
+                    Used ₹{fund.usedAmount.toLocaleString()}
+                  </p>
+                  <div className="pt-1.5">
+                    <span
+                      className={`inline-block px-3.5 py-1 rounded-full text-xs font-black border transition duration-300`}
+                      style={
+                        fund.remainingAmount > 0
+                          ? {
+                              boxShadow: "inset 2px 2px 4px #b0c9bb, inset -2px -2px 4px #ffffff",
+                              backgroundColor: "#e6f4ea",
+                              color: "#137333",
+                              borderColor: "#ceead6"
+                            }
+                          : {
+                              boxShadow: "inset 2px 2px 4px #d1d9e6, inset -2px -2px 4px #ffffff",
+                              backgroundColor: "#f1f3f4",
+                              color: "#5f6368",
+                              borderColor: "#e8eaed"
+                            }
+                      }
+                    >
+                      Remaining ₹{fund.remainingAmount.toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* PAGINATION */}
+          {totalPages > 1 && (
+            <div className="flex justify-end items-center gap-4 mt-8 pt-2">
+              <PaginationButton
+                disabled={page === 1}
+                onClick={() => setPage(p => p - 1)}
+                icon={<ChevronLeft size={18} />}
+              />
+              <span className="text-sm text-slate-600 font-bold px-1">
+                Page {page} of {totalPages}
+              </span>
+              <PaginationButton
+                disabled={page === totalPages}
+                onClick={() => setPage(p => p + 1)}
+                icon={<ChevronRight size={18} />}
+              />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
 };
 
-/* COMPONENTS */
-
+/* NEUMORPHIC SELECT COMPONENT */
 const FilterSelect = ({ value, onChange, children }) => (
   <select
     value={value}
     onChange={(e) => onChange(e.target.value)}
     className="
-      bg-[#020617] border border-white/10 rounded-xl
-      px-4 py-2 text-sm text-gray-200
-      focus:outline-none focus:ring-2 focus:ring-cyan-500/40
-      hover:border-cyan-400/40 transition"
+      rounded-2xl px-4 py-3 text-sm text-slate-700 font-bold outline-none
+      cursor-pointer transition duration-300 border-none w-36 sm:w-40"
+    style={{
+      boxShadow: "inset 3px 3px 6px #d1d9e6, inset -3px -3px 6px #ffffff",
+      backgroundColor: "#ecf0f3"
+    }}
   >
     {children}
   </select>
 );
 
+/* NEUMORPHIC SUMMARY CARD */
 const SummaryCard = ({ icon, label, value, color }) => (
-  <div className="bg-white/5 border border-white/10 rounded-2xl p-5
-    hover:border-cyan-400/30 transition">
-    <div className="flex items-center gap-3 text-gray-400 mb-2">
+  <div 
+    className="rounded-3xl p-6 transition duration-300 flex items-center gap-5"
+    style={{
+      boxShadow: "9px 9px 16px #b8c4d9, -9px -9px 16px #ffffff",
+      backgroundColor: "#ecf0f3",
+    }}
+  >
+    <div 
+      className="p-4 rounded-full"
+      style={{
+        boxShadow: "inset 4px 4px 8px #d1d9e6, inset -4px -4px 8px #ffffff",
+        backgroundColor: "#ecf0f3"
+      }}
+    >
       {icon}
-      {label}
     </div>
-    <p className={`text-2xl font-bold ${color}`}>
-      ₹{Number(value).toLocaleString()}
-    </p>
+    <div>
+      <span className="text-slate-400 text-xs font-black uppercase tracking-widest">{label}</span>
+      <p className={`text-2xl font-black ${color} mt-0.5`}>
+        ₹{Number(value).toLocaleString()}
+      </p>
+    </div>
   </div>
 );
 
-const PaginationButton = ({ icon, disabled, onClick }) => (
-  <button
-    disabled={disabled}
-    onClick={onClick}
-    className="p-2 rounded-lg bg-white/5 border border-white/10
-      disabled:opacity-40 hover:border-cyan-400/40 transition"
-  >
-    {icon}
-  </button>
-);
+/* NEUMORPHIC PAGINATION BUTTON */
+const PaginationButton = ({ icon, disabled, onClick }) => {
+  const [pressed, setPressed] = useState(false);
+  return (
+    <button
+      disabled={disabled}
+      onClick={onClick}
+      onMouseDown={() => setPressed(true)}
+      onMouseUp={() => setPressed(false)}
+      onMouseLeave={() => setPressed(false)}
+      onTouchStart={() => setPressed(true)}
+      onTouchEnd={() => setPressed(false)}
+      className="p-3 rounded-2xl text-slate-700 transition duration-300 disabled:opacity-40"
+      style={
+        pressed
+          ? { boxShadow: "inset 2px 2px 4px #b8c4d9, inset -2px -2px 4px #ffffff", backgroundColor: "#ecf0f3" }
+          : { boxShadow: "4px 4px 8px #b8c4d9, -4px -4px 8px #ffffff", backgroundColor: "#ecf0f3" }
+      }
+    >
+      {icon}
+    </button>
+  );
+};
 
 export default FundSummary;
