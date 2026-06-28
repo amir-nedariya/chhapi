@@ -69,9 +69,7 @@ self.__SERVER_FILES_MANIFEST={
       "unoptimized": false,
       "customCacheHandler": false
     },
-    "devIndicators": {
-      "position": "bottom-left"
-    },
+    "devIndicators": false,
     "onDemandEntries": {
       "maxInactiveAge": 60000,
       "pagesBufferLength": 5
@@ -103,7 +101,7 @@ self.__SERVER_FILES_MANIFEST={
         "transform": "lodash/{{member}}"
       }
     },
-    "outputFileTracingRoot": "C:\\Users\\iaami\\OneDrive\\Desktop\\chhapi\\donation-in-chhapi---2026\\client",
+    "outputFileTracingRoot": "C:\\Users\\Asus\\Desktop\\chhapi\\chhapi",
     "cacheComponents": false,
     "cacheLife": {
       "default": {
@@ -165,7 +163,7 @@ self.__SERVER_FILES_MANIFEST={
       "proxyPrefetch": "flexible",
       "optimisticClientCache": true,
       "manualClientBasePath": false,
-      "cpus": 7,
+      "cpus": 3,
       "memoryBasedWorkersCount": false,
       "imgOptConcurrency": null,
       "imgOptTimeoutInSeconds": 7,
@@ -303,11 +301,11 @@ self.__SERVER_FILES_MANIFEST={
     "bundlePagesRouterDependencies": false,
     "configFileName": "next.config.mjs",
     "turbopack": {
-      "root": "C:\\Users\\iaami\\OneDrive\\Desktop\\chhapi\\donation-in-chhapi---2026\\client"
+      "root": "C:\\Users\\Asus\\Desktop\\chhapi\\chhapi"
     },
     "distDirRoot": ".next"
   },
-  "appDir": "C:\\Users\\iaami\\OneDrive\\Desktop\\chhapi\\donation-in-chhapi---2026\\client",
+  "appDir": "C:\\Users\\Asus\\Desktop\\chhapi\\chhapi",
   "relativeAppDir": "",
   "files": [
     ".next\\package.json",

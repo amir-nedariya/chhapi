@@ -18,7 +18,6 @@
   "/dashboard/super-admin/all-donations/page": "app/dashboard/super-admin/all-donations/page.js",
   "/dashboard/super-admin/createAdmin/page": "app/dashboard/super-admin/createAdmin/page.js",
   "/dashboard/super-admin/createfund/page": "app/dashboard/super-admin/createfund/page.js",
-  "/dashboard/super-admin/createuser/page": "app/dashboard/super-admin/createuser/page.js",
   "/dashboard/super-admin/fundHistory/page": "app/dashboard/super-admin/fundHistory/page.js",
   "/dashboard/super-admin/fundSummary/page": "app/dashboard/super-admin/fundSummary/page.js",
   "/dashboard/super-admin/monthlyDonationTable/page": "app/dashboard/super-admin/monthlyDonationTable/page.js",

@@ -2,17 +2,21 @@
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import { getAllDonationsAPI } from "../../../../api/donation.api";
-import { FileText, ChevronLeft, ChevronRight, Search } from "lucide-react";
+import { FileText, ChevronLeft, ChevronRight, Search, Landmark, TrendingUp, Users, Clock } from "lucide-react";
 
 /* ================= STYLES ================= */
 const statusStyles = {
-  PENDING: "bg-yellow-50 text-yellow-700 border border-yellow-200 font-medium",
-  APPROVED: "bg-green-50 text-green-700 border border-green-200 font-medium",
+  PENDING: "bg-[#fff9db] text-[#f59e0b] border border-[#ffe066] font-semibold px-3.5 py-1 rounded-full text-xs shadow-xs",
+  APPROVED: "bg-[#ebfbee] text-[#09c372] border border-[#b2f2bb] font-semibold px-3.5 py-1 rounded-full text-xs shadow-xs",
+  SUCCESS: "bg-[#ebfbee] text-[#09c372] border border-[#b2f2bb] font-semibold px-3.5 py-1 rounded-full text-xs shadow-xs",
+  FAILED: "bg-[#fff5f5] text-[#fa5252] border border-[#ffc9c9] font-semibold px-3.5 py-1 rounded-full text-xs shadow-xs",
 };
 
 const amountStyles = {
-  PENDING: "text-yellow-600 font-bold",
-  APPROVED: "text-green-600 font-bold",
+  PENDING: "text-[#f59e0b] font-bold text-[15px]",
+  APPROVED: "text-[#09c372] font-bold text-[15px]",
+  SUCCESS: "text-[#09c372] font-bold text-[15px]",
+  FAILED: "text-[#fa5252] font-bold text-[15px]",
 };
 
 /* ================= MONTHS ================= */
@@ -26,8 +30,8 @@ const ITEMS_PER_PAGE = 10;
 /* ================= LOADER ================= */
 const TableLoader = ({ text = "Loading..." }) => (
   <div className="w-full py-20 flex flex-col items-center justify-center gap-3">
-    <div className="w-10 h-10 border-4 border-cyan-200 border-t-cyan-600 rounded-full animate-spin" />
-    <p className="text-sm text-slate-500">{text}</p>
+    <div className="w-10 h-10 border-4 border-slate-300 border-t-cyan-600 rounded-full animate-spin" />
+    <p className="text-sm text-slate-500 font-semibold">{text}</p>
   </div>
 );
 
@@ -40,6 +44,11 @@ const AllDonations = () => {
   const [filterMonth, setFilterMonth] = useState(now.getMonth() + 1);
   const [filterYear, setFilterYear] = useState(now.getFullYear());
   const [search, setSearch] = useState("");
+
+  // Neumorphic button press states
+  const [currentMonthPressed, setCurrentMonthPressed] = useState(false);
+  const [prevPressed, setPrevPressed] = useState(false);
+  const [nextPressed, setNextPressed] = useState(false);
 
   /* ================= FETCH ================= */
   const fetchDonations = async () => {
@@ -80,23 +89,147 @@ const AllDonations = () => {
     page * ITEMS_PER_PAGE
   );
 
+  /* ================= METRICS CALCULATIONS ================= */
+  const metrics = useMemo(() => {
+    const approved = donations.filter(d => (d.status || "").toUpperCase() === "SUCCESS" || (d.status || "").toUpperCase() === "APPROVED");
+    const pending = donations.filter(d => (d.status || "").toUpperCase() === "PENDING");
+    
+    const totalAmount = approved.reduce((sum, d) => sum + (Number(d.amount) || 0), 0);
+    const uniqueDonors = new Set(donations.map(d => d.donor?.name?.toLowerCase() || d.donorName?.toLowerCase())).size;
+
+    return {
+      totalAmount,
+      approvedCount: approved.length,
+      pendingCount: pending.length,
+      uniqueDonors
+    };
+  }, [donations]);
+
+  // Neumorphic Shadows styles
+  const cardShadow = {
+    boxShadow: "9px 9px 16px #b8c4d9, -9px -9px 16px #ffffff",
+    backgroundColor: "#ecf0f3",
+  };
+
+  const inputShadow = {
+    boxShadow: "inset 4px 4px 8px #d1d9e6, inset -4px -4px 8px #ffffff",
+    backgroundColor: "#ecf0f3",
+    border: "none",
+  };
+
+  const headerIconShadow = {
+    boxShadow: "4px 4px 8px #b8c4d9, -4px -4px 8px #ffffff",
+    backgroundColor: "#ecf0f3",
+  };
+
+  const currentMonthButtonShadow = currentMonthPressed
+    ? { boxShadow: "inset 3px 3px 6px #b8c4d9, inset -3px -3px 6px #ffffff", backgroundColor: "#ecf0f3" }
+    : { boxShadow: "5px 5px 10px #b8c4d9, -5px -5px 10px #ffffff", backgroundColor: "#ecf0f3" };
+
+  const prevButtonShadow = prevPressed
+    ? { boxShadow: "inset 3px 3px 6px #b8c4d9, inset -3px -3px 6px #ffffff", backgroundColor: "#ecf0f3" }
+    : { boxShadow: "4px 4px 8px #b8c4d9, -4px -4px 8px #ffffff", backgroundColor: "#ecf0f3" };
+
+  const nextButtonShadow = nextPressed
+    ? { boxShadow: "inset 3px 3px 6px #b8c4d9, inset -3px -3px 6px #ffffff", backgroundColor: "#ecf0f3" }
+    : { boxShadow: "4px 4px 8px #b8c4d9, -4px -4px 8px #ffffff", backgroundColor: "#ecf0f3" };
+
   return (
-    <div className="p-1 sm:p-6 space-y-6">
+    <div className="min-h-screen w-full bg-[#ecf0f3] p-1 sm:p-8 space-y-8 flex flex-col justify-start font-sans text-slate-800">
 
       {/* ================= HEADER ================= */}
-      <h2 className="flex items-center gap-2 text-xl sm:text-2xl font-bold text-slate-800">
-        <span className="p-2 rounded-xl bg-cyan-50 border border-cyan-200 shadow-sm">
-          <FileText size={20} className="text-cyan-600" />
-        </span>
-        All Donations
-      </h2>
+      <div className="flex items-center gap-3 px-2">
+        <div 
+          className="p-3.5 rounded-full flex items-center justify-center transition-all duration-300"
+          style={headerIconShadow}
+        >
+          <FileText className="text-cyan-600" size={24} />
+        </div>
+        <div>
+          <h2 className="text-2xl font-extrabold text-slate-800 tracking-tight">
+            All Donations
+          </h2>
+          <p className="text-slate-500 text-sm mt-0.5 font-medium">Verify and track user donations ledger</p>
+        </div>
+      </div>
+
+      {/* ================= METRICS CARDS GRID ================= */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 px-1">
+        
+        {/* TOTAL COLLECTED */}
+        <div 
+          style={cardShadow}
+          className="rounded-3xl p-5 flex items-center gap-4 transition-all duration-300 hover:scale-[1.02]"
+        >
+          <div style={headerIconShadow} className="p-3.5 rounded-full flex items-center justify-center text-emerald-600">
+            <TrendingUp size={22} className="stroke-[2.5]" />
+          </div>
+          <div>
+            <p className="text-slate-400 text-[10px] font-extrabold uppercase tracking-wider">Total Approved</p>
+            <h4 className="text-slate-800 font-extrabold text-xl mt-0.5">
+              ₹{metrics.totalAmount.toLocaleString("en-IN")}
+            </h4>
+          </div>
+        </div>
+
+        {/* TRANSACTIONS */}
+        <div 
+          style={cardShadow}
+          className="rounded-3xl p-5 flex items-center gap-4 transition-all duration-300 hover:scale-[1.02]"
+        >
+          <div style={headerIconShadow} className="p-3.5 rounded-full flex items-center justify-center text-cyan-600">
+            <Landmark size={22} className="stroke-[2.5]" />
+          </div>
+          <div>
+            <p className="text-slate-400 text-[10px] font-extrabold uppercase tracking-wider">Transactions</p>
+            <h4 className="text-slate-800 font-extrabold text-xl mt-0.5">
+              {donations.length} <span className="text-[11px] text-slate-400 font-medium">records</span>
+            </h4>
+          </div>
+        </div>
+
+        {/* PENDING APPROVALS */}
+        <div 
+          style={cardShadow}
+          className="rounded-3xl p-5 flex items-center gap-4 transition-all duration-300 hover:scale-[1.02]"
+        >
+          <div style={headerIconShadow} className="p-3.5 rounded-full flex items-center justify-center text-amber-600">
+            <Clock size={22} className="stroke-[2.5]" />
+          </div>
+          <div>
+            <p className="text-slate-400 text-[10px] font-extrabold uppercase tracking-wider">Pending Audit</p>
+            <h4 className="text-slate-800 font-extrabold text-xl mt-0.5">
+              {metrics.pendingCount} <span className="text-[11px] text-slate-400 font-medium">pending</span>
+            </h4>
+          </div>
+        </div>
+
+        {/* UNIQUE DONORS */}
+        <div 
+          style={cardShadow}
+          className="rounded-3xl p-5 flex items-center gap-4 transition-all duration-300 hover:scale-[1.02]"
+        >
+          <div style={headerIconShadow} className="p-3.5 rounded-full flex items-center justify-center text-purple-600">
+            <Users size={22} className="stroke-[2.5]" />
+          </div>
+          <div>
+            <p className="text-slate-400 text-[10px] font-extrabold uppercase tracking-wider">Unique Donors</p>
+            <h4 className="text-slate-800 font-extrabold text-xl mt-0.5">
+              {metrics.uniqueDonors} <span className="text-[11px] text-slate-400 font-medium">donors</span>
+            </h4>
+          </div>
+        </div>
+
+      </div>
 
       {/* ================= FILTER BAR ================= */}
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3 bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
-
+      <div 
+        className="flex flex-col md:flex-row md:items-center gap-4 rounded-3xl p-6 transition-all duration-300"
+        style={cardShadow}
+      >
         {/* SEARCH */}
         <div className="relative flex-1 w-full">
-          <Search size={16} className="absolute left-3 top-3.5 text-gray-400" />
+          <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
             placeholder="Search donor name..."
@@ -105,19 +238,21 @@ const AllDonations = () => {
               setSearch(e.target.value);
               setPage(1);
             }}
-            className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white text-slate-800 border border-gray-300 focus:ring-2 focus:ring-cyan-500 outline-none shadow-sm transition"
+            className="w-full pl-11 pr-4 py-3.5 rounded-2xl text-slate-800 outline-none placeholder:text-gray-400 font-semibold text-sm transition-all"
+            style={inputShadow}
           />
         </div>
 
         {/* MONTH + YEAR */}
-        <div className="flex gap-3 flex-1">
+        <div className="flex gap-4 flex-1 w-full">
           <select
             value={filterMonth}
             onChange={(e) => {
               setFilterMonth(Number(e.target.value));
               setPage(1);
             }}
-            className="flex-1 px-4 py-2.5 rounded-xl bg-white text-slate-800 border border-gray-300 focus:ring-2 focus:ring-cyan-500 shadow-sm transition outline-none cursor-pointer"
+            className="flex-1 px-4 py-3.5 rounded-2xl text-slate-800 outline-none cursor-pointer font-semibold text-sm transition-all"
+            style={inputShadow}
           >
             {months.map((m, i) => (
               <option key={i} value={i + 1}>{m}</option>
@@ -130,11 +265,16 @@ const AllDonations = () => {
               setFilterYear(Number(e.target.value));
               setPage(1);
             }}
-            className="flex-1 px-4 py-2.5 rounded-xl bg-white text-slate-800 border border-gray-300 focus:ring-2 focus:ring-cyan-500 shadow-sm transition outline-none cursor-pointer"
+            className="flex-1 px-4 py-3.5 rounded-2xl text-slate-800 outline-none cursor-pointer font-semibold text-sm transition-all"
+            style={inputShadow}
           >
-            {years.map((y) => (
-              <option key={y} value={y}>{y}</option>
-            ))}
+            {years.length === 0 ? (
+              <option value={now.getFullYear()}>{now.getFullYear()}</option>
+            ) : (
+              years.map((y) => (
+                <option key={y} value={y}>{y}</option>
+              ))
+            )}
           </select>
         </div>
 
@@ -145,60 +285,69 @@ const AllDonations = () => {
             setFilterYear(now.getFullYear());
             setPage(1);
           }}
-          className="px-5 py-2.5 rounded-xl font-semibold bg-cyan-50 text-cyan-700 border border-cyan-200 hover:bg-cyan-100 transition shadow-sm whitespace-nowrap"
+          onMouseDown={() => setCurrentMonthPressed(true)}
+          onMouseUp={() => setCurrentMonthPressed(false)}
+          onMouseLeave={() => setCurrentMonthPressed(false)}
+          className="px-6 py-3.5 rounded-2xl font-bold text-cyan-600 transition-all active:scale-[0.99] whitespace-nowrap text-sm cursor-pointer"
+          style={currentMonthButtonShadow}
         >
           Current Month
         </button>
       </div>
 
       {/* ================= DESKTOP TABLE ================= */}
-      <div className="hidden md:block overflow-x-auto rounded-2xl border border-gray-200 bg-white shadow-sm custom-scrollbar pb-2">
-        <table className="w-full text-sm text-slate-800">
-          <thead className="bg-slate-50 text-slate-600 border-b border-gray-200 font-semibold uppercase tracking-wider text-xs">
-            <tr>
-              <th className="p-4 text-left">Donor</th>
-              <th className="p-4 text-right">Amount</th>
-              <th className="p-4 text-left">Collected By</th>
-              <th className="p-4 text-left">Approved By</th>
-              <th className="p-4 text-center">Status</th>
-              <th className="p-4 text-left">Month</th>
+      <div 
+        className="hidden md:block overflow-hidden rounded-3xl p-6 transition-all duration-300"
+        style={cardShadow}
+      >
+        <table className="w-full text-sm text-slate-800 border-collapse">
+          <thead>
+            <tr className="text-slate-500 font-bold uppercase tracking-wider text-xs border-b border-slate-300/40">
+              <th className="pb-4 px-4 text-left">Donor</th>
+              <th className="pb-4 px-4 text-right">Amount</th>
+              <th className="pb-4 px-4 text-left">Collected By</th>
+              <th className="pb-4 px-4 text-left">Approved By</th>
+              <th className="pb-4 px-4 text-center">Status</th>
+              <th className="pb-4 px-4 text-left">Month</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-slate-350/20">
             {loading ? (
               <tr>
                 <td colSpan="6">
-                  <TableLoader text="Loading donations..." />
+                  <TableLoader text="Loading donations database..." />
                 </td>
               </tr>
             ) : paginatedData.length === 0 ? (
               <tr>
-                <td colSpan="6" className="p-6 text-center text-slate-500">
+                <td colSpan="6" className="p-8 text-center text-slate-500 font-bold">
                   No donations found
                 </td>
               </tr>
             ) : (
               paginatedData.map((d) => (
-                <tr key={d._id} className="hover:bg-slate-50 transition-colors">
-                  <td className="p-4 font-bold text-slate-700 uppercase text-xs tracking-wide">{d.donor?.name || "N/A"}</td>
-                  <td className={`p-4 text-right text-base ${amountStyles[d.status]}`}>₹{d.amount}</td>
-                  <td className="p-4 font-medium text-slate-600">{d.collectedBy?.name || "-"}</td>
-                  <td className="p-4">
+                <tr key={d._id} className="hover:bg-[#e4ebf0] transition-colors">
+                  <td className="py-4 px-4 font-semibold text-slate-800 text-[14px]">{d.donor?.name || "N/A"}</td>
+                  <td className={`py-4 px-4 text-right ${amountStyles[(d.status || "").toUpperCase()] || "text-slate-800"}`}>
+                    ₹{(Number(d.amount) || 0).toLocaleString("en-IN")}
+                  </td>
+                  <td className="py-4 px-4 text-slate-600 font-semibold">{d.collectedBy?.name || "-"}</td>
+                  <td className="py-4 px-4">
                     {d.approvedBy?.name ? (
                       <>
-                        <p className="font-medium text-slate-600">{d.approvedBy.name}</p>
-                        <p className="text-xs text-slate-400 mt-0.5">
+                        <p className="font-bold text-slate-700">{d.approvedBy.name}</p>
+                        <p className="text-[11px] text-slate-400 font-medium mt-0.5">
                           {new Date(d.approvedAt).toLocaleString()}
                         </p>
                       </>
                     ) : <span className="text-slate-400">—</span>}
                   </td>
-                  <td className="p-4 text-center">
-                    <span className={`px-3 py-1 rounded-full text-xs ${statusStyles[d.status]}`}>
+                  <td className="py-4 px-4 text-center">
+                    <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${statusStyles[(d.status || "").toUpperCase()] || "bg-slate-100 text-slate-700 border-slate-200"}`}>
                       {d.status}
                     </span>
                   </td>
-                  <td className="p-4 text-sm font-medium text-slate-600">
+                  <td className="py-4 px-4 text-slate-500 font-semibold">
                     {months[d.month - 1]} {d.year}
                   </td>
                 </tr>
@@ -215,22 +364,28 @@ const AllDonations = () => {
         </div>
       )}
 
-      <div className="md:hidden space-y-4">
+      <div className="md:hidden space-y-5">
         {paginatedData.map((d) => (
-          <div key={d._id} className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
-            <div className="flex justify-between items-center border-b border-gray-100 pb-3 mb-3">
-              <p className="font-bold text-slate-800 uppercase tracking-wide text-sm">{d.donor?.name}</p>
-              <p className={`text-lg ${amountStyles[d.status]}`}>₹{d.amount}</p>
+          <div 
+            key={d._id} 
+            className="rounded-3xl p-5 space-y-4"
+            style={cardShadow}
+          >
+            <div className="flex justify-between items-center border-b border-slate-350/20 pb-3">
+              <p className="font-bold text-slate-800 text-[14px]">{d.donor?.name}</p>
+              <p className={`text-base ${amountStyles[(d.status || "").toUpperCase()] || "text-slate-800"}`}>
+                ₹{(Number(d.amount) || 0).toLocaleString("en-IN")}
+              </p>
             </div>
-            <p className="text-sm text-slate-600 mt-1 flex justify-between">
-              <span className="text-slate-500">Collected by:</span>
-              <span className="font-medium">{d.collectedBy?.name || "-"}</span>
+            <p className="text-sm text-slate-600 flex justify-between">
+              <span className="text-slate-400 font-semibold">Collected by:</span>
+              <span className="font-bold text-slate-700">{d.collectedBy?.name || "-"}</span>
             </p>
-            <div className="flex justify-between items-center mt-3 pt-3 border-t border-gray-100">
-              <span className={`px-2.5 py-1 rounded-md text-xs ${statusStyles[d.status]}`}>
+            <div className="flex justify-between items-center pt-3 border-t border-slate-350/20">
+              <span className={`px-2.5 py-1 rounded-full text-xs font-semibold border ${statusStyles[(d.status || "").toUpperCase()] || "bg-slate-100 text-slate-700 border-slate-200"}`}>
                 {d.status}
               </span>
-              <span className="text-sm font-medium text-slate-600">
+              <span className="text-xs font-bold text-slate-500">
                 {months[d.month - 1]} {d.year}
               </span>
             </div>
@@ -240,21 +395,32 @@ const AllDonations = () => {
 
       {/* ================= PAGINATION ================= */}
       {totalPages > 1 && (
-        <div className="flex justify-center sm:justify-end items-center gap-3">
+        <div className="flex justify-center sm:justify-end items-center gap-4 py-2">
           <button
             disabled={page === 1}
             onClick={() => setPage(page - 1)}
-            className="p-2 rounded-lg bg-white border border-gray-300 text-slate-600 hover:bg-slate-50 disabled:opacity-40 transition shadow-sm"
+            onMouseDown={() => setPrevPressed(true)}
+            onMouseUp={() => setPrevPressed(false)}
+            onMouseLeave={() => setPrevPressed(false)}
+            className="p-2.5 rounded-2xl text-slate-600 hover:text-slate-850 active:scale-95 disabled:opacity-40 disabled:hover:text-slate-600 disabled:active:scale-100 transition-all cursor-pointer"
+            style={prevButtonShadow}
           >
             <ChevronLeft size={20} />
           </button>
-          <span className="text-slate-600 text-sm font-medium">
+          <span 
+            className="text-slate-700 text-sm font-bold px-4 py-2.5 rounded-2xl"
+            style={inputShadow}
+          >
             Page {page} of {totalPages}
           </span>
           <button
             disabled={page === totalPages}
             onClick={() => setPage(page + 1)}
-            className="p-2 rounded-lg bg-white border border-gray-300 text-slate-600 hover:bg-slate-50 disabled:opacity-40 transition shadow-sm"
+            onMouseDown={() => setNextPressed(true)}
+            onMouseUp={() => setNextPressed(false)}
+            onMouseLeave={() => setNextPressed(false)}
+            className="p-2.5 rounded-2xl text-slate-600 hover:text-slate-850 active:scale-95 disabled:opacity-40 disabled:hover:text-slate-600 disabled:active:scale-100 transition-all cursor-pointer"
+            style={nextButtonShadow}
           >
             <ChevronRight size={20} />
           </button>

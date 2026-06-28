@@ -1,34 +1,31 @@
 import { NavLink, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
-  UserPlus,
   Users,
-  Clock,
   Wallet,
-  Table,
   Settings,
   Landmark,
   ChevronDown,
+  Menu,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useState } from "react";
 
-const SuperAdminSidebar = ({ collapsed, mobile, sidebarOpen, setSidebarOpen }) => {
+const SuperAdminSidebar = ({ collapsed, setCollapsed, mobile, sidebarOpen, setSidebarOpen }) => {
   const { user } = useAuth();
   const location = useLocation();
 
-  // 🔹 dropdown states
+  // dropdown states
   const [userMgmtOpen, setUserMgmtOpen] = useState(
-    location.pathname.includes("/createAdmin") || location.pathname.includes("/usersList")
+    location.pathname.includes("/createAdmin") || location.pathname.includes("/usersList") || location.pathname.includes("/pending-donations") || location.pathname.includes("/reports")
   );
   const [fundOpen, setFundOpen] = useState(location.pathname.includes("/fund"));
   const [allDonationOpen, setAllDonationOpen] = useState(
     location.pathname.includes("/all-donations") || location.pathname.includes("/monthlyDonationTable")
   );
 
-  // 🔹 menu data
+  // menu data
   const userMgmtMenu = [
-    // { name: "Create Admin", path: "/dashboard/super-admin/createAdmin" },
     { name: "Users List", path: "/dashboard/super-admin/usersList" },
     { name: "Pending Donations", path: "/dashboard/super-admin/pending-donations" },
     { name: "Reports", path: "/dashboard/super-admin/reports" },
@@ -46,33 +43,73 @@ const SuperAdminSidebar = ({ collapsed, mobile, sidebarOpen, setSidebarOpen }) =
     { name: "Monthly Report", path: "/dashboard/super-admin/monthlyDonationTable" },
   ];
 
+  const getLinkClass = (isActive) => {
+    if (collapsed) {
+      return isActive
+        ? "sidebar-link-collapsed-active"
+        : "sidebar-link-collapsed-inactive";
+    }
+    return isActive
+      ? "sidebar-link sidebar-link-active"
+      : "sidebar-link sidebar-link-inactive";
+  };
+
   return (
     <>
       <aside
         className={`
           ${collapsed ? "w-20" : "w-72"}
-          h-screen overflow-y-auto custom-scrollbar p-4 text-white
-          bg-gradient-to-b from-[#0f172a]/80 to-[#020617]/80
-          backdrop-blur-xl border-r border-white/10
-          transition-all duration-300
+          h-screen overflow-y-auto overflow-x-hidden custom-scrollbar py-6 pl-2 pr-0 text-white
+          bg-gradient-to-b from-[#005f6b] via-[#007380] to-[#004d56] border-none outline-none
+          transition-all duration-300 shadow-[6px_0_30px_rgba(0,0,0,0.12)]
           ${mobile ? "fixed top-0 left-0 z-40 h-full" : "relative"}
           ${!sidebarOpen && mobile ? "-translate-x-full" : "translate-x-0"}
         `}
       >
+        {/* BRAND / COLLAPSE ROW */}
+        <div className="flex items-center justify-end mb-8 px-5 pr-4">
+          {!collapsed ? (
+            <>
+              {setCollapsed && !mobile && (
+                <button 
+                  onClick={() => setCollapsed(true)}
+                  className="p-2 rounded-xl hover:bg-white/8 text-white/80 hover:text-white transition cursor-pointer"
+                >
+                  <Menu size={20} />
+                </button>
+              )}
+            </>
+          ) : (
+            <div className="w-full flex justify-center">
+              {setCollapsed && (
+                <button 
+                  onClick={() => setCollapsed(false)}
+                  className="p-2 rounded-xl hover:bg-white/8 text-white/80 hover:text-white transition cursor-pointer"
+                >
+                  <Menu size={20} />
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+
         {/* PROFILE */}
         {!collapsed && (
-          <div className="flex items-center gap-4 mb-10 p-3 rounded-xl bg-white/5">
-            <img
-              src={
-                user?.profilePhoto?.url ||
-                "https://ui-avatars.com/api/?name=Super+Admin&background=0f172a&color=fff"
-              }
-              alt="profile"
-              className="w-12 h-12 rounded-full border border-white/20"
-            />
+          <div className="flex items-center gap-4 mb-8 p-3.5 rounded-2xl bg-white/6 border border-white/10 mr-4 ml-4 shadow-sm">
+            <div className="relative">
+              <img
+                src={
+                  user?.profilePhoto?.url ||
+                  `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || "Super Admin")}&background=ffffff&color=007380`
+                }
+                alt="profile"
+                className="w-12 h-12 rounded-full object-cover border-2 border-white/20"
+              />
+              <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-400 border-2 border-[#006e7a] rounded-full animate-pulse" />
+            </div>
             <div>
-              <p className="text-sm font-semibold">{user?.name || "Super Admin"}</p>
-              <span className="text-xs text-cyan-400">{user?.role || "SUPER_ADMIN"}</span>
+              <p className="text-sm font-extrabold text-white leading-tight">{user?.name || "Super Admin"}</p>
+              <span className="text-[10px] text-teal-200 font-bold tracking-wider uppercase block mt-0.5">{user?.role || "SUPER_ADMIN"}</span>
             </div>
           </div>
         )}
@@ -83,39 +120,42 @@ const SuperAdminSidebar = ({ collapsed, mobile, sidebarOpen, setSidebarOpen }) =
           <NavLink
             to="/dashboard/super-admin"
             onClick={() => mobile && setSidebarOpen(false)}
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-3 rounded-xl transition-all
-              ${isActive ? "bg-white/10 text-cyan-400 shadow-[inset_3px_0_0_#22d3ee]" : "text-gray-300 hover:bg-white/5"}
-              ${collapsed ? "justify-center" : ""}`
-            }
+            className={({ isActive }) => getLinkClass(isActive)}
           >
-            <LayoutDashboard size={18} />
-            {!collapsed && <span className="text-sm">Dashboard</span>}
+            {({ isActive }) => (
+              <>
+                <div className={collapsed ? "" : (isActive ? "sidebar-icon-container-active" : "sidebar-icon-container-inactive")}>
+                  <LayoutDashboard size={18} />
+                </div>
+                {!collapsed && <span className="text-sm font-semibold">Dashboard</span>}
+              </>
+            )}
           </NavLink>
 
-          {/* USER MANAGEMENT DROPDOWN */}
+          {/* USER MANAGEMENT */}
           <div>
             <button
               onClick={() => setUserMgmtOpen(!userMgmtOpen)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition
-                ${userMgmtOpen ? "bg-white/10 text-cyan-400" : "text-gray-300 hover:bg-white/5"}
-                ${collapsed ? "justify-center" : ""}`}
+              className={`w-full flex items-center gap-3 py-3 transition-all duration-200 cursor-pointer
+              ${collapsed ? "justify-center ml-3 w-12 h-12 rounded-xl" : "ml-3 pl-6 rounded-l-full text-left"}
+              ${userMgmtOpen ? "bg-white/10 text-white font-bold" : "text-white/80 hover:bg-white/6 hover:text-white"}`}
             >
-              <Users size={18} />
+              <div className={collapsed ? "" : (userMgmtOpen ? "sidebar-icon-container-active" : "sidebar-icon-container-inactive")}>
+                <Users size={18} />
+              </div>
               {!collapsed && (
                 <>
-                  <span className="flex-1 text-left text-sm">User Management</span>
+                  <span className="flex-1 text-sm font-semibold">User Management</span>
                   <ChevronDown
                     size={16}
-                    className={`transition ${userMgmtOpen ? "rotate-180" : ""}`}
+                    className={`transition mr-4 ${userMgmtOpen ? "rotate-180" : ""}`}
                   />
                 </>
               )}
             </button>
 
             {userMgmtOpen && !collapsed && (
-              <div className="ml-6 mt-3 relative pl-6">
-                <span className="absolute left-[11px] top-0 bottom-0 w-px bg-white/15" />
+              <div className="ml-6 mt-2 relative flex flex-col gap-1.5 pl-6 border-l border-white/15">
                 {userMgmtMenu.map((sub) => (
                   <NavLink
                     key={sub.path}
@@ -123,18 +163,21 @@ const SuperAdminSidebar = ({ collapsed, mobile, sidebarOpen, setSidebarOpen }) =
                     onClick={() => mobile && setSidebarOpen(false)}
                     className={({ isActive }) =>
                       `group relative flex items-center justify-between
-                      px-4 py-2.5 mb-1 rounded-lg text-sm transition-all
-                      ${isActive ? "bg-white/10 text-cyan-400" : "text-gray-400 hover:bg-white/5"}`
+                      px-4 py-2.5 rounded-lg text-sm transition-all duration-200
+                      ${isActive ? "bg-white/12 text-white font-bold" : "text-white/70 hover:bg-white/6 hover:text-white"}`
                     }
                   >
                     {({ isActive }) => (
                       <>
                         <span
-                          className={`absolute left-[-18px] top-1/2 -translate-y-1/2
-                          h-2.5 w-2.5 rounded-full border transition
-                          ${isActive ? "bg-cyan-400 border-cyan-400" : "border-gray-500 bg-[#020617]"}`}
+                          className={`absolute left-[-29px] top-1/2 -translate-y-1/2
+                          h-2 w-2 rounded-full border transition-all duration-300
+                          ${isActive ? "bg-teal-200 border-teal-200 scale-125" : "border-white/40 bg-[var(--sidebar-teal)]"}`}
                         />
                         <span>{sub.name}</span>
+                        <span className="opacity-0 group-hover:opacity-100 text-white/50 transition-all duration-200">
+                          ›
+                        </span>
                       </>
                     )}
                   </NavLink>
@@ -143,29 +186,30 @@ const SuperAdminSidebar = ({ collapsed, mobile, sidebarOpen, setSidebarOpen }) =
             )}
           </div>
 
-          {/* ALL DONATIONS HISTORY DROPDOWN */}
+          {/* ALL DONATIONS HISTORY */}
           <div>
             <button
               onClick={() => setAllDonationOpen(!allDonationOpen)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition
-                ${allDonationOpen ? "bg-white/10 text-cyan-400" : "text-gray-300 hover:bg-white/5"}
-                ${collapsed ? "justify-center" : ""}`}
+              className={`w-full flex items-center gap-3 py-3 transition-all duration-200 cursor-pointer
+              ${collapsed ? "justify-center ml-3 w-12 h-12 rounded-xl" : "ml-3 pl-6 rounded-l-full text-left"}
+              ${allDonationOpen ? "bg-white/10 text-white font-bold" : "text-white/80 hover:bg-white/6 hover:text-white"}`}
             >
-              <Wallet size={18} />
+              <div className={collapsed ? "" : (allDonationOpen ? "sidebar-icon-container-active" : "sidebar-icon-container-inactive")}>
+                <Wallet size={18} />
+              </div>
               {!collapsed && (
                 <>
-                  <span className="flex-1 text-left text-sm">All Donations History</span>
+                  <span className="flex-1 text-sm font-semibold">All Donations</span>
                   <ChevronDown
                     size={16}
-                    className={`transition ${allDonationOpen ? "rotate-180" : ""}`}
+                    className={`transition mr-4 ${allDonationOpen ? "rotate-180" : ""}`}
                   />
                 </>
               )}
             </button>
 
             {allDonationOpen && !collapsed && (
-              <div className="ml-6 mt-3 relative pl-6">
-                <span className="absolute left-[11px] top-0 bottom-0 w-px bg-white/15" />
+              <div className="ml-6 mt-2 relative flex flex-col gap-1.5 pl-6 border-l border-white/15">
                 {allDonationMenu.map((sub) => (
                   <NavLink
                     key={sub.path}
@@ -173,18 +217,21 @@ const SuperAdminSidebar = ({ collapsed, mobile, sidebarOpen, setSidebarOpen }) =
                     onClick={() => mobile && setSidebarOpen(false)}
                     className={({ isActive }) =>
                       `group relative flex items-center justify-between
-                      px-4 py-2.5 mb-1 rounded-lg text-sm transition-all
-                      ${isActive ? "bg-white/10 text-cyan-400" : "text-gray-400 hover:bg-white/5"}`
+                      px-4 py-2.5 rounded-lg text-sm transition-all duration-200
+                      ${isActive ? "bg-white/12 text-white font-bold" : "text-white/70 hover:bg-white/6 hover:text-white"}`
                     }
                   >
                     {({ isActive }) => (
                       <>
                         <span
-                          className={`absolute left-[-18px] top-1/2 -translate-y-1/2
-                          h-2.5 w-2.5 rounded-full border transition
-                          ${isActive ? "bg-cyan-400 border-cyan-400" : "border-gray-500 bg-[#020617]"}`}
+                          className={`absolute left-[-29px] top-1/2 -translate-y-1/2
+                          h-2 w-2 rounded-full border transition-all duration-300
+                          ${isActive ? "bg-teal-200 border-teal-200 scale-125" : "border-white/40 bg-[var(--sidebar-teal)]"}`}
                         />
                         <span>{sub.name}</span>
+                        <span className="opacity-0 group-hover:opacity-100 text-white/50 transition-all duration-200">
+                          ›
+                        </span>
                       </>
                     )}
                   </NavLink>
@@ -193,29 +240,30 @@ const SuperAdminSidebar = ({ collapsed, mobile, sidebarOpen, setSidebarOpen }) =
             )}
           </div>
 
-          {/* FUND MANAGEMENT DROPDOWN */}
+          {/* FUND MANAGEMENT */}
           <div>
             <button
               onClick={() => setFundOpen(!fundOpen)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition
-                ${fundOpen ? "bg-white/10 text-cyan-400" : "text-gray-300 hover:bg-white/5"}
-                ${collapsed ? "justify-center" : ""}`}
+              className={`w-full flex items-center gap-3 py-3 transition-all duration-200 cursor-pointer
+              ${collapsed ? "justify-center ml-3 w-12 h-12 rounded-xl" : "ml-3 pl-6 rounded-l-full text-left"}
+              ${fundOpen ? "bg-white/10 text-white font-bold" : "text-white/80 hover:bg-white/6 hover:text-white"}`}
             >
-              <Landmark size={18} />
+              <div className={collapsed ? "" : (fundOpen ? "sidebar-icon-container-active" : "sidebar-icon-container-inactive")}>
+                <Landmark size={18} />
+              </div>
               {!collapsed && (
                 <>
-                  <span className="flex-1 text-left text-sm">Fund Management</span>
+                  <span className="flex-1 text-sm font-semibold">Fund Management</span>
                   <ChevronDown
                     size={16}
-                    className={`transition ${fundOpen ? "rotate-180" : ""}`}
+                    className={`transition mr-4 ${fundOpen ? "rotate-180" : ""}`}
                   />
                 </>
               )}
             </button>
 
             {fundOpen && !collapsed && (
-              <div className="ml-6 mt-3 relative pl-6">
-                <span className="absolute left-[11px] top-0 bottom-0 w-px bg-white/15" />
+              <div className="ml-6 mt-2 relative flex flex-col gap-1.5 pl-6 border-l border-white/15">
                 {fundMenu.map((sub) => (
                   <NavLink
                     key={sub.path}
@@ -223,18 +271,21 @@ const SuperAdminSidebar = ({ collapsed, mobile, sidebarOpen, setSidebarOpen }) =
                     onClick={() => mobile && setSidebarOpen(false)}
                     className={({ isActive }) =>
                       `group relative flex items-center justify-between
-                      px-4 py-2.5 mb-1 rounded-lg text-sm transition-all
-                      ${isActive ? "bg-white/10 text-cyan-400" : "text-gray-400 hover:bg-white/5"}`
+                      px-4 py-2.5 rounded-lg text-sm transition-all duration-200
+                      ${isActive ? "bg-white/12 text-white font-bold" : "text-white/70 hover:bg-white/6 hover:text-white"}`
                     }
                   >
                     {({ isActive }) => (
                       <>
                         <span
-                          className={`absolute left-[-18px] top-1/2 -translate-y-1/2
-                          h-2.5 w-2.5 rounded-full border transition
-                          ${isActive ? "bg-cyan-400 border-cyan-400" : "border-gray-500 bg-[#020617]"}`}
+                          className={`absolute left-[-29px] top-1/2 -translate-y-1/2
+                          h-2 w-2 rounded-full border transition-all duration-300
+                          ${isActive ? "bg-teal-200 border-teal-200 scale-125" : "border-white/40 bg-[var(--sidebar-teal)]"}`}
                         />
                         <span>{sub.name}</span>
+                        <span className="opacity-0 group-hover:opacity-100 text-white/50 transition-all duration-200">
+                          ›
+                        </span>
                       </>
                     )}
                   </NavLink>
@@ -246,14 +297,17 @@ const SuperAdminSidebar = ({ collapsed, mobile, sidebarOpen, setSidebarOpen }) =
           {/* SETTINGS */}
           <NavLink
             to="/dashboard/super-admin/settings"
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-3 rounded-xl transition-all
-              ${isActive ? "bg-white/10 text-cyan-400 shadow-[inset_3px_0_0_#22d3ee]" : "text-gray-300 hover:bg-white/5"}
-              ${collapsed ? "justify-center" : ""}`
-            }
+            onClick={() => mobile && setSidebarOpen(false)}
+            className={({ isActive }) => getLinkClass(isActive)}
           >
-            <Settings size={18} />
-            {!collapsed && <span className="text-sm">Settings</span>}
+            {({ isActive }) => (
+              <>
+                <div className={collapsed ? "" : (isActive ? "sidebar-icon-container-active" : "sidebar-icon-container-inactive")}>
+                  <Settings size={18} />
+                </div>
+                {!collapsed && <span className="text-sm font-semibold">Settings</span>}
+              </>
+            )}
           </NavLink>
         </nav>
       </aside>
@@ -262,7 +316,7 @@ const SuperAdminSidebar = ({ collapsed, mobile, sidebarOpen, setSidebarOpen }) =
       {mobile && sidebarOpen && (
         <div
           onClick={() => setSidebarOpen(false)}
-          className="fixed inset-0 bg-black/30 z-30"
+          className="fixed inset-0 bg-black/40 z-30"
         />
       )}
     </>

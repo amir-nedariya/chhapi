@@ -1,17 +1,22 @@
-
 import SuperAdminSidebar from "../../sidebar/SuperAdminSidebar";
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 
 const SuperAdminLayout = ({ children }) => {
   const [isMobile, setIsMobile] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [collapsed, setCollapsed] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 1024); // mobile & tablet
-      if (window.innerWidth >= 1024) setSidebarOpen(true); // full on desktop
-      else setSidebarOpen(false);
+      const mobile = window.innerWidth < 1024;
+      setIsMobile(mobile);
+      if (!mobile) {
+        setSidebarOpen(true);
+      } else {
+        setSidebarOpen(false);
+        setCollapsed(false);
+      }
     };
     handleResize();
     window.addEventListener("resize", handleResize);
@@ -19,29 +24,30 @@ const SuperAdminLayout = ({ children }) => {
   }, []);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50 relative">
+    <div className="flex h-screen overflow-hidden bg-[var(--page-bg)] relative">
       {/* Sidebar */}
       <SuperAdminSidebar
-        collapsed={!sidebarOpen && isMobile}
+        collapsed={isMobile ? !sidebarOpen : collapsed}
+        setCollapsed={setCollapsed}
         mobile={isMobile}
         sidebarOpen={sidebarOpen}
         setSidebarOpen={setSidebarOpen}
       />
 
-      {/* Mobile Toggle Button (Right Side) */}
+      {/* Mobile Toggle Button */}
       {isMobile && (
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="fixed top-4 right-4 z-50 p-2 bg-cyan-500/30 hover:bg-cyan-500/50 text-white rounded-md shadow-lg transition"
+          className="fixed top-4 right-4 z-50 p-2.5 bg-[var(--sidebar-teal)] hover:bg-[var(--sidebar-teal)]/90 text-white rounded-xl shadow-lg transition cursor-pointer"
         >
-          {sidebarOpen ? <X size={22} /> : <Menu size={22} />}
+          {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
       )}
 
       {/* Content */}
       <main
         className={`flex-1 p-6 overflow-y-auto transition-all duration-300 ${
-          sidebarOpen && isMobile ? "blur-sm" : ""
+          sidebarOpen && isMobile ? "blur-sm pointer-events-none" : ""
         }`}
       >
         {children}
