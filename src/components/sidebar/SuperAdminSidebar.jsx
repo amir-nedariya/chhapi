@@ -7,6 +7,8 @@ import {
   Landmark,
   ChevronDown,
   Menu,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useState } from "react";
@@ -59,39 +61,15 @@ const SuperAdminSidebar = ({ collapsed, setCollapsed, mobile, sidebarOpen, setSi
       <aside
         className={`
           ${collapsed ? "w-20" : "w-72"}
-          h-screen overflow-y-auto overflow-x-hidden custom-scrollbar py-6 pl-2 pr-0 text-white
+          h-screen text-white relative
           bg-gradient-to-b from-[#005f6b] via-[#007380] to-[#004d56] border-none outline-none
           transition-all duration-300 shadow-[6px_0_30px_rgba(0,0,0,0.12)]
           ${mobile ? "fixed top-0 left-0 z-40 h-full" : "relative"}
           ${!sidebarOpen && mobile ? "-translate-x-full" : "translate-x-0"}
         `}
       >
-        {/* BRAND / COLLAPSE ROW */}
-        <div className="flex items-center justify-end mb-8 px-5 pr-4">
-          {!collapsed ? (
-            <>
-              {setCollapsed && !mobile && (
-                <button 
-                  onClick={() => setCollapsed(true)}
-                  className="p-2 rounded-xl hover:bg-white/8 text-white/80 hover:text-white transition cursor-pointer"
-                >
-                  <Menu size={20} />
-                </button>
-              )}
-            </>
-          ) : (
-            <div className="w-full flex justify-center">
-              {setCollapsed && (
-                <button 
-                  onClick={() => setCollapsed(false)}
-                  className="p-2 rounded-xl hover:bg-white/8 text-white/80 hover:text-white transition cursor-pointer"
-                >
-                  <Menu size={20} />
-                </button>
-              )}
-            </div>
-          )}
-        </div>
+        <div className="h-full overflow-y-auto overflow-x-hidden custom-scrollbar py-6 pl-2 pr-0">
+          <div className="h-4" />
 
         {/* PROFILE */}
         {!collapsed && (
@@ -310,6 +288,21 @@ const SuperAdminSidebar = ({ collapsed, setCollapsed, mobile, sidebarOpen, setSi
             )}
           </NavLink>
         </nav>
+        </div>
+
+        {/* Edge Toggle Button */}
+        {!mobile && setCollapsed && (
+          <button
+            onClick={() => setCollapsed(!collapsed)}
+            className="absolute right-[-16px] top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white text-[#007380] hover:text-[#005f6b] shadow-[0_3px_10px_rgba(0,0,0,0.15)] flex items-center justify-center cursor-pointer transition-all duration-300 z-50 border border-slate-100 hover:scale-105"
+          >
+            {collapsed ? (
+              <ChevronRight size={18} />
+            ) : (
+              <ChevronLeft size={18} />
+            )}
+          </button>
+        )}
       </aside>
 
       {/* MOBILE OVERLAY */}
