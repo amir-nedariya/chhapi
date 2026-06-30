@@ -143,12 +143,6 @@
       "namedRegex": "^/dashboard/super\\-admin/createfund(?:/)?$"
     },
     {
-      "page": "/dashboard/super-admin/createuser",
-      "regex": "^/dashboard/super\\-admin/createuser(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/dashboard/super\\-admin/createuser(?:/)?$"
-    },
-    {
       "page": "/dashboard/super-admin/fundHistory",
       "regex": "^/dashboard/super\\-admin/fundHistory(?:/)?$",
       "routeKeys": {},

@@ -1,4 +1,3 @@
-
 import { useAuth } from "../../../context/AuthContext";
 import UserSidebar from "../../sidebar/UserSidebar";
 import { useEffect, useState } from "react";
@@ -8,12 +7,18 @@ const UserLayout = ({ children }) => {
   const { logout } = useAuth();
   const [isMobile, setIsMobile] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [collapsed, setCollapsed] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 1024);
-      if (window.innerWidth >= 1024) setSidebarOpen(true);
-      else setSidebarOpen(false);
+      const mobile = window.innerWidth < 1024;
+      setIsMobile(mobile);
+      if (!mobile) {
+        setSidebarOpen(true);
+      } else {
+        setSidebarOpen(false);
+        setCollapsed(false);
+      }
     };
     handleResize();
     window.addEventListener("resize", handleResize);
@@ -21,10 +26,11 @@ const UserLayout = ({ children }) => {
   }, []);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50 relative">
+    <div className="flex h-screen overflow-hidden bg-[var(--page-bg)] relative">
       {/* Sidebar */}
       <UserSidebar
-        collapsed={!sidebarOpen && isMobile}
+        collapsed={isMobile ? !sidebarOpen : collapsed}
+        setCollapsed={setCollapsed}
         mobile={isMobile}
         sidebarOpen={sidebarOpen}
         setSidebarOpen={setSidebarOpen}
@@ -34,16 +40,16 @@ const UserLayout = ({ children }) => {
       {isMobile && (
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="fixed top-4 right-4 z-50 p-2 bg-cyan-500/30 hover:bg-cyan-500/50 text-white rounded-md shadow-lg transition"
+          className="fixed top-4 right-4 z-50 p-2.5 bg-[var(--sidebar-teal)] hover:bg-[var(--sidebar-teal)]/90 text-white rounded-xl shadow-lg transition cursor-pointer"
         >
-          {sidebarOpen ? <X size={22} /> : <Menu size={22} />}
+          {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
       )}
 
       {/* Content */}
       <main
         className={`flex-1 p-4 sm:p-6 overflow-y-auto transition-all duration-300 ${
-          sidebarOpen && isMobile ? "blur-sm" : ""
+          sidebarOpen && isMobile ? "blur-sm pointer-events-none" : ""
         }`}
       >
         {children}

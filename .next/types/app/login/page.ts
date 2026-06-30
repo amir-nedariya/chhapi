@@ -1,4 +1,4 @@
-// File: C:\Users\iaami\OneDrive\Desktop\chhapi\donation-in-chhapi---2026\client\src\app\login\page.jsx
+// File: C:\Users\Asus\Desktop\chhapi\chhapi\src\app\login\page.jsx
 import * as entry from '../../../../src/app/login/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

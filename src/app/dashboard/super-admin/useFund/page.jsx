@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { getFundSummaryAPI, useFundAPI } from "../../../../api/fund.api";
 import toast from "react-hot-toast";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Coins, Landmark } from "lucide-react";
 
 const ITEMS_PER_PAGE = 12;
 
@@ -18,6 +18,7 @@ const UseFund = () => {
   const [note, setNote] = useState("");
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
+  const [buttonPressed, setButtonPressed] = useState(false);
 
   /* ================= LOAD FUNDS ================= */
   const loadFunds = async () => {
@@ -94,23 +95,27 @@ const UseFund = () => {
     try {
       setLoading(true);
 
-      await Promise.all(
+      const responses = await Promise.all(
         usageList.map(item =>
           useFundAPI({
             fundId: item.fundId,
             amount: item.amount,
-            note: note.trim() || "—", // ✅ safe note
+            note: note.trim() || "—",
           })
         )
       );
 
-      toast.success("Fund used successfully");
+      const allSuccess = responses.every(r => r.data?.success);
 
-      setSelectedFunds([]);
-      setAmount("");
-      setNote("");
-
-      await loadFunds();
+      if (allSuccess) {
+        toast.success("Fund used successfully");
+        setSelectedFunds([]);
+        setAmount("");
+        setNote("");
+        await loadFunds();
+      } else {
+        toast.error("Some fund allocations failed");
+      }
     } catch (err) {
       toast.error(
         err?.response?.data?.message || "Fund usage failed"
@@ -120,137 +125,199 @@ const UseFund = () => {
     }
   };
 
+  // Neumorphic Styling Mappings
+  const cardShadow = {
+    boxShadow: "9px 9px 16px #b8c4d9, -9px -9px 16px #ffffff",
+    backgroundColor: "#ecf0f3",
+  };
+
+  const inputShadow = {
+    boxShadow: "inset 4px 4px 8px #d1d9e6, inset -4px -4px 8px #ffffff",
+    backgroundColor: "#ecf0f3",
+    border: "none",
+  };
+
+  const buttonShadow = buttonPressed
+    ? { boxShadow: "inset 3px 3px 6px #b8c4d9, inset -3px -3px 6px #ffffff", backgroundColor: "#ecf0f3" }
+    : { boxShadow: "5px 5px 10px #b8c4d9, -5px -5px 10px #ffffff", backgroundColor: "#ecf0f3" };
+
   return (
-    <div className="space-y-8 max-w-6xl mx-auto">
-
-      {/* ================= USE FUND FORM ================= */}
-      <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-        <h2 className="text-xl font-semibold text-white mb-6">
-          Use Fund
-        </h2>
-
-        <form
-          onSubmit={handleSubmit}
-          className="grid grid-cols-1 md:grid-cols-2 gap-5"
-        >
+    <div className="min-h-screen bg-[#ecf0f3] p-2 sm:p-8 space-y-6 text-slate-800 font-sans">
+      <div className="max-w-6xl mx-auto space-y-8">
+        
+        {/* HEADER */}
+        <div className="flex items-center gap-3 px-2">
+          <div 
+            className="p-3.5 rounded-full flex items-center justify-center"
+            style={{ boxShadow: "4px 4px 8px #b8c4d9, -4px -4px 8px #ffffff", backgroundColor: "#ecf0f3" }}
+          >
+            <Landmark className="text-cyan-600" size={24} />
+          </div>
           <div>
-            <label className="text-sm text-gray-400">
-              Total Amount (₹)
-            </label>
-            <input
-              type="number"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              disabled={loading}
-              className="w-full mt-1 px-4 py-2.5 rounded-xl bg-[#020617] text-white border border-white/10"
-              placeholder="500"
-            />
+            <h2 className="text-2xl font-extrabold text-slate-800 tracking-tight">
+              Use Budget Fund
+            </h2>
+            <p className="text-slate-500 text-sm mt-0.5 font-semibold">Record an expense transaction from allocated funds</p>
           </div>
-
-          <div>
-            <label className="text-sm text-gray-400">
-              Usage Note
-            </label>
-            <input
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              disabled={loading}
-              className="w-full mt-1 px-4 py-2.5 rounded-xl bg-[#020617] text-white border border-white/10"
-              placeholder="Emergency support"
-            />
-          </div>
-
-          <div className="md:col-span-2">
-            <button
-              disabled={loading}
-              className="w-full bg-cyan-500 hover:bg-cyan-600 text-black py-3 rounded-xl font-semibold transition disabled:opacity-50"
-            >
-              {loading ? "Processing..." : "Use Fund"}
-            </button>
-          </div>
-        </form>
-      </div>
-
-      {/* ================= SELECT FUNDS ================= */}
-      <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-        <h2 className="text-xl font-semibold text-white mb-4">
-          Select Funds
-        </h2>
-
-        <div className="overflow-x-auto rounded-xl border border-white/10">
-          <table className="w-full text-sm">
-            <thead className="bg-white/5 text-gray-400">
-              <tr>
-                <th className="px-4 py-3">Select</th>
-                <th className="px-4 py-3 text-left">Fund</th>
-                <th className="px-4 py-3">Month</th>
-                <th className="px-4 py-3 text-right">Remaining</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {paginatedFunds.map((fund) => (
-                <tr
-                  key={fund._id}
-                  className="border-t border-white/10 hover:bg-white/5"
-                >
-                  <td className="px-4 py-3 text-center">
-                    <input
-                      type="checkbox"
-                      checked={selectedFunds.some(f => f._id === fund._id)}
-                      onChange={() => toggleFund(fund)}
-                      disabled={loading}
-                    />
-                  </td>
-
-                  <td className="px-4 py-3 text-white font-medium">
-                    {fund.title}
-                  </td>
-
-                  <td className="px-4 py-3 text-gray-400 text-center">
-                    {monthNames[fund.month - 1]} {fund.year}
-                  </td>
-
-                  <td className="px-4 py-3 text-right text-green-400 font-semibold">
-                    ₹{fund.remainingAmount.toLocaleString()}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          {!paginatedFunds.length && (
-            <div className="p-6 text-center text-gray-400">
-              No available funds
-            </div>
-          )}
         </div>
 
-        {totalPages > 1 && (
-          <div className="flex justify-end items-center gap-3 mt-5">
-            <button
-              disabled={page === 1}
-              onClick={() => setPage(p => p - 1)}
-              className="p-2 rounded-lg bg-white/5 border border-white/10 disabled:opacity-40"
-            >
-              <ChevronLeft size={16} />
-            </button>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+          {/* ================= USE FUND FORM ================= */}
+          <div className="rounded-3xl p-6 lg:col-span-1 space-y-4" style={cardShadow}>
+            <h3 className="text-slate-700 font-extrabold text-lg mb-2">
+              Transaction Details
+            </h3>
 
-            <span className="text-sm text-gray-400">
-              Page {page} of {totalPages}
-            </span>
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div>
+                <label className="text-sm font-bold text-slate-600 block mb-2 px-1">
+                  Total Amount (₹)
+                </label>
+                <input
+                  type="number"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  disabled={loading}
+                  className="w-full px-5 py-3 rounded-2xl text-slate-800 outline-none transition-all placeholder:text-gray-400 font-semibold"
+                  style={inputShadow}
+                  placeholder="e.g., 500"
+                />
+              </div>
 
-            <button
-              disabled={page === totalPages}
-              onClick={() => setPage(p => p + 1)}
-              className="p-2 rounded-lg bg-white/5 border border-white/10 disabled:opacity-40"
-            >
-              <ChevronRight size={16} />
-            </button>
+              <div>
+                <label className="text-sm font-bold text-slate-600 block mb-2 px-1">
+                  Usage Note / Remarks
+                </label>
+                <input
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  disabled={loading}
+                  className="w-full px-5 py-3 rounded-2xl text-slate-800 outline-none transition-all placeholder:text-gray-400 font-semibold"
+                  style={inputShadow}
+                  placeholder="e.g., Medicine Purchase"
+                />
+              </div>
+
+              <div className="pt-2">
+                <button
+                  disabled={loading}
+                  onMouseDown={() => setButtonPressed(true)}
+                  onMouseUp={() => setButtonPressed(false)}
+                  onMouseLeave={() => setButtonPressed(false)}
+                  onTouchStart={() => setButtonPressed(true)}
+                  onTouchEnd={() => setButtonPressed(false)}
+                  className="w-full text-cyan-600 py-3.5 rounded-2xl font-extrabold transition-all active:scale-[0.99] disabled:opacity-50"
+                  style={buttonShadow}
+                >
+                  {loading ? "Processing..." : "Submit Transaction"}
+                </button>
+              </div>
+            </form>
           </div>
-        )}
+
+          {/* ================= SELECT FUNDS ================= */}
+          <div className="rounded-3xl p-6 lg:col-span-2" style={cardShadow}>
+            <h3 className="text-slate-700 font-extrabold text-lg mb-4">
+              Select Active Funds to Draw From
+            </h3>
+
+            <div className="overflow-x-auto rounded-2xl" style={{ boxShadow: "inset 2px 2px 5px #d1d9e6, inset -2px -2px 5px #ffffff" }}>
+              <table className="w-full text-sm">
+                <thead className="text-slate-500 text-[10px] font-black uppercase tracking-widest border-b border-gray-200/50">
+                  <tr>
+                    <th className="px-5 py-4 text-center w-16">Select</th>
+                    <th className="px-5 py-4 text-left">Fund Title</th>
+                    <th className="px-5 py-4 text-center">Month</th>
+                    <th className="px-5 py-4 text-right">Available Balance</th>
+                  </tr>
+                </thead>
+
+                <tbody className="divide-y divide-gray-200/30">
+                  {paginatedFunds.map((fund) => (
+                    <tr
+                      key={fund._id}
+                      className="hover:bg-slate-200/20 transition-colors"
+                    >
+                      <td className="px-5 py-4 text-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedFunds.some(f => f._id === fund._id)}
+                          onChange={() => toggleFund(fund)}
+                          disabled={loading}
+                          className="w-4 h-4 rounded text-cyan-600 border-gray-300 focus:ring-cyan-500 cursor-pointer"
+                        />
+                      </td>
+
+                      <td className="px-5 py-4 text-slate-700 font-bold">
+                        {fund.title}
+                      </td>
+
+                      <td className="px-5 py-4 text-slate-500 text-center font-bold">
+                        {monthNames[fund.month - 1]} {fund.year}
+                      </td>
+
+                      <td className="px-5 py-4 text-right text-emerald-600 font-black">
+                        ₹{fund.remainingAmount.toLocaleString()}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              {!paginatedFunds.length && (
+                <div className="p-12 text-center text-slate-400 font-bold">
+                  No active funds available. Please create a new fund first.
+                </div>
+              )}
+            </div>
+
+            {totalPages > 1 && (
+              <div className="flex justify-end items-center gap-3 mt-6">
+                <PaginationButton
+                  disabled={page === 1}
+                  onClick={() => setPage(p => p - 1)}
+                  icon={<ChevronLeft size={16} />}
+                />
+
+                <span className="text-sm text-slate-600 font-bold px-1">
+                  Page {page} of {totalPages}
+                </span>
+
+                <PaginationButton
+                  disabled={page === totalPages}
+                  onClick={() => setPage(p => p + 1)}
+                  icon={<ChevronRight size={16} />}
+                />
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
+  );
+};
+
+/* NEUMORPHIC PAGINATION BUTTON */
+const PaginationButton = ({ icon, disabled, onClick }) => {
+  const [pressed, setPressed] = useState(false);
+  return (
+    <button
+      disabled={disabled}
+      onClick={onClick}
+      onMouseDown={() => setPressed(true)}
+      onMouseUp={() => setPressed(false)}
+      onMouseLeave={() => setPressed(false)}
+      onTouchStart={() => setPressed(true)}
+      onTouchEnd={() => setPressed(false)}
+      className="p-2.5 rounded-2xl text-slate-700 transition duration-300 disabled:opacity-40"
+      style={
+        pressed
+          ? { boxShadow: "inset 2px 2px 4px #b8c4d9, inset -2px -2px 4px #ffffff", backgroundColor: "#ecf0f3" }
+          : { boxShadow: "4px 4px 8px #b8c4d9, -4px -4px 8px #ffffff", backgroundColor: "#ecf0f3" }
+      }
+    >
+      {icon}
+    </button>
   );
 };
 
