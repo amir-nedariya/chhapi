@@ -1,8 +1,10 @@
 import SuperAdminSidebar from "../../sidebar/SuperAdminSidebar";
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
+import { useAuth } from "../../../context/AuthContext";
 
 const SuperAdminLayout = ({ children }) => {
+  const { user } = useAuth();
   const [isMobile, setIsMobile] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [collapsed, setCollapsed] = useState(false);
@@ -34,24 +36,59 @@ const SuperAdminLayout = ({ children }) => {
         setSidebarOpen={setSidebarOpen}
       />
 
-      {/* Mobile Toggle Button */}
-      {isMobile && (
-        <button
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="fixed top-4 right-4 z-50 p-2.5 bg-[var(--sidebar-teal)] hover:bg-[var(--sidebar-teal)]/90 text-white rounded-xl shadow-lg transition cursor-pointer"
-        >
-          {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
-        </button>
-      )}
+      {/* Main Wrapper */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+        {/* Mobile Navbar Header */}
+        {isMobile && (
+          <header className="h-16 bg-white border-b border-slate-200/80 flex items-center justify-between px-4 flex-shrink-0 z-30 shadow-xs relative">
+            {/* Left Slot: Menu Toggle */}
+            <div className="flex items-center">
+              <button
+                onClick={() => setSidebarOpen(true)}
+                className="p-2 -ml-2 text-slate-600 hover:text-slate-900 rounded-xl hover:bg-slate-100 transition active:scale-95 cursor-pointer"
+              >
+                <Menu size={22} />
+              </button>
+            </div>
 
-      {/* Content */}
-      <main
-        className={`flex-1 p-6 overflow-y-auto transition-all duration-300 ${
-          sidebarOpen && isMobile ? "blur-sm pointer-events-none" : ""
-        }`}
-      >
-        {children}
-      </main>
+            {/* Center Slot: Perfectly Centered Brand Logo & Title */}
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-teal-400 to-[#007380] flex items-center justify-center shadow-sm flex-shrink-0">
+                <span className="text-white font-black text-sm">C</span>
+              </div>
+              <span className="text-sm font-black tracking-widest bg-gradient-to-r from-slate-800 to-slate-950 bg-clip-text text-transparent">
+                CHHAPI
+              </span>
+            </div>
+
+            {/* Right Slot: Profile Info */}
+            <div className="flex items-center gap-2.5">
+              <span className="hidden sm:inline-block text-[10px] bg-purple-50 text-purple-750 border border-purple-100 font-extrabold px-2 py-0.5 rounded-md tracking-wider uppercase whitespace-nowrap">
+                Super Admin
+              </span>
+              <img
+                src={
+                  user?.profilePhoto?.url ||
+                  `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                    user?.name || "Super Admin"
+                  )}&background=007380&color=ffffff`
+                }
+                alt="profile"
+                className="w-8 h-8 rounded-full object-cover border border-slate-200"
+              />
+            </div>
+          </header>
+        )}
+
+        {/* Content */}
+        <main
+          className={`flex-1 p-6 overflow-y-auto transition-all duration-300 ${
+            sidebarOpen && isMobile ? "blur-sm pointer-events-none" : ""
+          }`}
+        >
+          {children}
+        </main>
+      </div>
     </div>
   );
 };

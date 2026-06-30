@@ -98,7 +98,7 @@ const FundSummary = () => {
     <div className="space-y-6">
 
       {/* HEADER + FILTER */}
-      <div className="flex flex-wrap justify-between items-center gap-4">
+      <div className="flex flex-col items-center text-center sm:flex-row justify-between sm:items-center gap-4">
         <h2 className="text-xl font-semibold text-white tracking-wide">
           Fund Summary
         </h2>

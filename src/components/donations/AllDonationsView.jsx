@@ -753,8 +753,8 @@ const AllDonationsView = ({ role = "USER" }) => {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-slate-700 border-collapse">
-              <thead>
-                <tr className="bg-slate-50/75 border-b border-slate-100 text-slate-400 text-xs font-bold tracking-wider uppercase">
+              <thead className="bg-gradient-to-r from-[var(--sidebar-from)] via-[var(--sidebar-via)] to-[var(--sidebar-to)] text-white">
+                <tr className="border-b border-teal-950/20 text-xs font-bold tracking-wider uppercase">
                   <th className="py-4.5 px-5 text-left">Receipt ID</th>
                   <th className="py-4.5 px-5 text-left">Donor Name</th>
                   <th className="py-4.5 px-5 text-right">Amount</th>

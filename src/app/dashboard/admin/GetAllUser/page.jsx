@@ -10,6 +10,8 @@ import { toast } from "react-hot-toast";
 import { useAuth } from "../../../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
+import { useSidebarColor } from "../../../../hooks/useSidebarColor";
+
 const ITEMS_PER_PAGE = 10;
 
 const roleStyles = {
@@ -21,6 +23,16 @@ const roleStyles = {
 const GetAllUser = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const sidebarColor = useSidebarColor();
+  const getAvatarUrl = (userObj) => {
+    if (userObj?.profilePhoto?.url) {
+      if (userObj.profilePhoto.url.includes("ui-avatars.com")) {
+        return userObj.profilePhoto.url.replace(/background=[0-9a-fA-F]+/g, `background=${sidebarColor}`);
+      }
+      return userObj.profilePhoto.url;
+    }
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(userObj?.name || "User")}&background=${sidebarColor}&color=fff`;
+  };
 
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
@@ -94,7 +106,7 @@ const GetAllUser = () => {
   return (
     <div className="p-4 md:p-6">
       {/* HEADER */}
-      <div className="mb-6">
+      <div className="mb-6 flex flex-col items-center text-center sm:items-start sm:text-left">
         <h2 className="text-2xl font-bold text-slate-800">👥 Users Management</h2>
         <p className="text-sm text-slate-500">Manage users & roles</p>
       </div>
@@ -141,7 +153,7 @@ const GetAllUser = () => {
       {/* DESKTOP TABLE */}
       <div className="hidden md:block overflow-x-auto rounded-2xl bg-white border border-gray-200 shadow-sm">
         <table className="w-full text-sm text-slate-800">
-          <thead className="bg-slate-50 text-slate-600 border-b border-gray-200">
+          <thead className="bg-gradient-to-r from-[var(--sidebar-from)] via-[var(--sidebar-via)] to-[var(--sidebar-to)] text-white border-b border-teal-950/20">
             <tr>
               <th className="p-4 text-left font-semibold">User</th>
               <th className="p-4 font-semibold">Mobile</th>
@@ -169,7 +181,7 @@ const GetAllUser = () => {
                 >
                   <td className="p-4 flex items-center gap-3">
                     <img
-                      src={u.profilePhoto?.url || "/avatar.jpeg"}
+                      src={getAvatarUrl(u)}
                       className="w-9 h-9 rounded-full border border-gray-200 object-cover"
                       alt=""
                     />
@@ -242,7 +254,7 @@ const GetAllUser = () => {
           >
             <div className="flex items-center gap-3 mb-3">
               <img
-                src={u.profilePhoto?.url || "/avatar.jpeg"}
+                src={getAvatarUrl(u)}
                 className="w-10 h-10 rounded-full border border-gray-200 object-cover"
                 alt=""
               />

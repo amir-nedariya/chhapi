@@ -43,7 +43,7 @@ const FundHistory = () => {
   return (
     <div className="w-full">
       {/* HEADER */}
-      <div className="flex items-center gap-2 mb-6">
+      <div className="flex flex-col items-center text-center sm:flex-row sm:text-left sm:items-center gap-2 mb-6">
         <Wallet className="text-cyan-400" />
         <h2 className="text-xl font-semibold text-white">
           Fund Usage History
@@ -63,7 +63,7 @@ const FundHistory = () => {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
-              <thead className="bg-white/5 text-gray-400">
+              <thead className="bg-gradient-to-r from-[var(--sidebar-from)] via-[var(--sidebar-via)] to-[var(--sidebar-to)] text-white">
                 <tr>
                   <th className="px-5 py-3">#</th>
                   <th className="px-5 py-3">Amount (₹)</th>

@@ -51,9 +51,9 @@ const FundHistory = () => {
       <div className="w-full max-w-6xl mx-auto space-y-8">
         
         {/* HEADER */}
-        <div className="flex items-center gap-3 px-2">
+        <div className="flex flex-col items-center text-center sm:flex-row sm:text-left sm:items-center gap-3 px-2">
           <div 
-            className="p-3.5 rounded-full flex items-center justify-center"
+            className="p-3.5 rounded-full flex items-center justify-center flex-shrink-0"
             style={{ boxShadow: "4px 4px 8px #b8c4d9, -4px -4px 8px #ffffff", backgroundColor: "#ecf0f3" }}
           >
             <Landmark className="text-cyan-600" size={24} />

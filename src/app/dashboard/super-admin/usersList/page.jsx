@@ -33,6 +33,8 @@ import {
   BarChart3,
 } from "lucide-react";
 
+import { useSidebarColor } from "../../../../hooks/useSidebarColor";
+
 const ITEMS_PER_PAGE = 10;
 
 /* ================= ROLE STYLES ================= */
@@ -46,6 +48,16 @@ const roleStyles = {
 };
 
 const UsersList = () => {
+  const sidebarColor = useSidebarColor();
+  const getAvatarUrl = (userObj) => {
+    if (userObj?.profilePhoto?.url) {
+      if (userObj.profilePhoto.url.includes("ui-avatars.com")) {
+        return userObj.profilePhoto.url.replace(/background=[0-9a-fA-F]+/g, `background=${sidebarColor}`);
+      }
+      return userObj.profilePhoto.url;
+    }
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(userObj?.name || "User")}&background=${sidebarColor}&color=fff`;
+  };
   const [users, setUsers] = useState([]);
   const [loadingId, setLoadingId] = useState(null);
   const [search, setSearch] = useState("");
@@ -261,7 +273,7 @@ const UsersList = () => {
             <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgba(0,0,0,0.015)] flex flex-col items-center text-center">
               <div className="relative group mb-4">
                 <img
-                  src={viewUser.profilePhoto?.url || "/avatar.jpeg"}
+                  src={getAvatarUrl(viewUser)}
                   className="w-28 h-28 rounded-full border-4 border-white shadow-md object-cover ring-2 ring-slate-100/80 group-hover:scale-105 transition-all duration-300"
                 />
               </div>
@@ -746,8 +758,8 @@ const UsersList = () => {
   return (
     <div className="p-1 sm:p-6">
       {/* ================= HEADER ================= */}
-      <div className="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between mb-6">
-        <h2 className="flex items-center gap-2 text-xl sm:text-2xl font-semibold text-slate-800">
+      <div className="flex flex-col items-center text-center sm:flex-row gap-4 sm:items-center sm:justify-between mb-6">
+        <h2 className="flex flex-col sm:flex-row items-center gap-2 text-xl sm:text-2xl font-semibold text-slate-800">
           <Users size={24} className="text-cyan-600" />
           User Management
         </h2>
@@ -801,7 +813,7 @@ const UsersList = () => {
       {/* ================= DESKTOP TABLE ================= */}
       <div className="hidden md:block overflow-x-auto rounded-2xl border border-gray-200 bg-white shadow-sm">
         <table className="w-full text-sm text-slate-800">
-          <thead className="bg-slate-50 text-slate-600 border-b border-gray-200">
+          <thead className="bg-gradient-to-r from-[var(--sidebar-from)] via-[var(--sidebar-via)] to-[var(--sidebar-to)] text-white border-b border-teal-950/20">
             <tr>
               <th className="p-4 text-left font-semibold">User Info</th>
               <th className="p-4 text-center font-semibold">Role</th>
@@ -814,7 +826,7 @@ const UsersList = () => {
               <tr key={u._id} className="border-b border-gray-100 hover:bg-slate-50 transition">
                 <td className="p-4 flex items-center gap-4">
                   <img
-                    src={u.profilePhoto?.url || "/avatar.jpeg"}
+                    src={getAvatarUrl(u)}
                     className="w-10 h-10 rounded-full border border-gray-200 object-cover"
                   />
                   <div>
@@ -878,7 +890,7 @@ const UsersList = () => {
           <div key={u._id} className="rounded-2xl bg-white border border-gray-200 p-4 shadow-sm">
             <div className="flex items-center gap-3">
               <img
-                src={u.profilePhoto?.url || "/avatar.jpeg"}
+                src={getAvatarUrl(u)}
                 className="w-12 h-12 rounded-full border border-gray-200 object-cover"
               />
               <div className="flex-1">

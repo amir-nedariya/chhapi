@@ -1,1 +1,8 @@
-{}
+{
+  "/dashboard/super-admin/usersList/page": "app/dashboard/super-admin/usersList/page.js",
+  "/dashboard/super-admin/createfund/page": "app/dashboard/super-admin/createfund/page.js",
+  "/dashboard/super-admin/fundSummary/page": "app/dashboard/super-admin/fundSummary/page.js",
+  "/dashboard/super-admin/reminders/page": "app/dashboard/super-admin/reminders/page.js",
+  "/dashboard/super-admin/reports/page": "app/dashboard/super-admin/reports/page.js",
+  "/dashboard/super-admin/pending-donations/page": "app/dashboard/super-admin/pending-donations/page.js"
+}

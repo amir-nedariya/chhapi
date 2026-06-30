@@ -146,9 +146,9 @@ const UseFund = () => {
       <div className="max-w-6xl mx-auto space-y-8">
         
         {/* HEADER */}
-        <div className="flex items-center gap-3 px-2">
+        <div className="flex flex-col items-center text-center sm:flex-row sm:text-left sm:items-center gap-3 px-2">
           <div 
-            className="p-3.5 rounded-full flex items-center justify-center"
+            className="p-3.5 rounded-full flex items-center justify-center flex-shrink-0"
             style={{ boxShadow: "4px 4px 8px #b8c4d9, -4px -4px 8px #ffffff", backgroundColor: "#ecf0f3" }}
           >
             <Landmark className="text-cyan-600" size={24} />
@@ -204,8 +204,6 @@ const UseFund = () => {
                   onMouseDown={() => setButtonPressed(true)}
                   onMouseUp={() => setButtonPressed(false)}
                   onMouseLeave={() => setButtonPressed(false)}
-                  onTouchStart={() => setButtonPressed(true)}
-                  onTouchEnd={() => setButtonPressed(false)}
                   className="w-full text-cyan-600 py-3.5 rounded-2xl font-extrabold transition-all active:scale-[0.99] disabled:opacity-50"
                   style={buttonShadow}
                 >
@@ -223,7 +221,7 @@ const UseFund = () => {
 
             <div className="overflow-x-auto rounded-2xl" style={{ boxShadow: "inset 2px 2px 5px #d1d9e6, inset -2px -2px 5px #ffffff" }}>
               <table className="w-full text-sm">
-                <thead className="text-slate-500 text-[10px] font-black uppercase tracking-widest border-b border-gray-200/50">
+                <thead className="bg-gradient-to-r from-[var(--sidebar-from)] via-[var(--sidebar-via)] to-[var(--sidebar-to)] text-white text-[10px] font-black uppercase tracking-widest border-b border-teal-950/20">
                   <tr>
                     <th className="px-5 py-4 text-center w-16">Select</th>
                     <th className="px-5 py-4 text-left">Fund Title</th>
