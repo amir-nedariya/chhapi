@@ -93,7 +93,7 @@ const CreateUser = () => {
         </div>
 
         {/* FORM / SCROLLABLE CONTENT */}
-        <div className="p-6 max-h-[60vh] overflow-y-auto custom-scrollbar bg-white">
+        <div className="p-6 max-h-none md:max-h-[60vh] overflow-y-auto custom-scrollbar bg-white">
           <form id="createUserForm" onSubmit={handleSubmit} className="space-y-6">
             
             {/* GRID ROW 1 */}

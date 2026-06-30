@@ -120,16 +120,16 @@ const FundSummary = () => {
       <div className="max-w-6xl mx-auto space-y-8">
         
         {/* HEADER + FILTER */}
-        <div className="flex flex-wrap justify-between items-center gap-4 px-2">
-          <div>
-            <h2 className="text-2xl font-extrabold text-slate-800 flex items-center gap-2">
+        <div className="flex flex-col items-center text-center sm:flex-row justify-between sm:items-center sm:text-left gap-4 px-2">
+          <div className="flex flex-col items-center sm:items-start">
+            <h2 className="text-2xl font-extrabold text-slate-800 flex flex-col sm:flex-row items-center gap-2">
               <Coins className="text-cyan-600" />
               Fund Summary
             </h2>
             <p className="text-slate-500 text-sm mt-0.5 font-semibold">Overview of budget allocations and remaining balance</p>
           </div>
 
-          <div className="flex gap-4 items-center">
+          <div className="flex flex-col sm:flex-row gap-4 items-center w-full sm:w-auto justify-center">
             <div 
               className="p-2.5 rounded-full flex items-center justify-center"
               style={{ boxShadow: "4px 4px 8px #b8c4d9, -4px -4px 8px #ffffff", backgroundColor: "#ecf0f3" }}

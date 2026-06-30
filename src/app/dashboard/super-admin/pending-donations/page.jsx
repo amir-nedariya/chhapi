@@ -59,7 +59,24 @@ const PendingDonations = () => {
     try {
       setLoadingId(id);
       await approveDonationAPI(id);
-      toast.success("✅ Donation approved");
+
+      // Find approved donation details from list
+      const donation = donations.find(d => d._id === id);
+      if (donation) {
+        const phone = donation.donorMobile || donation.donor?.mobile || "";
+        const donorName = donation.donor?.name || donation.donorName || "Donor";
+        const amount = donation.amount;
+        const campaign = donation.remarks || "our campaigns";
+
+        // Construct pre-filled message text
+        const messageText = `Hello *${donorName}*,\n\nWe are pleased to inform you that your donation of *₹${amount}* for *${campaign}* has been verified and approved successfully.\n\nThank you for your generous contribution and support! 🙏\n\n— *Chhapi Donation Portal*`;
+        const whatsappUrl = `https://api.whatsapp.com/send?phone=${phone.replace(/[^\d]/g, '')}&text=${encodeURIComponent(messageText)}`;
+
+        // Open WhatsApp Web/App in a new tab (100% Free click-to-chat api)
+        window.open(whatsappUrl, "_blank");
+      }
+
+      toast.success("✅ Donation approved & WhatsApp chat opened");
       fetchPending();
     } catch {
       toast.error("❌ Approval failed");
@@ -139,7 +156,7 @@ const PendingDonations = () => {
   return (
     <div className="p-1 sm:p-6 space-y-5">
       {/* ================= HEADER ================= */}
-      <h2 className="flex items-center gap-2 text-xl sm:text-2xl font-bold text-slate-800">
+      <h2 className="flex flex-col sm:flex-row items-center text-center sm:text-left gap-2 text-xl sm:text-2xl font-bold text-slate-800">
         <Clock size={24} className="text-cyan-600" />
         Pending Donations
       </h2>
@@ -193,7 +210,7 @@ const PendingDonations = () => {
       {/* ================= DESKTOP TABLE ================= */}
       <div className="hidden md:block overflow-x-auto rounded-2xl border border-gray-200 bg-white shadow-sm">
         <table className="w-full text-sm text-slate-800">
-          <thead className="bg-slate-50 text-slate-600 border-b border-gray-200">
+          <thead className="bg-gradient-to-r from-[var(--sidebar-from)] via-[var(--sidebar-via)] to-[var(--sidebar-to)] text-white border-b border-teal-950/20">
             <tr>
               <th className="p-4 text-left font-semibold">Donor</th>
               <th className="p-4 text-left font-semibold">Amount</th>

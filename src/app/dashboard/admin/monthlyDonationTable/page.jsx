@@ -30,7 +30,19 @@ const months = [
 const currentMonthKey = months[new Date().getMonth()].key;
 const currentYear = new Date().getFullYear();
 
+import { useSidebarColor } from "../../../../hooks/useSidebarColor";
+
 const MonthlyDonationTable = () => {
+  const sidebarColor = useSidebarColor();
+  const getAvatarUrl = (userObj) => {
+    if (userObj?.profilePhoto?.url) {
+      if (userObj.profilePhoto.url.includes("ui-avatars.com")) {
+        return userObj.profilePhoto.url.replace(/background=[0-9a-fA-F]+/g, `background=${sidebarColor}`);
+      }
+      return userObj.profilePhoto.url;
+    }
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(userObj?.name || "User")}&background=${sidebarColor}&color=fff`;
+  };
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -136,9 +148,9 @@ const MonthlyDonationTable = () => {
     <div className="min-h-screen w-full bg-[#ecf0f3] p-1 sm:p-8 space-y-8 flex flex-col justify-start font-sans text-slate-800">
 
       {/* ================= HEADER ================= */}
-      <div className="flex items-center gap-3 px-2">
+      <div className="flex flex-col items-center text-center sm:flex-row sm:text-left sm:items-center gap-3 px-2">
         <div 
-          className="p-3.5 rounded-full flex items-center justify-center transition-all duration-300"
+          className="p-3.5 rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0"
           style={headerIconShadow}
         >
           <BarChart3 className="text-cyan-600 animate-pulse" size={24} />
@@ -238,16 +250,16 @@ const MonthlyDonationTable = () => {
       >
         <div className="overflow-x-auto custom-scrollbar pb-2">
           <table className="min-w-full text-left text-slate-800 border-collapse">
-            <thead>
-              <tr className="text-slate-500 font-bold uppercase tracking-wider text-xs border-b border-slate-300/40">
-                <th className="pb-4 px-4 sticky left-0 bg-[#ecf0f3] z-10 w-16 text-center">#</th>
-                <th className="pb-4 px-4 sticky left-0 bg-[#ecf0f3] z-10">Donor Details</th>
+            <thead className="bg-gradient-to-r from-[var(--sidebar-from)] via-[var(--sidebar-via)] to-[var(--sidebar-to)] text-white">
+              <tr className="font-bold uppercase tracking-wider text-xs border-b border-teal-950/20">
+                <th className="py-4 px-4 bg-[var(--sidebar-from)] text-white z-10 w-16 text-center">#</th>
+                <th className="py-4 px-4 sticky left-0 bg-[var(--sidebar-via)] text-white z-10">Donor Details</th>
                 {visibleMonths.map((m) => (
-                  <th key={m.key} className="pb-4 px-3 text-center">
+                  <th key={m.key} className="py-4 px-3 text-center">
                     {m.label}
                   </th>
                 ))}
-                <th className="pb-4 px-4 text-right bg-[#ecf0f3]">Total</th>
+                <th className="py-4 px-4 text-right bg-[var(--sidebar-to)] text-white">Total</th>
               </tr>
             </thead>
 
@@ -271,7 +283,7 @@ const MonthlyDonationTable = () => {
                       className="hover:bg-[#e4ebf0] transition-colors group"
                     >
                       {/* INDEX */}
-                      <td className="py-4 px-4 sticky left-0 bg-[#ecf0f3] group-hover:bg-[#e4ebf0] font-bold text-slate-500 text-sm text-center z-10">
+                      <td className="py-4 px-4 bg-[#ecf0f3] group-hover:bg-[#e4ebf0] font-bold text-slate-500 text-sm text-center">
                         {i + 1 + (page - 1) * 10}
                       </td>
 
@@ -279,10 +291,7 @@ const MonthlyDonationTable = () => {
                       <td className="py-4 px-4 sticky left-0 bg-[#ecf0f3] group-hover:bg-[#e4ebf0] z-10">
                         <div className="flex items-center gap-3">
                           <img
-                            src={
-                              u.profilePhoto?.url ||
-                              "https://via.placeholder.com/40?text=User"
-                            }
+                            src={getAvatarUrl(u)}
                             alt={u.name}
                             className="w-10 h-10 rounded-full object-cover border border-slate-300/40"
                           />

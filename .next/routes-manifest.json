@@ -65,6 +65,12 @@
       "namedRegex": "^/dashboard/admin(?:/)?$"
     },
     {
+      "page": "/dashboard/admin/appearance",
+      "regex": "^/dashboard/admin/appearance(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/admin/appearance(?:/)?$"
+    },
+    {
       "page": "/dashboard/admin/createuser",
       "regex": "^/dashboard/admin/createuser(?:/)?$",
       "routeKeys": {},
@@ -129,6 +135,12 @@
       "regex": "^/dashboard/super\\-admin/all\\-donations(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/dashboard/super\\-admin/all\\-donations(?:/)?$"
+    },
+    {
+      "page": "/dashboard/super-admin/appearance",
+      "regex": "^/dashboard/super\\-admin/appearance(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/super\\-admin/appearance(?:/)?$"
     },
     {
       "page": "/dashboard/super-admin/createAdmin",
@@ -201,6 +213,12 @@
       "regex": "^/dashboard/user/all\\-donations(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/dashboard/user/all\\-donations(?:/)?$"
+    },
+    {
+      "page": "/dashboard/user/appearance",
+      "regex": "^/dashboard/user/appearance(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/user/appearance(?:/)?$"
     },
     {
       "page": "/dashboard/user/donations",

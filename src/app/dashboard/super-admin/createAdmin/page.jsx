@@ -56,8 +56,8 @@ const CreateAdmin = () => {
         <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
 
         {/* HEADER */}
-        <div className="relative flex items-center gap-3 mb-8">
-          <div className="p-3 rounded-xl bg-cyan-500/20">
+        <div className="relative flex flex-col items-center text-center sm:flex-row sm:text-left sm:items-center gap-3 mb-8">
+          <div className="p-3 rounded-xl bg-cyan-500/20 flex-shrink-0">
             <UserPlus className="text-cyan-400" size={26} />
           </div>
           <div>

@@ -163,12 +163,12 @@ const SuperAdminReports = () => {
     <div className="p-6 max-w-[1600px] mx-auto space-y-8 bg-transparent min-h-screen text-slate-800">
 
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-4">
         <div>
           <h1 className="text-3xl font-black text-slate-900">Financial <span className="text-cyan-600">Reports</span></h1>
           <p className="text-slate-500 text-sm mt-1">Consolidated donor activity tracking</p>
         </div>
-        <button onClick={handlePDF} className="bg-cyan-600 hover:bg-cyan-700 text-white font-bold px-8 py-3 rounded-xl flex items-center gap-2 shadow-sm active:scale-95 transition-all">
+        <button onClick={handlePDF} className="bg-cyan-600 hover:bg-cyan-700 text-white font-bold px-8 py-3 rounded-xl flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-all w-full md:w-auto">
           <FileDown size={20} /> DOWNLOAD PDF
         </button>
       </div>
@@ -227,7 +227,7 @@ const SuperAdminReports = () => {
           <table className="w-full text-left">
             <thead className="bg-slate-50 text-slate-500 text-[11px] font-bold uppercase tracking-[0.15em] border-b border-gray-200">
               <tr>
-                <th className="px-6 py-6 sticky left-0 bg-slate-50 z-10 text-center w-16">#</th>
+                <th className="px-6 py-6 bg-slate-50 text-center w-16">#</th>
                 <th className="px-6 py-6 sticky left-0 bg-slate-50 z-10">Donor Details</th>
                 {(filterMonth === "All" ? months : [filterMonth.slice(0,3)]).map(m => (
                   <th key={m} className="px-3 py-6 text-center">{m}</th>
@@ -241,7 +241,7 @@ const SuperAdminReports = () => {
                 const total = tableMonths.reduce((sum, m) => sum + (d[m] || 0), 0);
                 return (
                   <tr key={i} className="hover:bg-slate-50 transition-colors group">
-                    <td className="px-6 py-5 sticky left-0 bg-white group-hover:bg-slate-50 font-black text-slate-600 text-lg text-center z-10">{i + 1}</td>
+                    <td className="px-6 py-5 bg-white group-hover:bg-slate-50 font-black text-slate-600 text-lg text-center">{i + 1}</td>
                     <td className="px-6 py-5 sticky left-0 bg-white group-hover:bg-slate-50 z-10">
                       <div className="font-black text-slate-700 text-sm tracking-wide uppercase">{d.donor}</div>
                       <div className="text-[11px] text-slate-400 font-medium mt-0.5">{d.mobile}</div>

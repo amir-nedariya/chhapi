@@ -4,26 +4,60 @@ import {
   Users,
   Wallet,
   Settings,
+  Sun,
   Landmark,
   ChevronDown,
-  Menu,
   ChevronLeft,
   ChevronRight,
+  UserPlus,
+  UserCheck,
+  History,
+  Coins,
+  CalendarRange,
+  PieChart,
+  MessageCircle,
+  X,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
-import { useState } from "react";
-
+import { useState, useEffect } from "react";
+import { useSidebarColor } from "../../hooks/useSidebarColor";
+import { themes, applyTheme, initTheme } from "../../utils/theme";
 
 const AdminSidebar = ({ collapsed, setCollapsed, mobile, sidebarOpen, setSidebarOpen }) => {
   const { user } = useAuth();
   const location = useLocation();
+  const sidebarColor = useSidebarColor();
+  const [currentTheme, setCurrentTheme] = useState("Classic Teal");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      initTheme();
+      const saved = localStorage.getItem("selected-sidebar-theme") || "Classic Teal";
+      setCurrentTheme(saved);
+
+      const handleExternalChange = () => {
+        const current = localStorage.getItem("selected-sidebar-theme") || "Classic Teal";
+        setCurrentTheme(current);
+      };
+
+      window.addEventListener("sidebar-theme-changed", handleExternalChange);
+      return () => window.removeEventListener("sidebar-theme-changed", handleExternalChange);
+    }
+  }, []);
+
+  const handleThemeChange = (t) => {
+    applyTheme(t);
+    setCurrentTheme(t.name);
+    window.dispatchEvent(new Event("sidebar-theme-changed"));
+  };
 
   // dropdown states
   const [fundOpen, setFundOpen] = useState(location.pathname.includes("/fund"));
   const [userMgmtOpen, setUserMgmtOpen] = useState(
     location.pathname.includes("/createuser") ||
       location.pathname.includes("/getalluser") ||
-      location.pathname.includes("/mydonations")
+      location.pathname.includes("/mydonations") ||
+      location.pathname.includes("/reminders")
   );
   const [allDonationOpen, setAllDonationOpen] = useState(
     location.pathname.includes("/all-donations") ||
@@ -32,19 +66,20 @@ const AdminSidebar = ({ collapsed, setCollapsed, mobile, sidebarOpen, setSidebar
   );
 
   const fundMenu = [
-    { name: "Fund Summary", path: "/dashboard/admin/fundSummary" },
-    { name: "Fund History", path: "/dashboard/admin/fundHistory" },
+    { name: "Fund Summary", path: "/dashboard/admin/fundSummary", icon: PieChart },
+    { name: "Fund History", path: "/dashboard/admin/fundHistory", icon: History },
   ];
 
   const userMgmtMenu = [
-    { name: "Create User", path: "/dashboard/admin/createuser" },
-    { name: "Users List", path: "/dashboard/admin/getalluser" },
-    { name: "My Donations history", path: "/dashboard/admin/mydonations" },
+    { name: "Create User", path: "/dashboard/admin/createuser", icon: UserPlus },
+    { name: "Users List", path: "/dashboard/admin/getalluser", icon: UserCheck },
+    { name: "Send Reminders", path: "/dashboard/admin/reminders", icon: MessageCircle },
+    { name: "My Donations history", path: "/dashboard/admin/mydonations", icon: History },
   ];
 
   const allDonationMenu = [
-    { name: "All Donations", path: "/dashboard/admin/donations" },
-    { name: "Monthly Report", path: "/dashboard/admin/monthlydonationtable" },
+    { name: "All Donations", path: "/dashboard/admin/donations", icon: Coins },
+    { name: "Monthly Report", path: "/dashboard/admin/monthlydonationtable", icon: CalendarRange },
   ];
 
   const getLinkClass = (isActive) => {
@@ -63,241 +98,262 @@ const AdminSidebar = ({ collapsed, setCollapsed, mobile, sidebarOpen, setSidebar
       <aside
         className={`
           ${collapsed ? "w-20" : "w-72"}
-          h-screen text-white relative
-          bg-gradient-to-b from-[#005f6b] via-[#007380] to-[#004d56] border-none outline-none
-          transition-all duration-300 shadow-[6px_0_30px_rgba(0,0,0,0.12)]
+          h-screen text-white relative flex-shrink-0
+          bg-gradient-to-b from-[var(--sidebar-from)] via-[var(--sidebar-via)] to-[var(--sidebar-to)] border-none outline-none
+          transition-all duration-300 shadow-[6px_0_30px_rgba(0,0,0,0.2)]
           ${mobile ? "fixed top-0 left-0 z-40 h-full" : "relative"}
           ${!sidebarOpen && mobile ? "-translate-x-full" : "translate-x-0"}
         `}
       >
-        <div className="h-full overflow-y-auto overflow-x-hidden custom-scrollbar py-6 pl-2 pr-0">
-          <div className="h-4" />
-
-
-        {/* PROFILE */}
-        {!collapsed && (
-          <div className="flex items-center gap-4 mb-8 p-3.5 rounded-2xl bg-white/6 border border-white/10 mr-4 ml-4 shadow-sm">
-            <div className="relative">
-              <img
-                src={
-                  user?.profilePhoto?.url ||
-                  `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || "Admin")}&background=ffffff&color=007380`
-                }
-                alt="profile"
-                className="w-12 h-12 rounded-full object-cover border-2 border-white/20"
-              />
-              <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-400 border-2 border-[#006e7a] rounded-full animate-pulse" />
-            </div>
-            <div>
-              <p className="text-sm font-extrabold text-white leading-tight">{user?.name || "Admin"}</p>
-              <span className="text-[10px] text-teal-200 font-bold tracking-wider uppercase block mt-0.5">ADMIN</span>
-            </div>
-          </div>
-        )}
-
-        {/* MENU */}
-        <nav className="flex flex-col gap-2">
-          {/* DASHBOARD */}
-          <NavLink
-            to="/dashboard/admin"
-            onClick={() => mobile && setSidebarOpen(false)}
-            className={({ isActive }) => getLinkClass(isActive)}
-          >
-            {({ isActive }) => (
-              <>
-                <div className={collapsed ? "" : (isActive ? "sidebar-icon-container-active" : "sidebar-icon-container-inactive")}>
-                  <LayoutDashboard size={18} />
+        <div className="h-full overflow-y-auto overflow-x-hidden custom-scrollbar py-6 pl-2 pr-0 flex flex-col justify-between">
+          <div>
+            {/* BRAND HEADER */}
+            <div className="flex items-center justify-between gap-3 px-4 mb-8">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-teal-400 to-[#007380] flex items-center justify-center shadow-[0_8px_16px_rgba(0,115,128,0.25)] border border-teal-300/20 flex-shrink-0">
+                  <span className="text-white font-black text-xl tracking-wider">C</span>
                 </div>
-                {!collapsed && <span className="text-sm font-semibold">Dashboard</span>}
-              </>
-            )}
-          </NavLink>
-
-          {/* USER MANAGEMENT */}
-          <div>
-            <button
-              onClick={() => setUserMgmtOpen(!userMgmtOpen)}
-              className={`w-full flex items-center gap-3 py-3 transition-all duration-200 cursor-pointer
-              ${collapsed ? "justify-center ml-3 w-12 h-12 rounded-xl" : "ml-3 pl-6 rounded-l-full text-left"}
-              ${userMgmtOpen ? "bg-white/10 text-white font-bold" : "text-white/80 hover:bg-white/6 hover:text-white"}`}
-            >
-              <div className={collapsed ? "" : (userMgmtOpen ? "sidebar-icon-container-active" : "sidebar-icon-container-inactive")}>
-                <Users size={18} />
+                {!collapsed && (
+                  <div className="flex flex-col">
+                    <span className="text-lg font-black tracking-widest bg-gradient-to-r from-white via-teal-100 to-white bg-clip-text text-transparent">
+                      CHHAPI
+                    </span>
+                    <span className="text-[9px] text-teal-300/80 font-bold tracking-widest uppercase">
+                      Donation Portal
+                    </span>
+                  </div>
+                )}
               </div>
-              {!collapsed && (
-                <>
-                  <span className="flex-1 text-sm font-semibold">User Management</span>
-                  <ChevronDown
-                    size={16}
-                    className={`transition mr-4 ${userMgmtOpen ? "rotate-180" : ""}`}
-                  />
-                </>
+
+              {/* Mobile Close Button */}
+              {mobile && sidebarOpen && (
+                <button
+                  onClick={() => setSidebarOpen(false)}
+                  className="p-1.5 hover:bg-white/10 rounded-lg text-white/80 hover:text-white transition cursor-pointer flex-shrink-0"
+                >
+                  <X size={20} />
+                </button>
               )}
-            </button>
+            </div>
 
-            {userMgmtOpen && !collapsed && (
-              <div className="ml-6 mt-2 relative flex flex-col gap-1.5 pl-6 border-l border-white/15">
-                {userMgmtMenu.map((sub) => (
-                  <NavLink
-                    key={sub.path}
-                    to={sub.path}
-                    onClick={() => mobile && setSidebarOpen(false)}
-                    className={({ isActive }) =>
-                      `group relative flex items-center justify-between
-                      px-4 py-2.5 rounded-lg text-sm transition-all duration-200
-                      ${isActive ? "bg-white/12 text-white font-bold" : "text-white/70 hover:bg-white/6 hover:text-white"}`
+            {/* PROFILE CARD */}
+            {!collapsed && (
+              <div className="flex items-center gap-4 mb-8 p-3.5 rounded-2xl bg-white/[0.04] backdrop-blur-md border border-white/10 hover:border-white/20 mr-4 ml-2 shadow-[0_4px_12px_rgba(0,0,0,0.1)] transition-all duration-300 hover:shadow-[0_8px_20px_rgba(0,0,0,0.15)] group">
+                <div className="relative">
+                  <img
+                    src={
+                      user?.profilePhoto?.url ||
+                      `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || "Admin")}&background=ffffff&color=${sidebarColor}`
                     }
-                  >
-                    {({ isActive }) => (
-                      <>
-                        <span
-                          className={`absolute left-[-29px] top-1/2 -translate-y-1/2
-                          h-2 w-2 rounded-full border transition-all duration-300
-                          ${isActive ? "bg-teal-200 border-teal-200 scale-125" : "border-white/40 bg-[var(--sidebar-teal)]"}`}
-                        />
-                        <span>{sub.name}</span>
-                        <span className="opacity-0 group-hover:opacity-100 text-white/50 transition-all duration-200">
-                          ›
-                        </span>
-                      </>
-                    )}
-                  </NavLink>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* ALL DONATIONS HISTORY */}
-          <div>
-            <button
-              onClick={() => setAllDonationOpen(!allDonationOpen)}
-              className={`w-full flex items-center gap-3 py-3 transition-all duration-200 cursor-pointer
-              ${collapsed ? "justify-center ml-3 w-12 h-12 rounded-xl" : "ml-3 pl-6 rounded-l-full text-left"}
-              ${allDonationOpen ? "bg-white/10 text-white font-bold" : "text-white/80 hover:bg-white/6 hover:text-white"}`}
-            >
-              <div className={collapsed ? "" : (allDonationOpen ? "sidebar-icon-container-active" : "sidebar-icon-container-inactive")}>
-                <Wallet size={18} />
-              </div>
-              {!collapsed && (
-                <>
-                  <span className="flex-1 text-sm font-semibold">All Donations</span>
-                  <ChevronDown
-                    size={16}
-                    className={`transition mr-4 ${allDonationOpen ? "rotate-180" : ""}`}
+                    alt="profile"
+                    className="w-12 h-12 rounded-full object-cover border-2 border-white/20 group-hover:border-teal-400/40 transition-colors duration-300"
                   />
-                </>
-              )}
-            </button>
-
-            {allDonationOpen && !collapsed && (
-              <div className="ml-6 mt-2 relative flex flex-col gap-1.5 pl-6 border-l border-white/15">
-                {allDonationMenu.map((sub) => (
-                  <NavLink
-                    key={sub.path}
-                    to={sub.path}
-                    onClick={() => mobile && setSidebarOpen(false)}
-                    className={({ isActive }) =>
-                      `group relative flex items-center justify-between
-                      px-4 py-2.5 rounded-lg text-sm transition-all duration-200
-                      ${isActive ? "bg-white/12 text-white font-bold" : "text-white/70 hover:bg-white/6 hover:text-white"}`
-                    }
-                  >
-                    {({ isActive }) => (
-                      <>
-                        <span
-                          className={`absolute left-[-29px] top-1/2 -translate-y-1/2
-                          h-2 w-2 rounded-full border transition-all duration-300
-                          ${isActive ? "bg-teal-200 border-teal-200 scale-125" : "border-white/40 bg-[var(--sidebar-teal)]"}`}
-                        />
-                        <span>{sub.name}</span>
-                        <span className="opacity-0 group-hover:opacity-100 text-white/50 transition-all duration-200">
-                          ›
-                        </span>
-                      </>
-                    )}
-                  </NavLink>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* FUND MANAGEMENT */}
-          <div>
-            <button
-              onClick={() => setFundOpen(!fundOpen)}
-              className={`w-full flex items-center gap-3 py-3 transition-all duration-200 cursor-pointer
-              ${collapsed ? "justify-center ml-3 w-12 h-12 rounded-xl" : "ml-3 pl-6 rounded-l-full text-left"}
-              ${fundOpen ? "bg-white/10 text-white font-bold" : "text-white/80 hover:bg-white/6 hover:text-white"}`}
-            >
-              <div className={collapsed ? "" : (fundOpen ? "sidebar-icon-container-active" : "sidebar-icon-container-inactive")}>
-                <Landmark size={18} />
-              </div>
-              {!collapsed && (
-                <>
-                  <span className="flex-1 text-sm font-semibold">Fund Management</span>
-                  <ChevronDown
-                    size={16}
-                    className={`transition mr-4 ${fundOpen ? "rotate-180" : ""}`}
-                  />
-                </>
-              )}
-            </button>
-
-            {fundOpen && !collapsed && (
-              <div className="ml-6 mt-2 relative flex flex-col gap-1.5 pl-6 border-l border-white/15">
-                {fundMenu.map((sub) => (
-                  <NavLink
-                    key={sub.path}
-                    to={sub.path}
-                    onClick={() => mobile && setSidebarOpen(false)}
-                    className={({ isActive }) =>
-                      `group relative flex items-center justify-between
-                      px-4 py-2.5 rounded-lg text-sm transition-all duration-200
-                      ${isActive ? "bg-white/12 text-white font-bold" : "text-white/70 hover:bg-white/6 hover:text-white"}`
-                    }
-                  >
-                    {({ isActive }) => (
-                      <>
-                        <span
-                          className={`absolute left-[-29px] top-1/2 -translate-y-1/2
-                          h-2 w-2 rounded-full border transition-all duration-300
-                          ${isActive ? "bg-teal-200 border-teal-200 scale-125" : "border-white/40 bg-[var(--sidebar-teal)]"}`}
-                        />
-                        <span>{sub.name}</span>
-                        <span className="opacity-0 group-hover:opacity-100 text-white/50 transition-all duration-200">
-                          ›
-                        </span>
-                      </>
-                    )}
-                  </NavLink>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* SETTINGS */}
-          <NavLink
-            to="/dashboard/admin/settings"
-            onClick={() => mobile && setSidebarOpen(false)}
-            className={({ isActive }) => getLinkClass(isActive)}
-          >
-            {({ isActive }) => (
-              <>
-                <div className={collapsed ? "" : (isActive ? "sidebar-icon-container-active" : "sidebar-icon-container-inactive")}>
-                  <Settings size={18} />
+                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-400 border-2 border-[#004e57] rounded-full animate-pulse" />
                 </div>
-                {!collapsed && <span className="text-sm font-semibold">Settings</span>}
-              </>
+                <div>
+                  <p className="text-sm font-extrabold text-white leading-tight transition-colors duration-300 group-hover:text-teal-200">
+                    {user?.name || "Admin"}
+                  </p>
+                  <span className="text-[10px] text-teal-300 font-bold tracking-wider uppercase block mt-0.5">
+                    ADMIN
+                  </span>
+                </div>
+              </div>
             )}
-          </NavLink>
-        </nav>
+
+            {/* MENU */}
+            <nav className="flex flex-col gap-1.5">
+              {/* DASHBOARD */}
+              <NavLink
+                to="/dashboard/admin"
+                onClick={() => mobile && setSidebarOpen(false)}
+                className={({ isActive }) => getLinkClass(isActive)}
+              >
+                {({ isActive }) => (
+                  <>
+                    <div className={collapsed ? "" : (isActive ? "sidebar-icon-container-active" : "sidebar-icon-container-inactive")}>
+                      <LayoutDashboard size={18} />
+                    </div>
+                    {!collapsed && <span className="text-sm font-semibold">Dashboard</span>}
+                  </>
+                )}
+              </NavLink>
+
+              {/* USER MANAGEMENT */}
+              <button
+                onClick={() => setUserMgmtOpen(!userMgmtOpen)}
+                className={`w-full flex items-center gap-3 py-3 transition-all duration-300 cursor-pointer
+                ${collapsed ? "justify-center w-12 h-12 rounded-xl mx-auto" : "ml-2 pl-6 pr-4 rounded-l-full text-left"}
+                ${userMgmtOpen && !collapsed
+                  ? "bg-white/[0.06] text-white font-bold"
+                  : "text-white/80 hover:bg-white/6 hover:text-white"
+                }`}
+              >
+                <div className={collapsed ? "" : (userMgmtOpen ? "sidebar-icon-container-active" : "sidebar-icon-container-inactive")}>
+                  <Users size={18} />
+                </div>
+                {!collapsed && (
+                  <>
+                    <span className="flex-1 text-sm font-semibold">User Management</span>
+                    <ChevronDown
+                      size={16}
+                      className={`transition duration-300 text-white/60 ${userMgmtOpen ? "rotate-180 text-teal-300" : ""}`}
+                    />
+                  </>
+                )}
+              </button>
+
+              {userMgmtOpen && !collapsed && userMgmtMenu.map((sub) => (
+                <NavLink
+                  key={sub.path}
+                  to={sub.path}
+                  onClick={() => mobile && setSidebarOpen(false)}
+                  className={({ isActive }) => getLinkClass(isActive)}
+                >
+                  {({ isActive }) => (
+                    <>
+                      <div className={`
+                        ${isActive ? "sidebar-icon-container-active" : "sidebar-icon-container-inactive"}
+                        ml-4 flex-shrink-0
+                      `}>
+                        <sub.icon size={18} />
+                      </div>
+                      <span className="text-sm font-semibold pl-2 truncate">{sub.name}</span>
+                    </>
+                  )}
+                </NavLink>
+              ))}
+
+              {/* ALL DONATIONS HISTORY */}
+              <button
+                onClick={() => setAllDonationOpen(!allDonationOpen)}
+                className={`w-full flex items-center gap-3 py-3 transition-all duration-300 cursor-pointer
+                ${collapsed ? "justify-center w-12 h-12 rounded-xl mx-auto" : "ml-2 pl-6 pr-4 rounded-l-full text-left"}
+                ${allDonationOpen && !collapsed
+                  ? "bg-white/[0.06] text-white font-bold"
+                  : "text-white/80 hover:bg-white/6 hover:text-white"
+                }`}
+              >
+                <div className={collapsed ? "" : (allDonationOpen ? "sidebar-icon-container-active" : "sidebar-icon-container-inactive")}>
+                  <Wallet size={18} />
+                </div>
+                {!collapsed && (
+                  <>
+                    <span className="flex-1 text-sm font-semibold">All Donations</span>
+                    <ChevronDown
+                      size={16}
+                      className={`transition duration-300 text-white/60 ${allDonationOpen ? "rotate-180 text-teal-300" : ""}`}
+                    />
+                  </>
+                )}
+              </button>
+
+              {allDonationOpen && !collapsed && allDonationMenu.map((sub) => (
+                <NavLink
+                  key={sub.path}
+                  to={sub.path}
+                  onClick={() => mobile && setSidebarOpen(false)}
+                  className={({ isActive }) => getLinkClass(isActive)}
+                >
+                  {({ isActive }) => (
+                    <>
+                      <div className={`
+                        ${isActive ? "sidebar-icon-container-active" : "sidebar-icon-container-inactive"}
+                        ml-4 flex-shrink-0
+                      `}>
+                        <sub.icon size={18} />
+                      </div>
+                      <span className="text-sm font-semibold pl-2 truncate">{sub.name}</span>
+                    </>
+                  )}
+                </NavLink>
+              ))}
+
+              {/* FUND MANAGEMENT */}
+              <button
+                onClick={() => setFundOpen(!fundOpen)}
+                className={`w-full flex items-center gap-3 py-3 transition-all duration-300 cursor-pointer
+                ${collapsed ? "justify-center w-12 h-12 rounded-xl mx-auto" : "ml-2 pl-6 pr-4 rounded-l-full text-left"}
+                ${fundOpen && !collapsed
+                  ? "bg-white/[0.06] text-white font-bold"
+                  : "text-white/80 hover:bg-white/6 hover:text-white"
+                }`}
+              >
+                <div className={collapsed ? "" : (fundOpen ? "sidebar-icon-container-active" : "sidebar-icon-container-inactive")}>
+                  <Landmark size={18} />
+                </div>
+                {!collapsed && (
+                  <>
+                    <span className="flex-1 text-sm font-semibold">Fund Management</span>
+                    <ChevronDown
+                      size={16}
+                      className={`transition duration-300 text-white/60 ${fundOpen ? "rotate-180 text-teal-300" : ""}`}
+                    />
+                  </>
+                )}
+              </button>
+
+              {fundOpen && !collapsed && fundMenu.map((sub) => (
+                <NavLink
+                  key={sub.path}
+                  to={sub.path}
+                  onClick={() => mobile && setSidebarOpen(false)}
+                  className={({ isActive }) => getLinkClass(isActive)}
+                >
+                  {({ isActive }) => (
+                    <>
+                      <div className={`
+                        ${isActive ? "sidebar-icon-container-active" : "sidebar-icon-container-inactive"}
+                        ml-4 flex-shrink-0
+                      `}>
+                        <sub.icon size={18} />
+                      </div>
+                      <span className="text-sm font-semibold pl-2 truncate">{sub.name}</span>
+                    </>
+                  )}
+                </NavLink>
+              ))}
+
+              {/* APPEARANCE */}
+              <NavLink
+                to="/dashboard/admin/appearance"
+                onClick={() => mobile && setSidebarOpen(false)}
+                className={({ isActive }) => getLinkClass(isActive)}
+              >
+                {({ isActive }) => (
+                  <>
+                    <div className={collapsed ? "" : (isActive ? "sidebar-icon-container-active" : "sidebar-icon-container-inactive")}>
+                      <Sun size={18} />
+                    </div>
+                    {!collapsed && <span className="text-sm font-semibold">Appearance</span>}
+                  </>
+                )}
+              </NavLink>
+
+              {/* SETTINGS */}
+              <NavLink
+                to="/dashboard/admin/settings"
+                onClick={() => mobile && setSidebarOpen(false)}
+                className={({ isActive }) => getLinkClass(isActive)}
+              >
+                {({ isActive }) => (
+                  <>
+                    <div className={collapsed ? "" : (isActive ? "sidebar-icon-container-active" : "sidebar-icon-container-inactive")}>
+                      <Settings size={18} />
+                    </div>
+                    {!collapsed && <span className="text-sm font-semibold">Settings</span>}
+                  </>
+                )}
+              </NavLink>
+            </nav>
+          </div>
         </div>
 
         {/* Edge Toggle Button */}
         {!mobile && setCollapsed && (
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="absolute right-[-16px] top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white text-[#007380] hover:text-[#005f6b] shadow-[0_3px_10px_rgba(0,0,0,0.15)] flex items-center justify-center cursor-pointer transition-all duration-300 z-50 border border-slate-100 hover:scale-105"
+            className="absolute right-[-16px] top-8 w-8 h-8 rounded-full bg-white text-[#007380] hover:text-[#005f6b] shadow-[0_4px_12px_rgba(0,115,128,0.2)] hover:shadow-[0_6px_20px_rgba(0,115,128,0.3)] flex items-center justify-center cursor-pointer transition-all duration-300 z-50 border border-teal-700/10 hover:scale-105 active:scale-95"
           >
             {collapsed ? (
               <ChevronRight size={18} />

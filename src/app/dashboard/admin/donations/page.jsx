@@ -138,9 +138,9 @@ const AllDonations = () => {
     <div className="min-h-screen w-full bg-[#ecf0f3] p-1 sm:p-8 space-y-8 flex flex-col justify-start font-sans text-slate-800">
 
       {/* ================= HEADER ================= */}
-      <div className="flex items-center gap-3 px-2">
+      <div className="flex flex-col items-center text-center sm:flex-row sm:text-left sm:items-center gap-3 px-2">
         <div 
-          className="p-3.5 rounded-full flex items-center justify-center transition-all duration-300"
+          className="p-3.5 rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0"
           style={headerIconShadow}
         >
           <FileText className="text-cyan-600" size={24} />
@@ -301,14 +301,14 @@ const AllDonations = () => {
         style={cardShadow}
       >
         <table className="w-full text-sm text-slate-800 border-collapse">
-          <thead>
-            <tr className="text-slate-500 font-bold uppercase tracking-wider text-xs border-b border-slate-300/40">
-              <th className="pb-4 px-4 text-left">Donor</th>
-              <th className="pb-4 px-4 text-right">Amount</th>
-              <th className="pb-4 px-4 text-left">Collected By</th>
-              <th className="pb-4 px-4 text-left">Approved By</th>
-              <th className="pb-4 px-4 text-center">Status</th>
-              <th className="pb-4 px-4 text-left">Month</th>
+          <thead className="bg-gradient-to-r from-[var(--sidebar-from)] via-[var(--sidebar-via)] to-[var(--sidebar-to)] text-white">
+            <tr className="font-bold uppercase tracking-wider text-xs border-b border-teal-950/20">
+              <th className="py-4 px-4 text-left">Donor</th>
+              <th className="py-4 px-4 text-right">Amount</th>
+              <th className="py-4 px-4 text-left">Collected By</th>
+              <th className="py-4 px-4 text-left">Approved By</th>
+              <th className="py-4 px-4 text-center">Status</th>
+              <th className="py-4 px-4 text-left">Month</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-350/20">

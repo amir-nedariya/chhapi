@@ -154,15 +154,15 @@ const MyDonations = () => {
     <div className="p-1 md:p-6 max-w-7xl mx-auto space-y-6 text-white">
 
       {/* ===== HEADER ===== */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="flex items-center gap-2 text-2xl font-bold text-white">
-            <span className="p-2 rounded-xl bg-cyan-500/10 border border-cyan-400/30">
+      <div className="flex flex-col items-center text-center sm:flex-row sm:text-left sm:justify-between sm:items-center gap-4">
+        <div className="flex flex-col items-center sm:items-start">
+          <h2 className="flex flex-col sm:flex-row items-center gap-2 text-2xl font-bold text-white">
+            <span className="p-2 rounded-xl bg-cyan-500/10 border border-cyan-400/30 flex items-center justify-center">
               <IndianRupee size={20} className="text-cyan-400" onClick={handleDownloadPDF}/>
             </span>
             My Donations
           </h2>
-          <p className="text-sm text-white/60">
+          <p className="text-sm text-white/60 mt-1">
             Track donations with month & year filters
           </p>
         </div>
@@ -244,7 +244,7 @@ const MyDonations = () => {
       {/* ===== TABLE ===== */}
       <div className="overflow-x-auto rounded-2xl border border-white/20 bg-white/5 backdrop-blur-xl">
         <table className="min-w-full text-sm">
-          <thead className="bg-white/10 text-white/60">
+          <thead className="bg-gradient-to-r from-[var(--sidebar-from)] via-[var(--sidebar-via)] to-[var(--sidebar-to)] text-white">
             <tr>
               <th className="p-4 text-left">Donor</th>
               <th className="p-4 text-right">Amount</th>
