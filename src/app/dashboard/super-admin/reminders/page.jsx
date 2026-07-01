@@ -162,12 +162,12 @@ const RemindersPage = () => {
 
         <div className="overflow-x-auto rounded-xl border border-slate-100">
           <table className="w-full text-sm text-left text-slate-700">
-            <thead className="bg-slate-50 border-b border-slate-100 text-slate-500 font-semibold text-xs">
+            <thead className="bg-gradient-to-r from-[var(--sidebar-from)] via-[var(--sidebar-via)] to-[var(--sidebar-to)] text-white border-b border-teal-950/20 text-xs font-semibold">
               <tr>
-                <th className="py-3 px-4">Donor Name</th>
-                <th className="py-3 px-4">Mobile Number</th>
-                <th className="py-3 px-4">Donation Status</th>
-                <th className="py-3 px-4 text-center">Action</th>
+                <th className="py-3 px-4 font-semibold">Donor Name</th>
+                <th className="py-3 px-4 font-semibold">Mobile Number</th>
+                <th className="py-3 px-4 font-semibold">Donation Status</th>
+                <th className="py-3 px-4 text-center font-semibold">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">

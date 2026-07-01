@@ -105,37 +105,41 @@ const AllDonations = () => {
     };
   }, [donations]);
 
-  // Neumorphic Shadows styles
+  // Clean Modern Styles
   const cardShadow = {
-    boxShadow: "9px 9px 16px #b8c4d9, -9px -9px 16px #ffffff",
-    backgroundColor: "#ecf0f3",
+    boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05)",
+    backgroundColor: "#ffffff",
+    border: "1px solid #e2e8f0",
   };
 
   const inputShadow = {
-    boxShadow: "inset 4px 4px 8px #d1d9e6, inset -4px -4px 8px #ffffff",
-    backgroundColor: "#ecf0f3",
-    border: "none",
+    backgroundColor: "#ffffff",
+    border: "1px solid #cbd5e1",
   };
 
   const headerIconShadow = {
-    boxShadow: "4px 4px 8px #b8c4d9, -4px -4px 8px #ffffff",
-    backgroundColor: "#ecf0f3",
+    boxShadow: "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
+    backgroundColor: "#ffffff",
+    border: "1px solid #e2e8f0",
   };
 
-  const currentMonthButtonShadow = currentMonthPressed
-    ? { boxShadow: "inset 3px 3px 6px #b8c4d9, inset -3px -3px 6px #ffffff", backgroundColor: "#ecf0f3" }
-    : { boxShadow: "5px 5px 10px #b8c4d9, -5px -5px 10px #ffffff", backgroundColor: "#ecf0f3" };
+  const currentMonthButtonShadow = {
+    backgroundColor: "#ffffff",
+    border: "1px solid #e2e8f0",
+  };
 
-  const prevButtonShadow = prevPressed
-    ? { boxShadow: "inset 3px 3px 6px #b8c4d9, inset -3px -3px 6px #ffffff", backgroundColor: "#ecf0f3" }
-    : { boxShadow: "4px 4px 8px #b8c4d9, -4px -4px 8px #ffffff", backgroundColor: "#ecf0f3" };
+  const prevButtonShadow = {
+    backgroundColor: "#ffffff",
+    border: "1px solid #e2e8f0",
+  };
 
-  const nextButtonShadow = nextPressed
-    ? { boxShadow: "inset 3px 3px 6px #b8c4d9, inset -3px -3px 6px #ffffff", backgroundColor: "#ecf0f3" }
-    : { boxShadow: "4px 4px 8px #b8c4d9, -4px -4px 8px #ffffff", backgroundColor: "#ecf0f3" };
+  const nextButtonShadow = {
+    backgroundColor: "#ffffff",
+    border: "1px solid #e2e8f0",
+  };
 
   return (
-    <div className="min-h-screen w-full bg-[#ecf0f3] p-1 sm:p-8 space-y-8 flex flex-col justify-start font-sans text-slate-800">
+    <div className="min-h-screen w-full bg-white p-1 sm:p-8 space-y-8 flex flex-col justify-start font-sans text-slate-800">
 
       {/* ================= HEADER ================= */}
       <div className="flex flex-col items-center text-center sm:flex-row sm:text-left sm:items-center gap-3 px-2">

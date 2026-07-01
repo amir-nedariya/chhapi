@@ -114,30 +114,33 @@ const MonthlyDonationTable = () => {
     }, 0);
   };
 
-  // Neumorphic Shadows styles
+  // Clean Modern Styles
   const cardShadow = {
-    boxShadow: "9px 9px 16px #b8c4d9, -9px -9px 16px #ffffff",
-    backgroundColor: "#ecf0f3",
+    boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05)",
+    backgroundColor: "#ffffff",
+    border: "1px solid #e2e8f0",
   };
 
   const inputShadow = {
-    boxShadow: "inset 4px 4px 8px #d1d9e6, inset -4px -4px 8px #ffffff",
-    backgroundColor: "#ecf0f3",
-    border: "none",
+    backgroundColor: "#ffffff",
+    border: "1px solid #cbd5e1",
   };
 
   const headerIconShadow = {
-    boxShadow: "4px 4px 8px #b8c4d9, -4px -4px 8px #ffffff",
-    backgroundColor: "#ecf0f3",
+    boxShadow: "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
+    backgroundColor: "#ffffff",
+    border: "1px solid #e2e8f0",
   };
 
-  const prevButtonShadow = prevPressed
-    ? { boxShadow: "inset 3px 3px 6px #b8c4d9, inset -3px -3px 6px #ffffff", backgroundColor: "#ecf0f3" }
-    : { boxShadow: "4px 4px 8px #b8c4d9, -4px -4px 8px #ffffff", backgroundColor: "#ecf0f3" };
+  const prevButtonShadow = {
+    backgroundColor: "#ffffff",
+    border: "1px solid #e2e8f0",
+  };
 
-  const nextButtonShadow = nextPressed
-    ? { boxShadow: "inset 3px 3px 6px #b8c4d9, inset -3px -3px 6px #ffffff", backgroundColor: "#ecf0f3" }
-    : { boxShadow: "4px 4px 8px #b8c4d9, -4px -4px 8px #ffffff", backgroundColor: "#ecf0f3" };
+  const nextButtonShadow = {
+    backgroundColor: "#ffffff",
+    border: "1px solid #e2e8f0",
+  };
 
   /* ================= LOADER ================= */
   if (loading && rows.length === 0) {
@@ -145,7 +148,7 @@ const MonthlyDonationTable = () => {
   }
 
   return (
-    <div className="min-h-screen w-full bg-[#ecf0f3] p-1 sm:p-8 space-y-8 flex flex-col justify-start font-sans text-slate-800">
+    <div className="min-h-screen w-full bg-white p-1 sm:p-8 space-y-8 flex flex-col justify-start font-sans text-slate-800">
 
       {/* ================= HEADER ================= */}
       <div className="flex flex-col items-center text-center sm:flex-row sm:text-left sm:items-center gap-3 px-2">
@@ -244,26 +247,23 @@ const MonthlyDonationTable = () => {
       </div>
 
       {/* ================= TABLE ================= */}
-      <div 
-        className="rounded-3xl p-6 transition-all duration-300"
-        style={cardShadow}
-      >
-        <div className="overflow-x-auto custom-scrollbar pb-2">
+      <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs">
+        <div className="overflow-x-auto custom-scrollbar pb-2 rounded-xl border border-slate-100">
           <table className="min-w-full text-left text-slate-800 border-collapse">
-            <thead className="bg-gradient-to-r from-[var(--sidebar-from)] via-[var(--sidebar-via)] to-[var(--sidebar-to)] text-white">
-              <tr className="font-bold uppercase tracking-wider text-xs border-b border-teal-950/20">
-                <th className="py-4 px-4 bg-[var(--sidebar-from)] text-white z-10 w-16 text-center">#</th>
-                <th className="py-4 px-4 sticky left-0 bg-[var(--sidebar-via)] text-white z-10">Donor Details</th>
+            <thead className="bg-gradient-to-r from-[var(--sidebar-from)] via-[var(--sidebar-via)] to-[var(--sidebar-to)] text-white border-b border-teal-950/20 text-xs font-semibold">
+              <tr>
+                <th className="py-3 px-4 bg-[var(--sidebar-from)] text-white z-10 w-16 text-center font-semibold">#</th>
+                <th className="py-3 px-4 sticky left-0 bg-[var(--sidebar-via)] text-white z-10 font-semibold">Donor Details</th>
                 {visibleMonths.map((m) => (
-                  <th key={m.key} className="py-4 px-3 text-center">
+                  <th key={m.key} className="py-3 px-3 text-center font-semibold">
                     {m.label}
                   </th>
                 ))}
-                <th className="py-4 px-4 text-right bg-[var(--sidebar-to)] text-white">Total</th>
+                <th className="py-3 px-4 text-right bg-[var(--sidebar-to)] text-white font-semibold">Total</th>
               </tr>
             </thead>
 
-            <tbody className="divide-y divide-slate-350/20">
+            <tbody className="divide-y divide-slate-100">
               {rows.length === 0 ? (
                 <tr>
                   <td
@@ -280,15 +280,15 @@ const MonthlyDonationTable = () => {
                   return (
                     <tr
                       key={u._id}
-                      className="hover:bg-[#e4ebf0] transition-colors group"
+                      className="hover:bg-slate-50 transition-colors group"
                     >
                       {/* INDEX */}
-                      <td className="py-4 px-4 bg-[#ecf0f3] group-hover:bg-[#e4ebf0] font-bold text-slate-500 text-sm text-center">
+                      <td className="py-3 px-4 bg-white group-hover:bg-slate-50 font-bold text-slate-500 text-sm text-center">
                         {i + 1 + (page - 1) * 10}
                       </td>
 
                       {/* USER */}
-                      <td className="py-4 px-4 sticky left-0 bg-[#ecf0f3] group-hover:bg-[#e4ebf0] z-10">
+                      <td className="py-3 px-4 sticky left-0 bg-white group-hover:bg-slate-50 z-10">
                         <div className="flex items-center gap-3">
                           <img
                             src={getAvatarUrl(u)}
@@ -306,7 +306,7 @@ const MonthlyDonationTable = () => {
                       {visibleMonths.map((m) => (
                         <td
                           key={m.key}
-                          className={`py-4 px-3 text-center text-[13px] ${
+                          className={`py-3 px-3 text-center text-[13px] ${
                             u[m.key] > 0
                               ? "text-emerald-500 font-bold"
                               : "text-slate-500 font-medium"
@@ -317,7 +317,7 @@ const MonthlyDonationTable = () => {
                       ))}
 
                       {/* TOTAL */}
-                      <td className="py-4 px-4 font-extrabold text-right text-base text-cyan-600 bg-[#ecf0f3] group-hover:bg-[#e4ebf0]">
+                      <td className="py-3 px-4 font-extrabold text-right text-base text-cyan-600 bg-white group-hover:bg-slate-50">
                         ₹{total.toLocaleString("en-IN")}
                       </td>
                     </tr>

@@ -40,21 +40,21 @@ const FundHistory = () => {
     startIndex + ITEMS_PER_PAGE
   );
 
-  // Neumorphic Styling Mappings
+  // Clean Modern Styles
   const cardShadow = {
-    boxShadow: "9px 9px 16px #b8c4d9, -9px -9px 16px #ffffff",
-    backgroundColor: "#ecf0f3",
+    boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05)",
+    backgroundColor: "#ffffff",
+    border: "1px solid #e2e8f0",
   };
 
   return (
-    <div className="min-h-screen bg-[#ecf0f3] p-2 sm:p-8 space-y-6 text-slate-800 font-sans">
+    <div className="min-h-screen bg-white p-2 sm:p-8 space-y-6 text-slate-800 font-sans">
       <div className="w-full max-w-6xl mx-auto space-y-8">
         
         {/* HEADER */}
         <div className="flex flex-col items-center text-center sm:flex-row sm:text-left sm:items-center gap-3 px-2">
           <div 
-            className="p-3.5 rounded-full flex items-center justify-center flex-shrink-0"
-            style={{ boxShadow: "4px 4px 8px #b8c4d9, -4px -4px 8px #ffffff", backgroundColor: "#ecf0f3" }}
+            className="p-3.5 rounded-full flex items-center justify-center flex-shrink-0 border border-slate-200 shadow-sm bg-white"
           >
             <Landmark className="text-cyan-600" size={24} />
           </div>
@@ -110,13 +110,7 @@ const FundHistory = () => {
                       <td className="px-5 py-4 text-slate-700 font-bold">
                         <span>{item.usedBy?.name}</span>
                         <span 
-                          className="text-[9px] px-2 py-0.5 rounded-full font-black ml-2 uppercase border"
-                          style={{
-                            boxShadow: "inset 1px 1px 2px #d1d9e6, inset -1px -1px 2px #ffffff",
-                            backgroundColor: "#ecf0f3",
-                            borderColor: "#e1e3e6",
-                            color: "#5f6368"
-                          }}
+                          className="text-[9px] px-2 py-0.5 rounded-full font-black ml-2 uppercase border border-slate-200 bg-slate-50 text-slate-600"
                         >
                           {item.usedBy?.role}
                         </span>
@@ -173,8 +167,8 @@ const PaginationButton = ({ icon, disabled, onClick }) => {
       className="p-3 rounded-2xl text-slate-700 transition duration-300 disabled:opacity-40"
       style={
         pressed
-          ? { boxShadow: "inset 2px 2px 4px #b8c4d9, inset -2px -2px 4px #ffffff", backgroundColor: "#ecf0f3" }
-          : { boxShadow: "4px 4px 8px #b8c4d9, -4px -4px 8px #ffffff", backgroundColor: "#ecf0f3" }
+          ? { backgroundColor: "#f1f5f9", border: "1px solid #cbd5e1" }
+          : { backgroundColor: "#ffffff", border: "1px solid #cbd5e1" }
       }
     >
       {icon}

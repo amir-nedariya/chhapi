@@ -26,7 +26,7 @@ const UserLayout = ({ children }) => {
   }, []);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[var(--page-bg)] relative">
+    <div className="flex h-screen overflow-hidden bg-white relative">
       {/* Sidebar */}
       <UserSidebar
         collapsed={isMobile ? !sidebarOpen : collapsed}
@@ -37,7 +37,7 @@ const UserLayout = ({ children }) => {
       />
 
       {/* Main Wrapper */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative bg-white">
         {/* Mobile Navbar Header */}
         {isMobile && (
           <header className="h-16 bg-white border-b border-slate-200/80 flex items-center justify-between px-4 flex-shrink-0 z-30 shadow-xs relative">
@@ -82,7 +82,7 @@ const UserLayout = ({ children }) => {
 
         {/* Content */}
         <main
-          className={`flex-1 p-4 sm:p-6 overflow-y-auto transition-all duration-300 ${
+          className={`flex-1 p-4 sm:p-6 overflow-y-auto bg-white transition-all duration-300 ${
             sidebarOpen && isMobile ? "blur-sm pointer-events-none" : ""
           }`}
         >
