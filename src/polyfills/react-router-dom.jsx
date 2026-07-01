@@ -29,11 +29,13 @@ export const Link = forwardRef(({ to, children, ...props }, ref) => {
 });
 Link.displayName = 'Link';
 
-export const NavLink = forwardRef(({ to, className, children, onClick, ...props }, ref) => {
+export const NavLink = forwardRef(({ to, className, children, onClick, end, ...props }, ref) => {
   const pathname = usePathname() || "";
   
   // Basic active matching
-  const isActive = pathname === to || (to !== "/" && pathname.startsWith(to));
+  const isActive = end 
+    ? pathname === to 
+    : (pathname === to || (to !== "/" && pathname.startsWith(to)));
   
   const computedClassName = typeof className === 'function' ? className({ isActive }) : className;
   const renderedChildren = typeof children === 'function' ? children({ isActive }) : children;

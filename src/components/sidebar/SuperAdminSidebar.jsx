@@ -98,12 +98,13 @@ const SuperAdminSidebar = ({ collapsed, setCollapsed, mobile, sidebarOpen, setSi
     <>
       <aside
         className={`
-          ${collapsed ? "w-20" : "w-72"}
-          h-screen text-white relative flex-shrink-0
+          h-screen text-white flex-shrink-0
           bg-gradient-to-b from-[var(--sidebar-from)] via-[var(--sidebar-via)] to-[var(--sidebar-to)] border-none outline-none
           transition-all duration-300 shadow-[6px_0_30px_rgba(0,0,0,0.2)]
-          ${mobile ? "fixed top-0 left-0 z-40 h-full" : "relative"}
-          ${!sidebarOpen && mobile ? "-translate-x-full" : "translate-x-0"}
+          ${mobile 
+            ? `fixed top-0 left-0 z-40 h-full w-72 ${!sidebarOpen ? "-translate-x-full pointer-events-none w-0" : "translate-x-0"}` 
+            : `relative ${collapsed ? "w-20" : "w-72"}`
+          }
         `}
       >
         <div className="h-full overflow-y-auto overflow-x-hidden custom-scrollbar py-6 pl-2 pr-0 flex flex-col justify-between">
@@ -167,6 +168,7 @@ const SuperAdminSidebar = ({ collapsed, setCollapsed, mobile, sidebarOpen, setSi
               {/* DASHBOARD */}
               <NavLink
                 to="/dashboard/super-admin"
+                end
                 onClick={() => mobile && setSidebarOpen(false)}
                 className={({ isActive }) => getLinkClass(isActive)}
               >

@@ -88,15 +88,14 @@ const FundSummary = () => {
 
   /* LOADING */
   if (loading) {
-    return <div className="min-h-screen bg-[#ecf0f3] p-6 text-slate-500 font-bold">Loading fund summary...</div>;
+    return <div className="min-h-screen bg-white p-6 text-slate-500 font-bold">Loading fund summary...</div>;
   }
 
   if (!funds.length) {
     return (
-      <div className="min-h-screen bg-[#ecf0f3] p-6 flex items-center justify-center">
+      <div className="min-h-screen bg-white p-6 flex items-center justify-center">
         <div 
-          className="p-8 text-center text-rose-600 font-extrabold rounded-3xl w-full max-w-md"
-          style={{ boxShadow: "9px 9px 16px #b8c4d9, -9px -9px 16px #ffffff", backgroundColor: "#ecf0f3" }}
+          className="p-8 text-center text-rose-600 font-extrabold rounded-3xl w-full max-w-md border border-slate-200 shadow-md bg-white"
         >
           No fund data available
         </div>
@@ -104,19 +103,20 @@ const FundSummary = () => {
     );
   }
 
-  // Neumorphic Styling Mappings
+  // Clean Modern Styles
   const cardShadow = {
-    boxShadow: "9px 9px 16px #b8c4d9, -9px -9px 16px #ffffff",
-    backgroundColor: "#ecf0f3",
+    boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05)",
+    backgroundColor: "#ffffff",
+    border: "1px solid #e2e8f0",
   };
 
   const innerSunken = {
-    boxShadow: "inset 4px 4px 8px #d1d9e6, inset -4px -4px 8px #ffffff",
-    backgroundColor: "#ecf0f3",
+    backgroundColor: "#ffffff",
+    border: "1px solid #cbd5e1",
   };
 
   return (
-    <div className="min-h-screen bg-[#ecf0f3] p-2 sm:p-8 space-y-8 text-slate-800 font-sans">
+    <div className="min-h-screen bg-white p-2 sm:p-8 space-y-8 text-slate-800 font-sans">
       <div className="max-w-6xl mx-auto space-y-8">
         
         {/* HEADER + FILTER */}
@@ -131,8 +131,7 @@ const FundSummary = () => {
 
           <div className="flex flex-col sm:flex-row gap-4 items-center w-full sm:w-auto justify-center">
             <div 
-              className="p-2.5 rounded-full flex items-center justify-center"
-              style={{ boxShadow: "4px 4px 8px #b8c4d9, -4px -4px 8px #ffffff", backgroundColor: "#ecf0f3" }}
+              className="p-2.5 rounded-full flex items-center justify-center border border-slate-200 shadow-sm bg-white"
             >
               <Filter size={18} className="text-slate-500" />
             </div>
@@ -183,11 +182,7 @@ const FundSummary = () => {
             {paginatedFunds.map((fund) => (
               <div
                 key={fund._id}
-                className="flex justify-between items-center p-6 rounded-2xl transition duration-300"
-                style={{
-                  boxShadow: "5px 5px 10px #b8c4d9, -5px -5px 10px #ffffff",
-                  backgroundColor: "#ecf0f3"
-                }}
+                className="flex justify-between items-center p-6 rounded-2xl transition duration-300 border border-slate-255/15 shadow-sm bg-white"
               >
                 <div>
                   <p className="text-slate-800 font-extrabold text-base">{fund.title}</p>
@@ -262,11 +257,7 @@ const FilterSelect = ({ value, onChange, children }) => (
     onChange={(e) => onChange(e.target.value)}
     className="
       rounded-2xl px-4 py-3 text-sm text-slate-700 font-bold outline-none
-      cursor-pointer transition duration-300 border-none w-36 sm:w-40"
-    style={{
-      boxShadow: "inset 3px 3px 6px #d1d9e6, inset -3px -3px 6px #ffffff",
-      backgroundColor: "#ecf0f3"
-    }}
+      cursor-pointer transition duration-300 border border-slate-300 bg-white w-36 sm:w-40"
   >
     {children}
   </select>
@@ -275,18 +266,10 @@ const FilterSelect = ({ value, onChange, children }) => (
 /* NEUMORPHIC SUMMARY CARD */
 const SummaryCard = ({ icon, label, value, color }) => (
   <div 
-    className="rounded-3xl p-6 transition duration-300 flex items-center gap-5"
-    style={{
-      boxShadow: "9px 9px 16px #b8c4d9, -9px -9px 16px #ffffff",
-      backgroundColor: "#ecf0f3",
-    }}
+    className="rounded-3xl p-6 transition duration-300 flex items-center gap-5 border border-slate-200 shadow-sm bg-white"
   >
     <div 
-      className="p-4 rounded-full"
-      style={{
-        boxShadow: "inset 4px 4px 8px #d1d9e6, inset -4px -4px 8px #ffffff",
-        backgroundColor: "#ecf0f3"
-      }}
+      className="p-4 rounded-full border border-slate-100 bg-slate-50"
     >
       {icon}
     </div>
@@ -314,8 +297,8 @@ const PaginationButton = ({ icon, disabled, onClick }) => {
       className="p-3 rounded-2xl text-slate-700 transition duration-300 disabled:opacity-40"
       style={
         pressed
-          ? { boxShadow: "inset 2px 2px 4px #b8c4d9, inset -2px -2px 4px #ffffff", backgroundColor: "#ecf0f3" }
-          : { boxShadow: "4px 4px 8px #b8c4d9, -4px -4px 8px #ffffff", backgroundColor: "#ecf0f3" }
+          ? { backgroundColor: "#f1f5f9", border: "1px solid #cbd5e1" }
+          : { backgroundColor: "#ffffff", border: "1px solid #cbd5e1" }
       }
     >
       {icon}

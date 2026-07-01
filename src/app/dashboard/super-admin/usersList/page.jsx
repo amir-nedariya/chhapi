@@ -13,6 +13,7 @@ import {
   softDeleteUserAPI,
   hardDeleteUserAPI,
 } from "../../../../api/user.api";
+import { createDonationAPI } from "../../../../api/donation.api";
 import { toast } from "react-hot-toast";
 import {
   Upload,
@@ -31,6 +32,7 @@ import {
   Activity,
   CreditCard,
   BarChart3,
+  PlusCircle,
 } from "lucide-react";
 
 import { useSidebarColor } from "../../../../hooks/useSidebarColor";
@@ -75,6 +77,18 @@ const UsersList = () => {
   const [deleteType, setDeleteType] = useState(null);
   const [deleteConfirmInput, setDeleteConfirmInput] = useState("");
   const [isPhotoDeleteOpen, setIsPhotoDeleteOpen] = useState(false);
+
+  // Donation creation states
+  const [showDonationModal, setShowDonationModal] = useState(false);
+  const [donationAmount, setDonationAmount] = useState("");
+  const [donationMonth, setDonationMonth] = useState(new Date().getMonth() + 1);
+  const [donationYear, setDonationYear] = useState(new Date().getFullYear());
+  const [donationLoading, setDonationLoading] = useState(false);
+
+  const monthsList = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
 
   const resetCreateForm = () => {
     setNewName("");
@@ -198,6 +212,31 @@ const UsersList = () => {
     }
   };
 
+  const handleCreateDonation = async () => {
+    if (!donationAmount || Number(donationAmount) <= 0) {
+      return toast.error("Please enter a valid amount");
+    }
+
+    try {
+      setDonationLoading(true);
+      await createDonationAPI({
+        donorId: viewUser._id,
+        amount: Number(donationAmount),
+        month: Number(donationMonth),
+        year: Number(donationYear),
+      });
+      toast.success("Donation recorded successfully!");
+      setDonationAmount("");
+      setShowDonationModal(false);
+      // Refresh user details to update checkmarks
+      openUserModal(viewUser._id);
+    } catch {
+      toast.error("Failed to add donation");
+    } finally {
+      setDonationLoading(false);
+    }
+  };
+
   const handleOpenDeleteModal = (type) => {
     setDeleteType(type);
     setDeleteConfirmInput("");
@@ -294,7 +333,18 @@ const UsersList = () => {
 
               {/* Profile Actions */}
               <div className="flex flex-col gap-3 w-full">
-                <label className="cursor-pointer text-center text-sm font-medium text-cyan-600 bg-cyan-50/50 hover:bg-cyan-50 border border-cyan-100/70 px-4 py-2.5 rounded-xl transition flex items-center justify-center gap-2">
+                <button
+                  onClick={() => {
+                    setDonationMonth(new Date().getMonth() + 1);
+                    setDonationYear(new Date().getFullYear());
+                    setShowDonationModal(true);
+                  }}
+                  className="text-sm font-medium text-emerald-600 bg-emerald-50/50 hover:bg-emerald-50 border border-emerald-100/70 px-4 py-2.5 rounded-xl transition flex items-center justify-center gap-2 active:scale-95 cursor-pointer"
+                >
+                  <PlusCircle size={16} /> Add Donation
+                </button>
+
+                <label className="cursor-pointer text-center text-sm font-medium text-cyan-600 bg-cyan-50/50 hover:bg-cyan-50 border border-cyan-100/70 px-4 py-2.5 rounded-xl transition flex items-center justify-center gap-2 active:scale-95">
                   <Upload size={16} /> Upload Photo
                   <input hidden type="file" accept="image/*"
                     onChange={(e) =>
@@ -306,7 +356,7 @@ const UsersList = () => {
                 {viewUser.profilePhoto && (
                   <button
                     onClick={handlePhotoDelete}
-                    className="text-sm font-medium text-rose-600 bg-rose-50/50 hover:bg-rose-50 border border-rose-100/70 px-4 py-2.5 rounded-xl transition flex items-center justify-center gap-2"
+                    className="text-sm font-medium text-rose-600 bg-rose-50/50 hover:bg-rose-50 border border-rose-100/70 px-4 py-2.5 rounded-xl transition flex items-center justify-center gap-2 active:scale-95 cursor-pointer"
                   >
                     <Trash2 size={16} /> Delete Photo
                   </button>
@@ -315,7 +365,7 @@ const UsersList = () => {
                 {viewUser.role !== "SUPER_ADMIN" && (
                   <button
                     onClick={() => handleOpenDeleteModal("choice")}
-                    className="text-sm font-medium text-red-600 bg-red-50/50 hover:bg-red-50 border border-red-100/70 px-4 py-2.5 rounded-xl transition flex items-center justify-center gap-2"
+                    className="text-sm font-medium text-red-600 bg-red-50/50 hover:bg-red-50 border border-red-100/70 px-4 py-2.5 rounded-xl transition flex items-center justify-center gap-2 active:scale-95 cursor-pointer"
                   >
                     <Trash2 size={16} /> Delete User
                   </button>
@@ -746,6 +796,95 @@ const UsersList = () => {
                   className="bg-red-600 hover:bg-red-700 font-medium px-5 py-2.5 rounded-xl shadow-md transition active:scale-95 text-sm text-white"
                 >
                   Delete Photo
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ================= ADD DONATION MODAL ================= */}
+        {showDonationModal && (
+          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200 text-left">
+            <div className="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden transition-all duration-200">
+              {/* Header */}
+              <div className="flex justify-between items-center px-6 py-4 border-b border-gray-100 bg-white">
+                <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
+                  <PlusCircle size={20} className="text-emerald-500" />
+                  Add Donation
+                </h3>
+                <button
+                  onClick={() => setShowDonationModal(false)}
+                  className="text-gray-400 hover:text-gray-600 transition"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              {/* Body */}
+              <div className="p-6 flex flex-col gap-4">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                    Amount (₹)
+                  </label>
+                  <input
+                    type="number"
+                    value={donationAmount}
+                    onChange={(e) => setDonationAmount(e.target.value)}
+                    placeholder="Enter amount"
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100 outline-none text-slate-700 placeholder-slate-400 transition text-sm"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                    Month
+                  </label>
+                  <select
+                    value={donationMonth}
+                    onChange={(e) => setDonationMonth(Number(e.target.value))}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm focus:bg-white focus:ring-2 focus:ring-cyan-500 focus:outline-none transition cursor-pointer"
+                  >
+                    {monthsList.map((m, i) => (
+                      <option key={i} value={i + 1}>
+                        {m}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                    Year
+                  </label>
+                  <select
+                    value={donationYear}
+                    onChange={(e) => setDonationYear(Number(e.target.value))}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm focus:bg-white focus:ring-2 focus:ring-cyan-500 focus:outline-none transition cursor-pointer"
+                  >
+                    {[2024, 2025, 2026, 2027].map((y) => (
+                      <option key={y} value={y}>
+                        {y}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="flex justify-end items-center gap-3 px-6 py-4 border-t border-gray-100 bg-white">
+                <button
+                  type="button"
+                  onClick={() => setShowDonationModal(false)}
+                  className="text-slate-500 hover:text-slate-800 font-medium px-4 py-2 transition text-sm"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleCreateDonation}
+                  disabled={donationLoading}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-5 py-2.5 rounded-xl shadow-md transition active:scale-95 text-sm flex items-center gap-2 disabled:opacity-50"
+                >
+                  {donationLoading ? "Adding..." : "Add Donation"}
                 </button>
               </div>
             </div>

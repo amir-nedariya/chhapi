@@ -125,31 +125,31 @@ const UseFund = () => {
     }
   };
 
-  // Neumorphic Styling Mappings
+  // Clean Modern Styles
   const cardShadow = {
-    boxShadow: "9px 9px 16px #b8c4d9, -9px -9px 16px #ffffff",
-    backgroundColor: "#ecf0f3",
+    boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05)",
+    backgroundColor: "#ffffff",
+    border: "1px solid #e2e8f0",
   };
 
   const inputShadow = {
-    boxShadow: "inset 4px 4px 8px #d1d9e6, inset -4px -4px 8px #ffffff",
-    backgroundColor: "#ecf0f3",
-    border: "none",
+    backgroundColor: "#ffffff",
+    border: "1px solid #cbd5e1",
   };
 
-  const buttonShadow = buttonPressed
-    ? { boxShadow: "inset 3px 3px 6px #b8c4d9, inset -3px -3px 6px #ffffff", backgroundColor: "#ecf0f3" }
-    : { boxShadow: "5px 5px 10px #b8c4d9, -5px -5px 10px #ffffff", backgroundColor: "#ecf0f3" };
+  const buttonShadow = {
+    backgroundColor: "#ffffff",
+    border: "1px solid #e2e8f0",
+  };
 
   return (
-    <div className="min-h-screen bg-[#ecf0f3] p-2 sm:p-8 space-y-6 text-slate-800 font-sans">
+    <div className="min-h-screen bg-white p-2 sm:p-8 space-y-6 text-slate-800 font-sans">
       <div className="max-w-6xl mx-auto space-y-8">
         
         {/* HEADER */}
         <div className="flex flex-col items-center text-center sm:flex-row sm:text-left sm:items-center gap-3 px-2">
           <div 
-            className="p-3.5 rounded-full flex items-center justify-center flex-shrink-0"
-            style={{ boxShadow: "4px 4px 8px #b8c4d9, -4px -4px 8px #ffffff", backgroundColor: "#ecf0f3" }}
+            className="p-3.5 rounded-full flex items-center justify-center flex-shrink-0 border border-slate-200 shadow-sm bg-white"
           >
             <Landmark className="text-cyan-600" size={24} />
           </div>
@@ -310,8 +310,8 @@ const PaginationButton = ({ icon, disabled, onClick }) => {
       className="p-2.5 rounded-2xl text-slate-700 transition duration-300 disabled:opacity-40"
       style={
         pressed
-          ? { boxShadow: "inset 2px 2px 4px #b8c4d9, inset -2px -2px 4px #ffffff", backgroundColor: "#ecf0f3" }
-          : { boxShadow: "4px 4px 8px #b8c4d9, -4px -4px 8px #ffffff", backgroundColor: "#ecf0f3" }
+          ? { backgroundColor: "#f1f5f9", border: "1px solid #cbd5e1" }
+          : { backgroundColor: "#ffffff", border: "1px solid #cbd5e1" }
       }
     >
       {icon}
