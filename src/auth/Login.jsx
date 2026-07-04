@@ -10,13 +10,25 @@ const Login = () => {
   const navigate = useNavigate();
   const { setUser } = useAuth();
 
+  const [selectedRole, setSelectedRole] = useState("ADMIN");
   const [form, setForm] = useState({
-    mobile: "",
-    password: "",
+    mobile: "123456890",
+    password: "password123",
   });
 
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const handleRoleChange = (role) => {
+    setSelectedRole(role);
+    if (role === "ADMIN") {
+      setForm({ mobile: "123456890", password: "password123" });
+    } else if (role === "SUPER_ADMIN") {
+      setForm({ mobile: "9999999999", password: "password123" });
+    } else {
+      setForm({ mobile: "9876543210", password: "password123" });
+    }
+  };
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -70,6 +82,27 @@ const Login = () => {
           <p className="text-sm text-gray-400">
             Login to access your dashboard
           </p>
+        </div>
+
+        {/* ROLE SELECTOR FOR TESTING */}
+        <div className="space-y-2">
+          <label className="text-xs font-bold text-gray-405 uppercase tracking-wider block text-center">Login Role (For Testing)</label>
+          <div className="grid grid-cols-3 gap-2 bg-white/5 p-1 rounded-xl border border-white/10">
+            {["ADMIN", "SUPER_ADMIN", "USER"].map((role) => (
+              <button
+                key={role}
+                type="button"
+                onClick={() => handleRoleChange(role)}
+                className={`py-2 rounded-lg text-xs font-bold transition cursor-pointer uppercase ${
+                  selectedRole === role
+                    ? "bg-cyan-500 text-black shadow-md"
+                    : "text-gray-400 hover:text-white hover:bg-white/5"
+                }`}
+              >
+                {role.replace("_", " ")}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* MOBILE */}

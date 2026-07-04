@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { getFundHistoryAPI } from "../../../../api/fund.api";
-import { ChevronLeft, ChevronRight, Wallet } from "lucide-react";
+import { ChevronLeft, ChevronRight, Landmark } from "lucide-react";
 import toast from "react-hot-toast";
 
 const ITEMS_PER_PAGE = 8;
@@ -40,100 +40,139 @@ const FundHistory = () => {
     startIndex + ITEMS_PER_PAGE
   );
 
+  // Clean Modern Styles
+  const cardShadow = {
+    boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05)",
+    backgroundColor: "#ffffff",
+    border: "1px solid #e2e8f0",
+  };
+
   return (
-    <div className="w-full">
-      {/* HEADER */}
-      <div className="flex flex-col items-center text-center sm:flex-row sm:text-left sm:items-center gap-2 mb-6">
-        <Wallet className="text-cyan-400" />
-        <h2 className="text-xl font-semibold text-white">
-          Fund Usage History
-        </h2>
-      </div>
-
-      {/* TABLE */}
-      <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden">
-        {loading ? (
-          <div className="p-8 text-center text-gray-400">
-            Loading fund history...
-          </div>
-        ) : paginatedData.length === 0 ? (
-          <div className="p-8 text-center text-gray-400">
-            No fund usage records found
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left">
-              <thead className="bg-gradient-to-r from-[var(--sidebar-from)] via-[var(--sidebar-via)] to-[var(--sidebar-to)] text-white">
-                <tr>
-                  <th className="px-5 py-3">#</th>
-                  <th className="px-5 py-3">Amount (₹)</th>
-                  <th className="px-5 py-3">Note</th>
-                  <th className="px-5 py-3">Used By</th>
-                  <th className="px-5 py-3">Date</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {paginatedData.map((item, index) => (
-                  <tr
-                    key={item._id}
-                    className="border-t border-white/5 hover:bg-white/5 transition"
-                  >
-                    <td className="px-5 py-3 text-gray-300">
-                      {startIndex + index + 1}
-                    </td>
-
-                    <td className="px-5 py-3 font-semibold text-red-400">
-                      ₹{item.amount.toLocaleString()}
-                    </td>
-
-                    <td className="px-5 py-3 text-gray-300">
-                      {item.note}
-                    </td>
-
-                    <td className="px-5 py-3 text-gray-300">
-                      {item.usedBy?.name}{" "}
-                      <span className="text-xs text-gray-500">
-                        ({item.usedBy?.role})
-                      </span>
-                    </td>
-
-                    <td className="px-5 py-3 text-gray-400">
-                      {new Date(item.createdAt).toLocaleString()}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
-
-      {/* PAGINATION */}
-      {totalPages > 1 && (
-        <div className="flex justify-end items-center gap-2 mt-4">
-          <button
-            onClick={() => setPage((p) => Math.max(p - 1, 1))}
-            disabled={page === 1}
-            className="p-2 rounded-lg bg-white/5 border border-white/10 text-white disabled:opacity-40"
+    <div className="min-h-screen bg-white p-2 sm:p-8 space-y-6 text-slate-800 font-sans">
+      <div className="w-full max-w-6xl mx-auto space-y-8">
+        
+        {/* HEADER */}
+        <div className="flex flex-col items-center text-center sm:flex-row sm:text-left sm:items-center gap-3 px-2">
+          <div 
+            className="p-3.5 rounded-full flex items-center justify-center flex-shrink-0 border border-slate-200 shadow-sm bg-white"
           >
-            <ChevronLeft size={16} />
-          </button>
-
-          <span className="text-sm text-gray-400">
-            Page {page} of {totalPages}
-          </span>
-
-          <button
-            onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
-            disabled={page === totalPages}
-            className="p-2 rounded-lg bg-white/5 border border-white/10 text-white disabled:opacity-40"
-          >
-            <ChevronRight size={16} />
-          </button>
+            <Landmark className="text-cyan-600" size={24} />
+          </div>
+          <div>
+            <h2 className="text-2xl font-extrabold text-slate-800 tracking-tight">
+              Fund Usage History
+            </h2>
+            <p className="text-slate-500 text-sm mt-0.5 font-semibold">Chronological record of expenses and withdrawals</p>
+          </div>
         </div>
-      )}
+
+        {/* TABLE CONTAINER */}
+        <div className="rounded-3xl p-8 space-y-6" style={cardShadow}>
+          {loading ? (
+            <div className="p-12 text-center text-slate-400 font-bold">
+              Loading fund history...
+            </div>
+          ) : paginatedData.length === 0 ? (
+            <div className="p-12 text-center text-slate-400 font-bold">
+              No fund usage records found
+            </div>
+          ) : (
+            <div className="overflow-x-auto rounded-2xl animate-fade-in" style={{ boxShadow: "inset 2px 2px 5px #d1d9e6, inset -2px -2px 5px #ffffff" }}>
+              <table className="w-full text-sm text-left">
+                <thead className="text-slate-500 text-[10px] font-black uppercase tracking-widest border-b border-gray-200/50">
+                  <tr>
+                    <th className="px-5 py-4 w-16">#</th>
+                    <th className="px-5 py-4">Amount (₹)</th>
+                    <th className="px-5 py-4 text-left">Usage Note</th>
+                    <th className="px-5 py-4">Authorized By</th>
+                    <th className="px-5 py-4">Timestamp</th>
+                  </tr>
+                </thead>
+
+                <tbody className="divide-y divide-gray-200/30">
+                  {paginatedData.map((item, index) => (
+                    <tr
+                      key={item._id}
+                      className="hover:bg-slate-200/20 transition-colors"
+                    >
+                      <td className="px-5 py-4 text-slate-500 font-bold">
+                        {startIndex + index + 1}
+                      </td>
+
+                      <td className="px-5 py-4 font-black text-rose-600 text-base">
+                        ₹{item.amount.toLocaleString()}
+                      </td>
+
+                      <td className="px-5 py-4 text-slate-700 font-bold">
+                        {item.note}
+                      </td>
+
+                      <td className="px-5 py-4 text-slate-700 font-bold">
+                        <span>{item.usedBy?.name}</span>
+                        <span 
+                          className="text-[9px] px-2 py-0.5 rounded-full font-black ml-2 uppercase border border-slate-200 bg-slate-50 text-slate-600"
+                        >
+                          {item.usedBy?.role}
+                        </span>
+                      </td>
+
+                      <td className="px-5 py-4 text-slate-500 font-bold">
+                        {new Date(item.createdAt).toLocaleString()}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* PAGINATION */}
+          {!loading && totalPages > 1 && (
+            <div className="flex justify-end items-center gap-4 mt-8 pt-2">
+              <PaginationButton
+                onClick={() => setPage((p) => Math.max(p - 1, 1))}
+                disabled={page === 1}
+                icon={<ChevronLeft size={18} />}
+              />
+
+              <span className="text-sm text-slate-600 font-bold px-1">
+                Page {page} of {totalPages}
+              </span>
+
+              <PaginationButton
+                onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
+                disabled={page === totalPages}
+                icon={<ChevronRight size={18} />}
+              />
+            </div>
+          )}
+        </div>
+      </div>
     </div>
+  );
+};
+
+/* NEUMORPHIC PAGINATION BUTTON */
+const PaginationButton = ({ icon, disabled, onClick }) => {
+  const [pressed, setPressed] = useState(false);
+  return (
+    <button
+      disabled={disabled}
+      onClick={onClick}
+      onMouseDown={() => setPressed(true)}
+      onMouseUp={() => setPressed(false)}
+      onMouseLeave={() => setPressed(false)}
+      onTouchStart={() => setPressed(true)}
+      onTouchEnd={() => setPressed(false)}
+      className="p-3 rounded-2xl text-slate-700 transition duration-300 disabled:opacity-40"
+      style={
+        pressed
+          ? { backgroundColor: "#f1f5f9", border: "1px solid #cbd5e1" }
+          : { backgroundColor: "#ffffff", border: "1px solid #cbd5e1" }
+      }
+    >
+      {icon}
+    </button>
   );
 };
 

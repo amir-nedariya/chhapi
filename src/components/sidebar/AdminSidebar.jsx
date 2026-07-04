@@ -55,14 +55,14 @@ const AdminSidebar = ({ collapsed, setCollapsed, mobile, sidebarOpen, setSidebar
   const [fundOpen, setFundOpen] = useState(location.pathname.includes("/fund"));
   const [userMgmtOpen, setUserMgmtOpen] = useState(
     location.pathname.includes("/createuser") ||
-      location.pathname.includes("/getalluser") ||
-      location.pathname.includes("/mydonations") ||
+      location.pathname.includes("/GetAllUser") ||
+      location.pathname.includes("/MyDonations") ||
       location.pathname.includes("/reminders")
   );
   const [allDonationOpen, setAllDonationOpen] = useState(
     location.pathname.includes("/all-donations") ||
       location.pathname.includes("/donations") ||
-      location.pathname.includes("/monthlydonationtable")
+      location.pathname.includes("/monthlyDonationTable")
   );
 
   const fundMenu = [
@@ -72,14 +72,14 @@ const AdminSidebar = ({ collapsed, setCollapsed, mobile, sidebarOpen, setSidebar
 
   const userMgmtMenu = [
     { name: "Create User", path: "/dashboard/admin/createuser", icon: UserPlus },
-    { name: "Users List", path: "/dashboard/admin/getalluser", icon: UserCheck },
+    { name: "Users List", path: "/dashboard/admin/GetAllUser", icon: UserCheck },
     { name: "Send Reminders", path: "/dashboard/admin/reminders", icon: MessageCircle },
-    { name: "My Donations history", path: "/dashboard/admin/mydonations", icon: History },
+    { name: "My Donations history", path: "/dashboard/admin/MyDonations", icon: History },
   ];
 
   const allDonationMenu = [
     { name: "All Donations", path: "/dashboard/admin/donations", icon: Coins },
-    { name: "Monthly Report", path: "/dashboard/admin/monthlydonationtable", icon: CalendarRange },
+    { name: "Monthly Report", path: "/dashboard/admin/monthlyDonationTable", icon: CalendarRange },
   ];
 
   const getLinkClass = (isActive) => {
