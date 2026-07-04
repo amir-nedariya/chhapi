@@ -1,6 +1,7 @@
 {
-  "/_not-found/page": "app/_not-found/page.js",
-  "/dashboard/super-admin/fundHistory/page": "app/dashboard/super-admin/fundHistory/page.js",
-  "/dashboard/super-admin/appearance/page": "app/dashboard/super-admin/appearance/page.js",
-  "/dashboard/super-admin/usersList/page": "app/dashboard/super-admin/usersList/page.js"
+  "/page": "app/page.js",
+  "/dashboard/admin/page": "app/dashboard/admin/page.js",
+  "/dashboard/admin/appearance/page": "app/dashboard/admin/appearance/page.js",
+  "/dashboard/admin/createuser/page": "app/dashboard/admin/createuser/page.js",
+  "/dashboard/admin/GetAllUser/page": "app/dashboard/admin/GetAllUser/page.js"
 }

@@ -1,21 +1,95 @@
 // Mock Donation API
+import { dummyUsers } from "./user.api";
 
 const dummyDonationData = [
-  { _id: "d1", donorName: "Rahul Sharma", donor: { name: "Rahul Sharma" }, amount: 5000, date: "2026-06-18", year: 2026, month: 6, status: "Success", paymentMethod: "UPI", donorMobile: "9876543210", remarks: "For education", collectedBy: { name: "Demo Admin", role: "ADMIN" } },
-  { _id: "d2", donorName: "Priya Singh", donor: { name: "Priya Singh" }, amount: 1200, date: "2026-06-17", year: 2026, month: 6, status: "Success", paymentMethod: "Card", donorMobile: "8765432109", remarks: "General Fund", collectedBy: { name: "Ramesh Kumar", role: "USER" } },
-  { _id: "d3", donorName: "Amit Kumar", donor: { name: "Amit Kumar" }, amount: 10000, date: "2026-06-16", year: 2026, month: 6, status: "Pending", paymentMethod: "Cash", donorMobile: "7654321098", remarks: "Medical Camp", collectedBy: { name: "Demo Admin", role: "ADMIN" } },
-  { _id: "d4", donorName: "Sunita Devi", donor: { name: "Sunita Devi" }, amount: 500, date: "2026-06-15", year: 2026, month: 6, status: "Success", paymentMethod: "UPI", donorMobile: "6543210987", remarks: "", collectedBy: { name: "Suresh Singh", role: "ADMIN" } },
-  { _id: "d5", donorName: "Vikram Raj", donor: { name: "Vikram Raj" }, amount: 2500, date: "2026-06-14", year: 2026, month: 6, status: "Failed", paymentMethod: "NetBanking", donorMobile: "5432109876", remarks: "Food distribution", collectedBy: { name: "Ramesh Kumar", role: "USER" } },
-  { _id: "d6", donorName: "Rohan Verma", donor: { name: "Rohan Verma" }, amount: 1500, date: "2026-06-24", year: 2026, month: 6, status: "Pending", paymentMethod: "UPI", donorMobile: "9812345678", remarks: "Book Donation", collectedBy: { name: "Demo Admin", role: "ADMIN" } },
-  { _id: "d7", donorName: "Neha Gupta", donor: { name: "Neha Gupta" }, amount: 4500, date: "2026-06-23", year: 2026, month: 6, status: "Pending", paymentMethod: "Cash", donorMobile: "8723456789", remarks: "Blanket Drive", collectedBy: { name: "Suresh Singh", role: "ADMIN" } },
-  { _id: "d8", donorName: "Sandeep Mishra", donor: { name: "Sandeep Mishra" }, amount: 12000, date: "2026-06-22", year: 2026, month: 6, status: "Pending", paymentMethod: "NetBanking", donorMobile: "7634567890", remarks: "Orphanage Support", collectedBy: { name: "Ramesh Kumar", role: "USER" } },
-  { _id: "d9", donorName: "Anjali Rao", donor: { name: "Anjali Rao" }, amount: 3500, date: "2026-06-21", year: 2026, month: 6, status: "Pending", paymentMethod: "Card", donorMobile: "6545678901", remarks: "Tree Plantation", collectedBy: { name: "Demo Admin", role: "ADMIN" } },
-  { _id: "d10", donorName: "Karan Johar", donor: { name: "Karan Johar" }, amount: 8000, date: "2026-06-20", year: 2026, month: 6, status: "Pending", paymentMethod: "UPI", donorMobile: "9456789012", remarks: "Cow Shelter Feed", collectedBy: { name: "Suresh Singh", role: "ADMIN" } },
-  { _id: "d11", donorName: "Meera Patel", donor: { name: "Meera Patel" }, amount: 6200, date: "2026-06-19", year: 2026, month: 6, status: "Pending", paymentMethod: "Cash", donorMobile: "8367890123", remarks: "Temple Renovation", collectedBy: { name: "Ramesh Kumar", role: "USER" } }
+  // Rahul Sharma (u1)
+  { _id: "d_u1_1", donorId: "u1", donorName: "Rahul Sharma", donor: { name: "Rahul Sharma" }, amount: 5000, date: "2026-01-18", year: 2026, month: 1, status: "Success", paymentMethod: "UPI", donorMobile: "9876543210", remarks: "Monthly contribution", collectedBy: { name: "Demo Admin", role: "ADMIN" } },
+  { _id: "d_u1_2", donorId: "u1", donorName: "Rahul Sharma", donor: { name: "Rahul Sharma" }, amount: 12000, date: "2026-03-12", year: 2026, month: 3, status: "Success", paymentMethod: "UPI", donorMobile: "9876543210", remarks: "Special project fund", collectedBy: { name: "Demo Admin", role: "ADMIN" } },
+  { _id: "d_u1_3", donorId: "u1", donorName: "Rahul Sharma", donor: { name: "Rahul Sharma" }, amount: 5000, date: "2026-04-15", year: 2026, month: 4, status: "Success", paymentMethod: "Cash", donorMobile: "9876543210", remarks: "Monthly donation", collectedBy: { name: "Demo Admin", role: "ADMIN" } },
+  { _id: "d_u1_4", donorId: "u1", donorName: "Rahul Sharma", donor: { name: "Rahul Sharma" }, amount: 10000, date: "2026-05-10", year: 2026, month: 5, status: "Success", paymentMethod: "NetBanking", donorMobile: "9876543210", remarks: "Education campaign support", collectedBy: { name: "Demo Admin", role: "ADMIN" } },
+  { _id: "d_u1_5", donorId: "u1", donorName: "Rahul Sharma", donor: { name: "Rahul Sharma" }, amount: 5000, date: "2026-06-20", year: 2026, month: 6, status: "Success", paymentMethod: "UPI", donorMobile: "9876543210", remarks: "Regular monthly donation", collectedBy: { name: "Demo Admin", role: "ADMIN" } },
+
+  // Priya Singh (u2)
+  { _id: "d_u2_1", donorId: "u2", donorName: "Priya Singh", donor: { name: "Priya Singh" }, amount: 1200, date: "2026-01-10", year: 2026, month: 1, status: "Success", paymentMethod: "Card", donorMobile: "8765432109", remarks: "Monthly support", collectedBy: { name: "Demo Admin", role: "ADMIN" } },
+  { _id: "d_u2_2", donorId: "u2", donorName: "Priya Singh", donor: { name: "Priya Singh" }, amount: 1200, date: "2026-02-14", year: 2026, month: 2, status: "Success", paymentMethod: "Card", donorMobile: "8765432109", remarks: "Monthly support", collectedBy: { name: "Demo Admin", role: "ADMIN" } },
+  { _id: "d_u2_3", donorId: "u2", donorName: "Priya Singh", donor: { name: "Priya Singh" }, amount: 1200, date: "2026-03-15", year: 2026, month: 3, status: "Success", paymentMethod: "Card", donorMobile: "8765432109", remarks: "Monthly support", collectedBy: { name: "Demo Admin", role: "ADMIN" } },
+  { _id: "d_u2_4", donorId: "u2", donorName: "Priya Singh", donor: { name: "Priya Singh" }, amount: 1200, date: "2026-04-18", year: 2026, month: 4, status: "Success", paymentMethod: "Card", donorMobile: "8765432109", remarks: "Monthly support", collectedBy: { name: "Demo Admin", role: "ADMIN" } },
+
+  // Amit Kumar (u3)
+  { _id: "d_u3_1", donorId: "u3", donorName: "Amit Kumar", donor: { name: "Amit Kumar" }, amount: 10000, date: "2026-02-20", year: 2026, month: 2, status: "Success", paymentMethod: "Cash", donorMobile: "7654321098", remarks: "Health camp fund", collectedBy: { name: "Demo Admin", role: "ADMIN" } },
+  { _id: "d_u3_2", donorId: "u3", donorName: "Amit Kumar", donor: { name: "Amit Kumar" }, amount: 10000, date: "2026-04-22", year: 2026, month: 4, status: "Success", paymentMethod: "Cash", donorMobile: "7654321098", remarks: "Health camp fund", collectedBy: { name: "Demo Admin", role: "ADMIN" } },
+
+  // Sunita Devi (u4)
+  { _id: "d_u4_1", donorId: "u4", donorName: "Sunita Devi", donor: { name: "Sunita Devi" }, amount: 500, date: "2026-01-05", year: 2026, month: 1, status: "Success", paymentMethod: "UPI", donorMobile: "6543210987", remarks: "", collectedBy: { name: "Demo Admin", role: "ADMIN" } },
+  { _id: "d_u4_2", donorId: "u4", donorName: "Sunita Devi", donor: { name: "Sunita Devi" }, amount: 500, date: "2026-02-05", year: 2026, month: 2, status: "Success", paymentMethod: "UPI", donorMobile: "6543210987", remarks: "", collectedBy: { name: "Demo Admin", role: "ADMIN" } },
+  { _id: "d_u4_3", donorId: "u4", donorName: "Sunita Devi", donor: { name: "Sunita Devi" }, amount: 500, date: "2026-03-05", year: 2026, month: 3, status: "Success", paymentMethod: "UPI", donorMobile: "6543210987", remarks: "", collectedBy: { name: "Demo Admin", role: "ADMIN" } },
+
+  // Vikram Raj (u5)
+  { _id: "d_u5_1", donorId: "u5", donorName: "Vikram Raj", donor: { name: "Vikram Raj" }, amount: 2500, date: "2026-01-12", year: 2026, month: 1, status: "Success", paymentMethod: "NetBanking", donorMobile: "5432109876", remarks: "Food Distribution project", collectedBy: { name: "Demo Admin", role: "ADMIN" } },
+  { _id: "d_u5_2", donorId: "u5", donorName: "Vikram Raj", donor: { name: "Vikram Raj" }, amount: 2500, date: "2026-03-14", year: 2026, month: 3, status: "Success", paymentMethod: "NetBanking", donorMobile: "5432109876", remarks: "Food Distribution project", collectedBy: { name: "Demo Admin", role: "ADMIN" } },
+
+  // Additional pending and failed cases for demo
+  { _id: "d_u6_1", donorId: "u6", donorName: "Rohan Verma", donor: { name: "Rohan Verma" }, amount: 1500, date: "2026-06-24", year: 2026, month: 6, status: "Pending", paymentMethod: "UPI", donorMobile: "9812345678", remarks: "Book donation drive", collectedBy: { name: "Demo Admin", role: "ADMIN" } },
+  { _id: "d_u7_1", donorId: "u7", donorName: "Neha Gupta", donor: { name: "Neha Gupta" }, amount: 4500, date: "2026-06-23", year: 2026, month: 6, status: "Pending", paymentMethod: "Cash", donorMobile: "8723456789", remarks: "Blanket drive", collectedBy: { name: "Demo Admin", role: "ADMIN" } },
+  { _id: "d_u8_1", donorId: "u8", donorName: "Sandeep Mishra", donor: { name: "Sandeep Mishra" }, amount: 12000, date: "2026-06-22", year: 2026, month: 6, status: "Pending", paymentMethod: "NetBanking", donorMobile: "7634567890", remarks: "Orphanage support fund", collectedBy: { name: "Demo Admin", role: "ADMIN" } },
+  { _id: "d_u9_1", donorId: "u9", donorName: "Anjali Rao", donor: { name: "Anjali Rao" }, amount: 3500, date: "2026-06-21", year: 2026, month: 6, status: "Pending", paymentMethod: "Card", donorMobile: "6545678901", remarks: "Tree plantation event", collectedBy: { name: "Demo Admin", role: "ADMIN" } },
+  { _id: "d_u10_1", donorId: "u10", donorName: "Karan Johar", donor: { name: "Karan Johar" }, amount: 8000, date: "2026-06-20", year: 2026, month: 6, status: "Pending", paymentMethod: "UPI", donorMobile: "9456789012", remarks: "Animal shelter support", collectedBy: { name: "Demo Admin", role: "ADMIN" } }
 ];
 
 export const createDonationAPI = async (data) => {
-  return { data: { message: "Donation recorded successfully" } };
+  const user = dummyUsers.find(u => u._id === data.donorId);
+  const donorName = user ? user.name : "Demo User";
+  const donorMobile = user ? user.mobile : "";
+  const newDonation = {
+    _id: "d" + (dummyDonationData.length + 1),
+    donorId: data.donorId,
+    donorName: donorName,
+    donor: { name: donorName },
+    donorMobile: donorMobile,
+    amount: Number(data.amount),
+    date: new Date().toISOString().split("T")[0],
+    year: Number(data.year),
+    month: Number(data.month),
+    status: data.status || "Success",
+    paymentMethod: "Cash",
+    remarks: data.remarks || "",
+    collectedBy: { name: "Demo Admin", role: "ADMIN" }
+  };
+  dummyDonationData.push(newDonation);
+  return { data: { message: "Donation recorded successfully", data: newDonation } };
+};
+
+export const getDonationsByDonorIdAPI = async (donorId) => {
+  const user = dummyUsers.find(u => u._id === donorId);
+  const userName = user ? user.name : "";
+  const filtered = dummyDonationData.filter(d => 
+    d.donorId === donorId || 
+    (userName && d.donor?.name?.toLowerCase() === userName.toLowerCase()) ||
+    (userName && d.donorName?.toLowerCase() === userName.toLowerCase())
+  );
+  return { data: { data: filtered } };
+};
+
+export const updateDonationAPI = async (id, data) => {
+  const donation = dummyDonationData.find(d => d._id === id);
+  if (donation) {
+    donation.amount = Number(data.amount);
+    donation.month = Number(data.month);
+    donation.year = Number(data.year);
+    if (data.status) donation.status = data.status;
+    if (data.remarks !== undefined) donation.remarks = data.remarks;
+    return { data: { message: "Donation updated successfully", data: donation } };
+  }
+  return { data: { message: "Donation not found" } };
+};
+
+export const deleteDonationAPI = async (id) => {
+  const index = dummyDonationData.findIndex(d => d._id === id);
+  if (index !== -1) {
+    dummyDonationData.splice(index, 1);
+    return { data: { message: "Donation deleted successfully" } };
+  }
+  return { data: { message: "Donation not found" } };
 };
 
 export const getMyDonationsAPI = async () => {

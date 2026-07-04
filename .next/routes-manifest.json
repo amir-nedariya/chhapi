@@ -113,6 +113,12 @@
       "namedRegex": "^/dashboard/admin/MyDonations(?:/)?$"
     },
     {
+      "page": "/dashboard/admin/reminders",
+      "regex": "^/dashboard/admin/reminders(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/admin/reminders(?:/)?$"
+    },
+    {
       "page": "/dashboard/admin/settings",
       "regex": "^/dashboard/admin/settings(?:/)?$",
       "routeKeys": {},
@@ -177,6 +183,12 @@
       "regex": "^/dashboard/super\\-admin/pending\\-donations(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/dashboard/super\\-admin/pending\\-donations(?:/)?$"
+    },
+    {
+      "page": "/dashboard/super-admin/reminders",
+      "regex": "^/dashboard/super\\-admin/reminders(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/super\\-admin/reminders(?:/)?$"
     },
     {
       "page": "/dashboard/super-admin/reports",
