@@ -1,7 +1,10 @@
 {
   "/page": "app/page.js",
+  "/login/page": "app/login/page.js",
   "/dashboard/admin/page": "app/dashboard/admin/page.js",
-  "/dashboard/admin/appearance/page": "app/dashboard/admin/appearance/page.js",
-  "/dashboard/admin/createuser/page": "app/dashboard/admin/createuser/page.js",
-  "/dashboard/admin/GetAllUser/page": "app/dashboard/admin/GetAllUser/page.js"
+  "/dashboard/user/page": "app/dashboard/user/page.js",
+  "/dashboard/user/monthlyDonationTable/page": "app/dashboard/user/monthlyDonationTable/page.js",
+  "/dashboard/user/fundSummary/page": "app/dashboard/user/fundSummary/page.js",
+  "/dashboard/user/fundHistory/page": "app/dashboard/user/fundHistory/page.js",
+  "/dashboard/user/settings/page": "app/dashboard/user/settings/page.js"
 }
