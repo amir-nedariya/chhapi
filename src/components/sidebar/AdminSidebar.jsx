@@ -27,16 +27,16 @@ const AdminSidebar = ({ collapsed, setCollapsed, mobile, sidebarOpen, setSidebar
   const { user } = useAuth();
   const location = useLocation();
   const sidebarColor = useSidebarColor();
-  const [currentTheme, setCurrentTheme] = useState("Classic Teal");
+  const [currentTheme, setCurrentTheme] = useState("Clear Ocean");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       initTheme();
-      const saved = localStorage.getItem("selected-sidebar-theme") || "Classic Teal";
+      const saved = localStorage.getItem("selected-sidebar-theme") || "Clear Ocean";
       setCurrentTheme(saved);
 
       const handleExternalChange = () => {
-        const current = localStorage.getItem("selected-sidebar-theme") || "Classic Teal";
+        const current = localStorage.getItem("selected-sidebar-theme") || "Clear Ocean";
         setCurrentTheme(current);
       };
 

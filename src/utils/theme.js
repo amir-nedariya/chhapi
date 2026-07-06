@@ -1,75 +1,85 @@
 export const themes = [
+  // CORE THEME FIRST (FALLBACK DEFAULT)
+  {
+    name: "Clear Ocean",
+    category: "SINGLE COLOR",
+    color: "#007380",
+    from: "#007380",
+    via: "#005f6a",
+    to: "#004851",
+    teal: "#007380"
+  },
   // SINGLE COLOR
   {
     name: "Royal Purple",
     category: "SINGLE COLOR",
     color: "#7c3aed",
-    from: "#2e1065",
+    from: "#6d28d9",
     via: "#5b21b6",
-    to: "#3b0764",
+    to: "#4c1d95",
     teal: "#8b5cf6"
   },
   {
     name: "Sunset Orange",
     category: "SINGLE COLOR",
     color: "#ea580c",
-    from: "#431407",
-    via: "#9a3412",
-    to: "#2c0b02",
+    from: "#ea580c",
+    via: "#d96514",
+    to: "#b8470a",
     teal: "#ea580c"
   },
   {
     name: "Golden Glow",
     category: "SINGLE COLOR",
     color: "#d97706",
-    from: "#451a03",
-    via: "#854d0e",
-    to: "#2d1002",
+    from: "#d97706",
+    via: "#b45309",
+    to: "#92400e",
     teal: "#f59e0b"
   },
   {
     name: "Forest Green",
     category: "SINGLE COLOR",
     color: "#15803d",
-    from: "#022c22",
-    via: "#065f46",
-    to: "#021a11",
+    from: "#15803d",
+    via: "#166534",
+    to: "#14532d",
     teal: "#10b981"
   },
   {
     name: "Ocean Blue",
     category: "SINGLE COLOR",
     color: "#0284c7",
-    from: "#082f49",
+    from: "#0284c7",
     via: "#0369a1",
-    to: "#0f172a",
+    to: "#075985",
     teal: "#0ea5e9"
   },
   {
     name: "Rose Pink",
     category: "SINGLE COLOR",
     color: "#db2777",
-    from: "#4c0519",
-    via: "#9d174d",
-    to: "#310411",
+    from: "#db2777",
+    via: "#be185d",
+    to: "#9d174d",
     teal: "#f43f5e"
   },
   {
     name: "Slate Gray",
     category: "SINGLE COLOR",
     color: "#4b5563",
-    from: "#1f2937",
-    via: "#4b5563",
-    to: "#111827",
+    from: "#4b5563",
+    via: "#374151",
+    to: "#1f2937",
     teal: "#9ca3af"
   },
   {
     name: "Midnight Indigo",
     category: "SINGLE COLOR",
     color: "#3730a3",
-    from: "#1e1b4b",
+    from: "#4338ca",
     via: "#3730a3",
-    to: "#0f172a",
+    to: "#312e81",
     teal: "#6366f1"
   },
   // VISION ASSISTIVE
@@ -77,19 +87,10 @@ export const themes = [
     name: "Vision Dark",
     category: "VISION ASSISTIVE",
     color: "#1e293b",
-    from: "#0f172a",
-    via: "#1e293b",
+    from: "#1e293b",
+    via: "#0f172a",
     to: "#020617",
     teal: "#38bdf8"
-  },
-  {
-    name: "Clear Ocean",
-    category: "VISION ASSISTIVE",
-    color: "#007380",
-    from: "#072429",
-    via: "#004e57",
-    to: "#002e33",
-    teal: "#007380"
   }
 ];
 

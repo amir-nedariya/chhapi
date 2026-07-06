@@ -45,9 +45,9 @@
   --text-muted: #64748b;
   
   /* Sidebar default dynamic fallback */
-  --sidebar-from: #072429;
-  --sidebar-via: #004e57;
-  --sidebar-to: #002e33;
+  --sidebar-from: #007380;
+  --sidebar-via: #005f6a;
+  --sidebar-to: #004851;
   --sidebar-teal: #007380;
   --sidebar-hover: rgba(255, 255, 255, 0.08);
   --active-blue-glow: rgba(0, 115, 128, 0.12);
