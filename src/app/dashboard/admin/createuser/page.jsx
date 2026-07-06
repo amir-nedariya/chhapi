@@ -1,11 +1,13 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { createUserAPI, createAdminAPI } from "../../../../api/user.api";
 import { useAuth } from "../../../../context/AuthContext";
 import { X } from "lucide-react";
 
 const CreateUser = () => {
+  const router = useRouter();
   const { user } = useAuth();
   const isSuperAdmin = user?.role === "SUPER_ADMIN";
 
@@ -17,6 +19,10 @@ const CreateUser = () => {
   });
 
   const [loading, setLoading] = useState(false);
+
+  const handleCancel = () => {
+    router.push(isSuperAdmin ? "/dashboard/super-admin" : "/dashboard/admin");
+  };
 
   /* ================= HANDLE CHANGE ================= */
   const handleChange = (e) => {
@@ -87,7 +93,7 @@ const CreateUser = () => {
           <h2 className="text-xl font-bold text-[#1e3a8a]">
             Create {form.role === "ADMIN" ? "Admin" : "User"}
           </h2>
-          <button className="text-gray-400 hover:text-gray-600 transition">
+          <button onClick={handleCancel} className="text-gray-400 hover:text-gray-600 transition">
             <X size={24} />
           </button>
         </div>
@@ -172,7 +178,7 @@ const CreateUser = () => {
         <div className="flex items-center justify-end gap-4 px-6 py-4 border-t border-gray-200 bg-white">
           <button
             type="button"
-            onClick={() => setForm({ name: "", mobile: "", password: "", role: "USER" })}
+            onClick={handleCancel}
             className="text-gray-500 hover:text-gray-700 font-medium px-4 py-2 transition"
           >
             Cancel
