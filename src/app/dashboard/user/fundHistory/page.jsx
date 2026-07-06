@@ -40,84 +40,84 @@ const FundHistory = () => {
     startIndex + ITEMS_PER_PAGE
   );
 
-  // Clean Modern Styles
-  const cardShadow = {
-    boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05)",
-    backgroundColor: "#ffffff",
-    border: "1px solid #e2e8f0",
-  };
-
   return (
-    <div className="min-h-screen bg-white p-2 sm:p-8 space-y-6 text-slate-800 font-sans">
-      <div className="w-full max-w-6xl mx-auto space-y-8">
+    <div className="min-h-screen bg-slate-50/30 p-4 sm:p-8 space-y-6 text-slate-800 font-sans">
+      <div className="w-full max-w-6xl mx-auto space-y-6">
         
         {/* HEADER */}
-        <div className="flex flex-col items-center text-center sm:flex-row sm:text-left sm:items-center gap-3 px-2">
-          <div 
-            className="p-3.5 rounded-full flex items-center justify-center flex-shrink-0 border border-slate-200 shadow-sm bg-white"
-          >
-            <Landmark className="text-cyan-600" size={24} />
+        <div className="flex flex-col items-center text-center sm:flex-row sm:text-left sm:items-center gap-3 px-1">
+          <div className="p-3 rounded-lg border border-primary/10 bg-primary/5 text-primary flex items-center justify-center">
+            <Landmark size={20} />
           </div>
           <div>
-            <h2 className="text-2xl font-extrabold text-slate-800 tracking-tight">
+            <h2 className="text-xl font-semibold text-slate-800 tracking-tight">
               Fund Usage History
             </h2>
-            <p className="text-slate-500 text-sm mt-0.5 font-semibold">Chronological record of expenses and withdrawals</p>
+            <p className="text-slate-400 text-xs mt-0.5 font-medium">Chronological record of expenses and withdrawals</p>
           </div>
         </div>
 
         {/* TABLE CONTAINER */}
-        <div className="rounded-3xl p-8 space-y-6" style={cardShadow}>
+        <div className="rounded-xl p-5 sm:p-6 space-y-6 border border-slate-200/50 bg-white shadow-sm">
           {loading ? (
-            <div className="p-12 text-center text-slate-400 font-bold">
+            <div className="p-12 text-center text-slate-400 font-medium text-sm">
               Loading fund history...
             </div>
           ) : paginatedData.length === 0 ? (
-            <div className="p-12 text-center text-slate-400 font-bold">
+            <div className="p-12 text-center text-slate-400 font-medium text-sm">
               No fund usage records found
             </div>
           ) : (
-            <div className="overflow-x-auto rounded-2xl animate-fade-in" style={{ boxShadow: "inset 2px 2px 5px #d1d9e6, inset -2px -2px 5px #ffffff" }}>
-              <table className="w-full text-sm text-left">
-                <thead className="text-slate-500 text-[10px] font-black uppercase tracking-widest border-b border-gray-200/50">
+            <div className="overflow-x-auto rounded-lg border border-slate-200/40">
+              <table className="w-full text-xs text-left border-collapse">
+                <thead className="bg-gradient-to-r from-[var(--sidebar-from)] via-[var(--sidebar-via)] to-[var(--sidebar-to)] text-white font-semibold uppercase tracking-wider border-b border-slate-200/20">
                   <tr>
-                    <th className="px-5 py-4 w-16">#</th>
-                    <th className="px-5 py-4">Amount (₹)</th>
-                    <th className="px-5 py-4 text-left">Usage Note</th>
-                    <th className="px-5 py-4">Authorized By</th>
-                    <th className="px-5 py-4">Timestamp</th>
+                    <th className="px-4 py-3 w-16 text-center">#</th>
+                    <th className="px-4 py-3">Amount</th>
+                    <th className="px-4 py-3 text-left">Usage Note</th>
+                    <th className="px-4 py-3">Authorized By</th>
+                    <th className="px-4 py-3">Timestamp</th>
                   </tr>
                 </thead>
 
-                <tbody className="divide-y divide-gray-200/30">
+                <tbody className="divide-y divide-slate-100 text-slate-600">
                   {paginatedData.map((item, index) => (
                     <tr
                       key={item._id}
-                      className="hover:bg-slate-200/20 transition-colors"
+                      className="hover:bg-slate-50/60 transition-colors"
                     >
-                      <td className="px-5 py-4 text-slate-500 font-bold">
+                      <td className="px-4 py-3.5 text-center text-slate-400 font-medium">
                         {startIndex + index + 1}
                       </td>
 
-                      <td className="px-5 py-4 font-black text-rose-600 text-base">
+                      <td className="px-4 py-3.5 font-semibold text-rose-600">
                         ₹{item.amount.toLocaleString()}
                       </td>
 
-                      <td className="px-5 py-4 text-slate-700 font-bold">
+                      <td className="px-4 py-3.5 text-slate-700 font-medium">
                         {item.note}
                       </td>
 
-                      <td className="px-5 py-4 text-slate-700 font-bold">
-                        <span>{item.usedBy?.name}</span>
-                        <span 
-                          className="text-[9px] px-2 py-0.5 rounded-full font-black ml-2 uppercase border border-slate-200 bg-slate-50 text-slate-600"
-                        >
-                          {item.usedBy?.role}
-                        </span>
+                      <td className="px-4 py-3.5 text-slate-700 font-medium">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span>{item.usedBy?.name}</span>
+                          <span 
+                            className={`text-[9px] px-1.5 py-0.5 rounded font-semibold uppercase border ${
+                              item.usedBy?.role?.toLowerCase() === 'admin' || item.usedBy?.role?.toLowerCase() === 'super-admin'
+                                ? 'bg-primary/5 text-primary border-primary/10'
+                                : 'bg-slate-50 text-slate-500 border-slate-100'
+                            }`}
+                          >
+                            {item.usedBy?.role}
+                          </span>
+                        </div>
                       </td>
 
-                      <td className="px-5 py-4 text-slate-500 font-bold">
-                        {new Date(item.createdAt).toLocaleString()}
+                      <td className="px-4 py-3.5 text-slate-400 font-medium">
+                        {new Date(item.createdAt).toLocaleString(undefined, {
+                          dateStyle: 'medium',
+                          timeStyle: 'short',
+                        })}
                       </td>
                     </tr>
                   ))}
@@ -128,21 +128,21 @@ const FundHistory = () => {
 
           {/* PAGINATION */}
           {!loading && totalPages > 1 && (
-            <div className="flex justify-end items-center gap-4 mt-8 pt-2">
+            <div className="flex justify-end items-center gap-3 pt-2">
               <PaginationButton
                 onClick={() => setPage((p) => Math.max(p - 1, 1))}
                 disabled={page === 1}
-                icon={<ChevronLeft size={18} />}
+                icon={<ChevronLeft size={14} />}
               />
 
-              <span className="text-sm text-slate-600 font-bold px-1">
+              <span className="text-xs text-slate-500 font-medium px-1">
                 Page {page} of {totalPages}
               </span>
 
               <PaginationButton
                 onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
                 disabled={page === totalPages}
-                icon={<ChevronRight size={18} />}
+                icon={<ChevronRight size={14} />}
               />
             </div>
           )}
@@ -152,28 +152,15 @@ const FundHistory = () => {
   );
 };
 
-/* NEUMORPHIC PAGINATION BUTTON */
-const PaginationButton = ({ icon, disabled, onClick }) => {
-  const [pressed, setPressed] = useState(false);
-  return (
-    <button
-      disabled={disabled}
-      onClick={onClick}
-      onMouseDown={() => setPressed(true)}
-      onMouseUp={() => setPressed(false)}
-      onMouseLeave={() => setPressed(false)}
-      onTouchStart={() => setPressed(true)}
-      onTouchEnd={() => setPressed(false)}
-      className="p-3 rounded-2xl text-slate-700 transition duration-300 disabled:opacity-40"
-      style={
-        pressed
-          ? { backgroundColor: "#f1f5f9", border: "1px solid #cbd5e1" }
-          : { backgroundColor: "#ffffff", border: "1px solid #cbd5e1" }
-      }
-    >
-      {icon}
-    </button>
-  );
-};
+/* CLEAN PAGINATION BUTTON */
+const PaginationButton = ({ icon, disabled, onClick }) => (
+  <button
+    disabled={disabled}
+    onClick={onClick}
+    className="p-1.5 rounded-lg text-slate-600 border border-slate-200 bg-white hover:bg-slate-50 active:bg-slate-100 transition-colors disabled:opacity-40 disabled:hover:bg-white cursor-pointer disabled:cursor-not-allowed"
+  >
+    {icon}
+  </button>
+);
 
 export default FundHistory;

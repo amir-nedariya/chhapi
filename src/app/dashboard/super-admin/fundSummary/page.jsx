@@ -103,37 +103,24 @@ const FundSummary = () => {
     );
   }
 
-  // Clean Modern Styles
-  const cardShadow = {
-    boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05)",
-    backgroundColor: "#ffffff",
-    border: "1px solid #e2e8f0",
-  };
-
-  const innerSunken = {
-    backgroundColor: "#ffffff",
-    border: "1px solid #cbd5e1",
-  };
-
   return (
-    <div className="min-h-screen bg-white p-2 sm:p-8 space-y-8 text-slate-800 font-sans">
-      <div className="max-w-6xl mx-auto space-y-8">
+    <div className="min-h-screen bg-slate-50/30 p-4 sm:p-8 space-y-6 text-slate-800 font-sans">
+      <div className="max-w-6xl mx-auto space-y-6">
         
         {/* HEADER + FILTER */}
-        <div className="flex flex-col items-center text-center sm:flex-row justify-between sm:items-center sm:text-left gap-4 px-2">
+        <div className="flex flex-col items-center text-center sm:flex-row justify-between sm:items-center sm:text-left gap-4 px-1">
           <div className="flex flex-col items-center sm:items-start">
-            <h2 className="text-2xl font-extrabold text-slate-800 flex flex-col sm:flex-row items-center gap-2">
-              <Coins className="text-cyan-600" />
+            <h2 className="text-xl font-semibold text-slate-800 flex items-center gap-2">
+              <Coins className="text-primary" size={22} />
               Fund Summary
             </h2>
-            <p className="text-slate-500 text-sm mt-0.5 font-semibold">Overview of budget allocations and remaining balance</p>
+            <p className="text-slate-400 text-xs mt-0.5 font-medium">Overview of budget allocations and remaining balance</p>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 items-center w-full sm:w-auto justify-center">
-            <div 
-              className="p-2.5 rounded-full flex items-center justify-center border border-slate-200 shadow-sm bg-white"
-            >
-              <Filter size={18} className="text-slate-500" />
+          <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto justify-center">
+            <div className="flex items-center gap-1.5 text-xs text-slate-400 bg-white px-2.5 py-1.5 rounded-lg border border-slate-200">
+              <Filter size={13} />
+              <span className="font-medium">Filter</span>
             </div>
             
             <FilterSelect value={selectedYear} onChange={setSelectedYear}>
@@ -153,94 +140,133 @@ const FundSummary = () => {
         </div>
 
         {/* SUMMARY CARDS */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
           <SummaryCard
-            icon={<Wallet size={22} className="text-cyan-600" />}
+            icon={<Wallet size={20} />}
             label="Total Amount"
             value={grandTotal.total}
-            color="text-cyan-600"
+            accentColor="primary"
           />
           <SummaryCard
-            icon={<TrendingDown size={22} className="text-rose-600" />}
+            icon={<TrendingDown size={20} />}
             label="Used Amount"
             value={grandTotal.used}
-            color="text-rose-600"
+            accentColor="rose"
           />
           <SummaryCard
-            icon={<Coins size={22} className="text-emerald-600" />}
+            icon={<Coins size={20} />}
             label="Remaining Amount"
             value={grandTotal.remaining}
-            color={grandTotal.remaining > 0 ? "text-emerald-600" : "text-slate-500"}
+            accentColor="emerald"
           />
         </div>
 
         {/* FUND DETAILS */}
-        <div className="rounded-3xl p-8 space-y-6" style={cardShadow}>
-          <h3 className="text-slate-700 font-extrabold text-lg mb-2">Fund Details</h3>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
-            {paginatedFunds.map((fund) => (
-              <div
-                key={fund._id}
-                className="flex justify-between items-center p-6 rounded-2xl transition duration-300 border border-slate-255/15 shadow-sm bg-white"
-              >
-                <div>
-                  <p className="text-slate-800 font-extrabold text-base">{fund.title}</p>
-                  <p className="text-slate-500 text-xs flex items-center gap-1.5 mt-2 font-bold">
-                    <Calendar size={13} className="text-slate-400" />
-                    {monthNames[fund.month - 1]} {fund.year}
-                  </p>
-                </div>
-
-                <div className="text-right space-y-1">
-                  <p className="text-cyan-600 font-black text-lg">
-                    ₹{fund.totalAmount.toLocaleString()}
-                  </p>
-                  <p className="text-rose-500 text-xs font-bold">
-                    Used ₹{fund.usedAmount.toLocaleString()}
-                  </p>
-                  <div className="pt-1.5">
-                    <span
-                      className={`inline-block px-3.5 py-1 rounded-full text-xs font-black border transition duration-300`}
-                      style={
-                        fund.remainingAmount > 0
-                          ? {
-                              boxShadow: "inset 2px 2px 4px #b0c9bb, inset -2px -2px 4px #ffffff",
-                              backgroundColor: "#e6f4ea",
-                              color: "#137333",
-                              borderColor: "#ceead6"
-                            }
-                          : {
-                              boxShadow: "inset 2px 2px 4px #d1d9e6, inset -2px -2px 4px #ffffff",
-                              backgroundColor: "#f1f3f4",
-                              color: "#5f6368",
-                              borderColor: "#e8eaed"
-                            }
-                      }
-                    >
-                      Remaining ₹{fund.remainingAmount.toLocaleString()}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            ))}
+        <div className="rounded-xl p-6 sm:p-8 space-y-6 border border-slate-200/50 bg-white shadow-sm">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+            <h3 className="text-slate-800 font-semibold text-base">Fund Details</h3>
+            <span className="text-xs font-medium text-slate-400">
+              Showing {paginatedFunds.length} of {filteredFunds.length} entries
+            </span>
           </div>
+
+          {paginatedFunds.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {paginatedFunds.map((fund) => {
+                const percentUsed = fund.totalAmount > 0 
+                  ? Math.min(100, Math.round((fund.usedAmount / fund.totalAmount) * 100)) 
+                  : 0;
+                
+                return (
+                  <div
+                    key={fund._id}
+                    className="p-5 rounded-xl border border-slate-200/50 bg-white hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 flex flex-col justify-between space-y-4"
+                  >
+                    <div className="flex justify-between items-start gap-4">
+                      <div>
+                        <h4 className="text-slate-800 font-medium text-sm tracking-tight">{fund.title}</h4>
+                        <p className="text-slate-400 text-xs flex items-center gap-1.5 mt-1.5 font-medium">
+                          <Calendar size={12} />
+                          {monthNames[fund.month - 1]} {fund.year}
+                        </p>
+                      </div>
+                      <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] font-semibold rounded-md border ${
+                        fund.remainingAmount > 0 
+                          ? 'bg-emerald-50/50 text-emerald-700 border-emerald-100/80' 
+                          : 'bg-slate-50 text-slate-500 border-slate-100'
+                      }`}>
+                        <span className={`w-1 h-1 rounded-full ${
+                          fund.remainingAmount > 0 ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'
+                        }`} />
+                        {fund.remainingAmount > 0 ? 'Active' : 'Depleted'}
+                      </span>
+                    </div>
+
+                    {/* Sleek Progress Bar */}
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between text-xs text-slate-400">
+                        <span>Usage</span>
+                        <span className="font-medium text-slate-600">{percentUsed}%</span>
+                      </div>
+                      <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                        <div 
+                          className={`h-full rounded-full transition-all duration-500 ease-out ${
+                            percentUsed > 90 
+                              ? 'bg-gradient-to-r from-rose-500 to-red-500' 
+                              : percentUsed > 75 
+                              ? 'bg-gradient-to-r from-amber-400 to-amber-500' 
+                              : 'bg-gradient-to-r from-primary to-teal-500'
+                          }`}
+                          style={{ width: `${percentUsed}%` }}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Budget breakdown grid */}
+                    <div className="grid grid-cols-3 gap-2 pt-3 border-t border-slate-100 text-xs">
+                      <div>
+                        <p className="text-slate-400 font-medium">Budget</p>
+                        <p className="text-slate-700 font-medium mt-0.5">₹{fund.totalAmount.toLocaleString()}</p>
+                      </div>
+                      <div>
+                        <p className="text-slate-400 font-medium">Used</p>
+                        <p className="text-slate-700 font-medium mt-0.5">₹{fund.usedAmount.toLocaleString()}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-slate-400 font-medium">Remaining</p>
+                        <p className={`font-semibold mt-0.5 ${
+                          fund.remainingAmount > 0 ? 'text-emerald-600' : 'text-slate-500'
+                        }`}>
+                          ₹{fund.remainingAmount.toLocaleString()}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center p-12 text-center border border-dashed border-slate-200 rounded-xl bg-slate-50/20">
+              <Coins size={32} className="text-slate-300 mb-2" />
+              <p className="text-slate-400 font-medium text-sm">No fund matching the filters</p>
+            </div>
+          )}
 
           {/* PAGINATION */}
           {totalPages > 1 && (
-            <div className="flex justify-end items-center gap-4 mt-8 pt-2">
+            <div className="flex justify-end items-center gap-3 mt-6 pt-2">
               <PaginationButton
                 disabled={page === 1}
                 onClick={() => setPage(p => p - 1)}
-                icon={<ChevronLeft size={18} />}
+                icon={<ChevronLeft size={14} />}
               />
-              <span className="text-sm text-slate-600 font-bold px-1">
+              <span className="text-xs text-slate-500 font-medium px-1">
                 Page {page} of {totalPages}
               </span>
               <PaginationButton
                 disabled={page === totalPages}
                 onClick={() => setPage(p => p + 1)}
-                icon={<ChevronRight size={18} />}
+                icon={<ChevronRight size={14} />}
               />
             </div>
           )}
@@ -250,60 +276,65 @@ const FundSummary = () => {
   );
 };
 
-/* NEUMORPHIC SELECT COMPONENT */
+/* CLEAN SELECT COMPONENT */
 const FilterSelect = ({ value, onChange, children }) => (
   <select
     value={value}
     onChange={(e) => onChange(e.target.value)}
     className="
-      rounded-2xl px-4 py-3 text-sm text-slate-700 font-bold outline-none
-      cursor-pointer transition duration-300 border border-slate-300 bg-white w-36 sm:w-40"
+      rounded-lg px-3 py-1.5 text-xs text-slate-600 font-medium outline-none
+      cursor-pointer border border-slate-200 bg-white hover:bg-slate-50/80 focus:border-primary/50 focus:ring-2 focus:ring-primary/10 transition-all duration-150 w-full sm:w-36"
   >
     {children}
   </select>
 );
 
-/* NEUMORPHIC SUMMARY CARD */
-const SummaryCard = ({ icon, label, value, color }) => (
-  <div 
-    className="rounded-3xl p-6 transition duration-300 flex items-center gap-5 border border-slate-200 shadow-sm bg-white"
-  >
-    <div 
-      className="p-4 rounded-full border border-slate-100 bg-slate-50"
-    >
-      {icon}
-    </div>
-    <div>
-      <span className="text-slate-400 text-xs font-black uppercase tracking-widest">{label}</span>
-      <p className={`text-2xl font-black ${color} mt-0.5`}>
-        ₹{Number(value).toLocaleString()}
-      </p>
-    </div>
-  </div>
-);
+/* CLEAN SUMMARY CARD */
+const SummaryCard = ({ icon, label, value, accentColor }) => {
+  const colorMap = {
+    primary: {
+      bg: "bg-gradient-to-br from-teal-50 to-cyan-50/30",
+      text: "text-primary border-teal-100/70",
+      valText: "text-slate-800"
+    },
+    rose: {
+      bg: "bg-gradient-to-br from-rose-50 to-orange-50/30",
+      text: "text-rose-600 border-rose-100/70",
+      valText: "text-rose-600"
+    },
+    emerald: {
+      bg: "bg-gradient-to-br from-emerald-50 to-teal-50/30",
+      text: "text-emerald-600 border-emerald-100/70",
+      valText: "text-emerald-600"
+    }
+  };
 
-/* NEUMORPHIC PAGINATION BUTTON */
-const PaginationButton = ({ icon, disabled, onClick }) => {
-  const [pressed, setPressed] = useState(false);
+  const style = colorMap[accentColor] || colorMap.primary;
+
   return (
-    <button
-      disabled={disabled}
-      onClick={onClick}
-      onMouseDown={() => setPressed(true)}
-      onMouseUp={() => setPressed(false)}
-      onMouseLeave={() => setPressed(false)}
-      onTouchStart={() => setPressed(true)}
-      onTouchEnd={() => setPressed(false)}
-      className="p-3 rounded-2xl text-slate-700 transition duration-300 disabled:opacity-40"
-      style={
-        pressed
-          ? { backgroundColor: "#f1f5f9", border: "1px solid #cbd5e1" }
-          : { backgroundColor: "#ffffff", border: "1px solid #cbd5e1" }
-      }
-    >
-      {icon}
-    </button>
+    <div className="group rounded-xl p-5 flex items-center gap-4 border border-slate-200/50 bg-white shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+      <div className={`p-3 rounded-lg border ${style.bg} ${style.text} group-hover:scale-105 transition-transform duration-300`}>
+        {icon}
+      </div>
+      <div>
+        <span className="text-slate-400 text-[10px] font-medium uppercase tracking-wider">{label}</span>
+        <p className={`text-xl font-semibold mt-1 tracking-tight ${style.valText}`}>
+          ₹{Number(value).toLocaleString()}
+        </p>
+      </div>
+    </div>
   );
 };
+
+/* CLEAN PAGINATION BUTTON */
+const PaginationButton = ({ icon, disabled, onClick }) => (
+  <button
+    disabled={disabled}
+    onClick={onClick}
+    className="p-1.5 rounded-lg text-slate-600 border border-slate-200 bg-white hover:bg-slate-50 active:bg-slate-100 transition-colors disabled:opacity-40 disabled:hover:bg-white cursor-pointer disabled:cursor-not-allowed"
+  >
+    {icon}
+  </button>
+);
 
 export default FundSummary;
