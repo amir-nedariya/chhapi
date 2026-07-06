@@ -9,7 +9,6 @@ import {
   Calendar,
   ShieldCheck,
   Edit,
-  Trash2,
 } from "lucide-react";
 
 import { getUserByIdAPI } from "../../../../../api/user.api";
@@ -17,7 +16,6 @@ import {
   createDonationAPI,
   getDonationsByDonorIdAPI,
   updateDonationAPI,
-  deleteDonationAPI,
 } from "../../../../../api/donation.api";
 import { useSidebarColor } from "../../../../../hooks/useSidebarColor";
 
@@ -49,7 +47,6 @@ const ViewUser = () => {
   const [showModal, setShowModal] = useState(false);
   //50 is default amount
   const [amount, setAmount] = useState("50");
-  const [remarks, setRemarks] = useState("");
 
   const now = new Date();
   const [month, setMonth] = useState(now.getMonth() + 1);
@@ -64,7 +61,6 @@ const ViewUser = () => {
   const [editMonth, setEditMonth] = useState(1);
   const [editYear, setEditYear] = useState(now.getFullYear());
   const [editStatus, setEditStatus] = useState("Success");
-  const [editRemarks, setEditRemarks] = useState("");
   const [editDonationLoading, setEditDonationLoading] = useState(false);
 
   const fetchDonations = async () => {
@@ -106,11 +102,10 @@ const ViewUser = () => {
         amount: Number(amount),
         month,
         year,
-        remarks,
+        remarks: "",
       });
       toast.success("Donation added");
       setAmount("50");
-      setRemarks("");
       setShowModal(false);
       fetchDonations();
     } catch {
@@ -127,7 +122,6 @@ const ViewUser = () => {
     setEditMonth(donation.month);
     setEditYear(donation.year);
     setEditStatus(donation.status || "Success");
-    setEditRemarks(donation.remarks || "");
     setShowEditModal(true);
   };
 
@@ -144,7 +138,7 @@ const ViewUser = () => {
         month: editMonth,
         year: editYear,
         status: editStatus,
-        remarks: editRemarks,
+        remarks: "",
       });
       toast.success("Donation updated successfully");
       setShowEditModal(false);
@@ -156,20 +150,7 @@ const ViewUser = () => {
     }
   };
 
-  /* ===== DELETE DONATION ===== */
-  const handleDeleteDonation = async (donationId) => {
-    if (!window.confirm("Are you sure you want to delete this donation?")) {
-      return;
-    }
 
-    try {
-      await deleteDonationAPI(donationId);
-      toast.success("Donation deleted successfully");
-      fetchDonations();
-    } catch {
-      toast.error("Failed to delete donation");
-    }
-  };
 
   if (loading) {
     return (
@@ -198,7 +179,7 @@ const ViewUser = () => {
       </button>
 
       {/* ===== PROFILE HEADER ===== */}
-      <div className="rounded-3xl bg-white border border-slate-200 p-6 flex flex-col md:flex-row items-center gap-6 shadow-sm">
+      <div className="rounded-xl bg-white border border-slate-200/50 p-5 sm:p-6 flex flex-col md:flex-row items-center gap-6 shadow-xs">
 
         <img
           src={user.profilePhoto?.url && user.profilePhoto.url !== "/avatar.png"
@@ -207,17 +188,17 @@ const ViewUser = () => {
                 : user.profilePhoto.url)
             : `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || "User")}&background=${sidebarColor}&color=fff`}
           alt="profile"
-          className="w-28 h-28 rounded-full border border-slate-200 object-cover shadow-xs"
+          className="w-24 h-24 rounded-full border border-slate-200 object-cover shadow-xs"
         />
 
         <div className="flex-1 text-center md:text-left">
-          <h2 className="text-3xl font-extrabold text-slate-800 tracking-tight">{user.name}</h2>
+          <h2 className="text-2xl font-semibold text-slate-800 tracking-tight">{user.name}</h2>
 
-          <div className="flex flex-wrap justify-center md:justify-start gap-2 mt-3">
-            <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${roleStyles[user.role]}`}>
+          <div className="flex flex-wrap justify-center md:justify-start gap-2 mt-2.5">
+            <span className={`px-2 py-0.5 rounded text-[10px] font-semibold uppercase border ${roleStyles[user.role]}`}>
               {user.role}
             </span>
-            <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${
+            <span className={`px-2 py-0.5 rounded text-[10px] font-semibold uppercase border ${
               user.isActive ? statusStyles.ACTIVE : statusStyles.INACTIVE
             }`}>
               {user.isActive ? "ACTIVE" : "INACTIVE"}
@@ -227,95 +208,86 @@ const ViewUser = () => {
 
         <button
           onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 px-5 py-3 rounded-xl bg-cyan-50 hover:bg-cyan-100 text-cyan-700 border border-cyan-100 transition font-bold shadow-xs cursor-pointer"
+          className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition font-semibold text-xs shadow-sm hover:shadow active:scale-98 cursor-pointer"
         >
-          <PlusCircle size={18} />
+          <PlusCircle size={14} />
           Add Donation
         </button>
       </div>
 
       {/* ===== DETAILS ===== */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <InfoCard icon={<Phone size={18} />} label="Mobile" value={user.mobile} />
+        <InfoCard icon={<Phone size={16} />} label="Mobile" value={user.mobile} />
         <InfoCard
-          icon={<ShieldCheck size={18} />}
+          icon={<ShieldCheck size={16} />}
           label="Created By"
           value={`${user.createdByName || "SYSTEM"} ${
             user.createdByRole ? `(${user.createdByRole})` : ""
           }`}
         />
         <InfoCard
-          icon={<Calendar size={18} />}
+          icon={<Calendar size={16} />}
           label="Joined"
           value={new Date(user.createdAt).toLocaleDateString("en-GB")}
         />
       </div>
 
       {/* ===== DONATION HISTORY ===== */}
-      <div className="rounded-3xl bg-white border border-slate-200 p-6 shadow-sm space-y-4">
-        <div className="flex justify-between items-center border-b border-slate-100 pb-4">
+      <div className="rounded-xl bg-white border border-slate-200/50 p-5 sm:p-6 shadow-xs space-y-4">
+        <div className="flex justify-between items-center border-b border-slate-100 pb-3">
           <div>
-            <h3 className="text-xl font-bold text-slate-800">Donation History</h3>
-            <p className="text-slate-400 text-xs mt-0.5">Manage and view all recorded donation entries for this user</p>
+            <h3 className="text-slate-800 font-semibold text-xs uppercase tracking-wider">Donation History</h3>
+            <p className="text-slate-400 text-[10px] mt-0.5 font-medium">Manage and view all recorded donation entries for this user</p>
           </div>
         </div>
 
         {donations.length === 0 ? (
-          <div className="text-center py-10 text-slate-400 font-medium bg-slate-50/50 rounded-2xl border border-dashed border-slate-200">
+          <div className="text-center py-10 text-slate-400 font-medium bg-slate-50/50 rounded-lg border border-dashed border-slate-200">
             No donations recorded yet.
           </div>
         ) : (
-          <div className="overflow-x-auto rounded-2xl border border-slate-100">
-            <table className="w-full text-sm text-slate-800 border-collapse">
+          <div className="overflow-x-auto rounded-lg border border-slate-200/40">
+            <table className="w-full text-xs text-slate-800 border-collapse">
               <thead className="bg-gradient-to-r from-[var(--sidebar-from)] via-[var(--sidebar-via)] to-[var(--sidebar-to)] text-white border-b border-teal-950/20 text-xs font-semibold">
                 <tr>
-                  <th className="py-3.5 px-4 text-left font-semibold">Month & Year</th>
-                  <th className="py-3.5 px-4 text-right font-semibold">Amount</th>
-                  <th className="py-3.5 px-4 text-left font-semibold">Remarks</th>
-                  <th className="py-3.5 px-4 text-center font-semibold">Status</th>
-                  <th className="py-3.5 px-4 text-center font-semibold">Actions</th>
+                  <th className="py-3 px-4 text-left font-semibold border-b border-slate-200/10">Month & Year</th>
+                  <th className="py-3 px-4 text-right font-semibold border-b border-slate-200/10">Amount</th>
+                  <th className="py-3 px-4 text-left font-semibold border-b border-slate-200/10">Remarks</th>
+                  <th className="py-3 px-4 text-center font-semibold border-b border-slate-200/10">Status</th>
+                  <th className="py-3 px-4 text-center font-semibold border-b border-slate-200/10">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {donations.map((d) => (
-                  <tr key={d._id} className="hover:bg-slate-50/50 transition">
-                    <td className="py-3.5 px-4 font-semibold text-slate-700">
+                  <tr key={d._id} className="hover:bg-slate-50/60 transition-colors">
+                    <td className="py-3 px-4 font-semibold text-slate-700">
                       {months[d.month - 1]} {d.year}
                     </td>
-                    <td className="py-3.5 px-4 text-right font-bold text-slate-900">
+                    <td className="py-3 px-4 text-right font-semibold text-slate-900">
                       ₹{d.amount.toLocaleString("en-IN")}
                     </td>
-                    <td className="py-3.5 px-4 text-slate-500 max-w-[200px] truncate">
-                      {d.remarks || <span className="text-slate-300 italic">None</span>}
+                    <td className="py-3 px-4 text-slate-500 max-w-[200px] truncate">
+                      {d.remarks || <span className="text-slate-350 italic">None</span>}
                     </td>
-                    <td className="py-3.5 px-4 text-center">
-                      <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold border ${
+                    <td className="py-3 px-4 text-center">
+                      <span className={`px-2 py-0.5 rounded font-semibold text-[10px] border ${
                         d.status === "Success" || d.status === "Approved"
-                          ? "bg-emerald-50 text-emerald-700 border-emerald-150"
+                          ? "bg-emerald-50 text-emerald-700 border-emerald-100"
                           : d.status === "Pending"
-                          ? "bg-amber-50 text-amber-700 border-amber-150"
-                          : "bg-rose-50 text-rose-700 border-rose-150"
+                          ? "bg-amber-50 text-amber-700 border-amber-100"
+                          : "bg-rose-50 text-rose-700 border-rose-100"
                       }`}>
                         {d.status || "Success"}
                       </span>
                     </td>
-                    <td className="py-3.5 px-4 text-center">
-                      <div className="flex justify-center items-center gap-3">
-                        <button
-                          onClick={() => handleOpenEdit(d)}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-cyan-600 hover:bg-cyan-50 transition cursor-pointer"
-                          title="Edit Donation"
-                        >
-                          <Edit size={16} />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteDonation(d._id)}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition cursor-pointer"
-                          title="Delete Donation"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
+                    <td className="py-3 px-4 text-center">
+                      <button
+                        onClick={() => handleOpenEdit(d)}
+                        className="p-1.5 rounded-lg text-slate-400 hover:text-cyan-600 hover:bg-cyan-50 transition cursor-pointer"
+                        title="Edit Donation"
+                      >
+                        <Edit size={14} />
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -375,16 +347,7 @@ const ViewUser = () => {
               </select>
             </div>
 
-            {/* REMARKS */}
-            <div className="space-y-1">
-              <label className="text-xs text-slate-400 font-bold uppercase tracking-wider">Remarks</label>
-              <textarea
-                placeholder="Remarks (optional)"
-                value={remarks}
-                onChange={(e) => setRemarks(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 placeholder-slate-400 outline-none focus:ring-2 focus:ring-cyan-500 transition font-semibold resize-none h-20"
-              />
-            </div>
+
 
             <div className="flex justify-end gap-3 pt-2">
               <button
@@ -469,16 +432,7 @@ const ViewUser = () => {
               </select>
             </div>
 
-            {/* REMARKS */}
-            <div className="space-y-1">
-              <label className="text-xs text-slate-400 font-bold uppercase tracking-wider">Remarks</label>
-              <textarea
-                placeholder="Remarks (optional)"
-                value={editRemarks}
-                onChange={(e) => setEditRemarks(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 placeholder-slate-400 outline-none focus:ring-2 focus:ring-cyan-500 transition font-semibold resize-none h-20"
-              />
-            </div>
+
 
             <div className="flex justify-end gap-3 pt-2">
               <button
@@ -504,11 +458,11 @@ const ViewUser = () => {
 
 /* ===== INFO CARD ===== */
 const InfoCard = ({ icon, label, value }) => (
-  <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-5 flex items-center gap-3.5">
-    <div className="p-2.5 rounded-xl bg-slate-100 text-cyan-600 flex items-center justify-center">{icon}</div>
+  <div className="rounded-xl bg-white border border-slate-200/50 shadow-xs p-5 flex items-center gap-3.5 hover:shadow-sm transition-shadow">
+    <div className="p-2.5 rounded-lg bg-slate-50 text-slate-500 border border-slate-100 flex items-center justify-center">{icon}</div>
     <div>
-      <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">{label}</p>
-      <p className="font-bold text-slate-800 mt-0.5">{value}</p>
+      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{label}</p>
+      <p className="font-semibold text-slate-800 mt-0.5 text-sm">{value}</p>
     </div>
   </div>
 );

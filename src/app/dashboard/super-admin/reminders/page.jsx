@@ -10,6 +10,21 @@ const monthLabels = [
   "July", "August", "September", "October", "November", "December"
 ];
 
+const gujaratiMonths = {
+  jan: "જાન્યુઆરી",
+  feb: "ફેબ્રુઆરી",
+  mar: "માર્ચ",
+  apr: "એપ્રિલ",
+  may: "મે",
+  jun: "જૂન",
+  jul: "જુલાઈ",
+  aug: "ઑગસ્ટ",
+  sep: "સપ્ટેમ્બર",
+  oct: "ઓક્ટોબર",
+  nov: "નવેમ્બર",
+  dec: "ડિસેમ્બર"
+};
+
 const RemindersPage = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -60,9 +75,11 @@ const RemindersPage = () => {
       return;
     }
 
+    const monthName = gujaratiMonths[selectedMonth] || "";
+
     const message = `પ્રિય ${name},
 
-"સેવા એ જ સાચો ધર્મ છે." તમારું નાનું સરખું દાન પણ કોઈ ગરીબ કે જરૂરિયાતમંદ માટે આશીર્વાદ સમાન બની શકે છે. આપણી કમાણીનો એક નાનો ભાગ સત્કર્મમાં લગાવીé. આજે જ જોડાઓ! 🤝❤️
+આપનું ${monthName} મહિનાનું યોગદાન બાકી છે. "સેવા એ જ સાચો ધર્મ છે." તમાrું નાનું સરખું દાન પણ કોઈ ગરીબ કે જરૂરિયાતમંદ માટે આશીર્વાદ સમાન બની શકે છે. આપણી કમાણીનો એક નાનો ભાગ સત્કર્મમાં લગાવીએ. 🤝❤️
 
 — છપી ડોનેશન પોર્ટલ`;
 
@@ -90,130 +107,141 @@ const RemindersPage = () => {
   };
 
   return (
-    <div className="p-6 space-y-6 max-w-7xl mx-auto">
-      
-      {/* Header */}
-      <div className="flex flex-col items-center text-center sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h2 className="text-2xl font-bold text-slate-800">Pending Monthly Reminders</h2>
-          <p className="text-sm text-slate-500 mt-1">Send WhatsApp reminders to donors who haven't contributed this month.</p>
-        </div>
-        <div className="flex items-center justify-center sm:justify-end gap-3 w-full sm:w-auto">
-          <button 
-            onClick={fetchUsers}
-            className="flex items-center justify-center p-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition active:scale-95 cursor-pointer"
-            title="Refresh List"
-          >
-            <RefreshCw size={15} className={`${loading ? 'animate-spin' : ''}`} />
-          </button>
-          
-          {pendingDonors.length > 0 && (
+    <div className="min-h-screen bg-slate-50/30 p-4 sm:p-8 space-y-6 text-slate-800 font-sans">
+      <div className="w-full max-w-6xl mx-auto space-y-6">
+        
+        {/* Header */}
+        <div className="flex flex-col items-center text-center sm:flex-row sm:text-left sm:items-center sm:justify-between gap-4 px-1">
+          <div className="flex flex-col items-center text-center sm:flex-row sm:text-left sm:items-center gap-3">
+            <div className="p-3 rounded-lg border border-primary/10 bg-primary/5 text-primary flex items-center justify-center">
+              <MessageSquare size={20} />
+            </div>
+            <div>
+              <h2 className="text-xl font-semibold text-slate-800 tracking-tight">
+                Pending Monthly Reminders
+              </h2>
+              <p className="text-slate-400 text-xs mt-0.5 font-medium">Send WhatsApp reminders to donors who haven't contributed this month.</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 w-full sm:w-auto justify-center sm:justify-end">
             <button 
-              onClick={sendAllReminders}
-              className="flex items-center gap-2 px-5 py-2.5 text-sm font-bold rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white transition active:scale-95 shadow-md hover:shadow-lg cursor-pointer"
+              onClick={fetchUsers}
+              disabled={loading}
+              className="p-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-600 transition cursor-pointer flex items-center justify-center"
+              title="Refresh List"
             >
-              <Send size={15} />
-              <span>Send to All ({pendingDonors.length})</span>
+              <RefreshCw size={14} className={`${loading ? 'animate-spin' : ''}`} />
             </button>
-          )}
-        </div>
-      </div>
-
-      {/* Filter Controls */}
-      <div className="flex flex-col sm:flex-row gap-4 bg-white p-4 border border-slate-200 rounded-2xl shadow-xs">
-        {/* Search */}
-        <div className="relative flex-1">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
-          <input
-            type="text"
-            placeholder="Search by name or phone..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-xl bg-slate-50/50 text-slate-800 text-sm focus:outline-none focus:border-cyan-500 focus:bg-white transition"
-          />
+            
+            {pendingDonors.length > 0 && (
+              <button 
+                onClick={sendAllReminders}
+                className="flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition cursor-pointer shadow-sm hover:shadow active:scale-98"
+              >
+                <Send size={12} />
+                <span>Send to All ({pendingDonors.length})</span>
+              </button>
+            )}
+          </div>
         </div>
 
-        {/* Month Selector */}
-        <div className="w-full sm:w-48">
-          <select
-            value={selectedMonth}
-            onChange={(e) => setSelectedMonth(e.target.value)}
-            className="w-full px-4 py-2 border border-slate-200 rounded-xl bg-white text-slate-800 text-sm focus:outline-none focus:border-cyan-500 transition cursor-pointer"
-          >
-            {monthKeys.map((key, index) => (
-              <option key={key} value={key}>
-                {monthLabels[index]} Reminders
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
+        {/* Filter Controls */}
+        <div className="rounded-xl p-4 sm:p-5 border border-slate-200/50 bg-white shadow-sm flex flex-col sm:flex-row gap-4 items-center">
+          {/* Search */}
+          <div className="relative flex-1 w-full">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+            <input
+              type="text"
+              placeholder="Search by name or phone..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-9 pr-4 py-2 border border-slate-200 focus:border-primary/45 rounded-lg text-slate-800 outline-none placeholder:text-slate-400 font-medium text-xs transition-colors bg-white"
+            />
+          </div>
 
-      {/* Donors List Table */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-slate-800 font-semibold text-base">
-            Pending Donors ({pendingDonors.length})
-          </h3>
-          <span className="text-xs text-slate-400 font-medium uppercase tracking-wider">
-            Month: {monthLabels[monthKeys.indexOf(selectedMonth)]}
-          </span>
+          {/* Month Selector */}
+          <div className="w-full sm:w-48">
+            <select
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              className="w-full px-3 py-2 border border-slate-200 focus:border-primary/45 rounded-lg text-slate-800 outline-none cursor-pointer font-medium text-xs transition-colors bg-white"
+            >
+              {monthKeys.map((key, index) => (
+                <option key={key} value={key}>
+                  {monthLabels[index]} Reminders
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
-        <div className="overflow-x-auto rounded-xl border border-slate-100">
-          <table className="w-full text-sm text-left text-slate-700">
-            <thead className="bg-gradient-to-r from-[var(--sidebar-from)] via-[var(--sidebar-via)] to-[var(--sidebar-to)] text-white border-b border-teal-950/20 text-xs font-semibold">
-              <tr>
-                <th className="py-3 px-4 font-semibold">Donor Name</th>
-                <th className="py-3 px-4 font-semibold">Mobile Number</th>
-                <th className="py-3 px-4 font-semibold">Donation Status</th>
-                <th className="py-3 px-4 text-center font-semibold">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {loading ? (
+        {/* Donors List Table */}
+        <div className="rounded-xl p-5 sm:p-6 space-y-6 border border-slate-200/50 bg-white shadow-sm">
+          <div className="flex justify-between items-center mb-1">
+            <h3 className="text-slate-800 font-semibold text-xs uppercase tracking-wider">
+              Pending Donors ({pendingDonors.length})
+            </h3>
+            <span className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">
+              Month: {monthLabels[monthKeys.indexOf(selectedMonth)]}
+            </span>
+          </div>
+
+          <div className="overflow-x-auto rounded-lg border border-slate-200/40">
+            <table className="w-full text-xs text-left text-slate-700 border-collapse">
+              <thead className="bg-gradient-to-r from-[var(--sidebar-from)] via-[var(--sidebar-via)] to-[var(--sidebar-to)] text-white text-xs font-semibold">
                 <tr>
-                  <td colSpan={4} className="py-8 text-center text-slate-400 font-medium">
-                    Loading donor records...
-                  </td>
+                  <th className="py-3 px-4 font-semibold border-b border-slate-200/10">Donor Details</th>
+                  <th className="py-3 px-4 font-semibold border-b border-slate-200/10">Donation Status</th>
+                  <th className="py-3 px-4 text-center font-semibold border-b border-slate-200/10">Action</th>
                 </tr>
-              ) : pendingDonors.length > 0 ? (
-                pendingDonors.map((userObj) => (
-                  <tr key={userObj._id} className="hover:bg-slate-50/50 transition">
-                    <td className="py-3 px-4 font-semibold text-slate-850">{userObj.name}</td>
-                    <td className="py-3 px-4 text-slate-600 font-medium">{userObj.mobile || "N/A"}</td>
-                    <td className="py-3 px-4">
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-50 text-rose-700">
-                        <AlertCircle size={12} />
-                        Not Paid
-                      </span>
-                    </td>
-                    <td className="py-3 px-4 text-center">
-                      <button
-                        onClick={() => { sendWhatsAppReminder(userObj); toast.success(`✉️ Opened chat for ${userObj.name}`); }}
-                        className="inline-flex items-center gap-1.5 px-4.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-600 text-emerald-700 hover:text-white border border-emerald-100 hover:border-emerald-600 font-semibold text-xs transition active:scale-95 cursor-pointer"
-                      >
-                        <MessageSquare size={13} className="fill-current stroke-none" />
-                        <span>Send WhatsApp</span>
-                      </button>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {loading ? (
+                  <tr>
+                    <td colSpan={3} className="py-8 text-center text-slate-400 font-medium">
+                      Loading donor records...
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={4} className="py-8 text-center text-emerald-600 font-medium">
-                    <div className="flex flex-col items-center gap-1 justify-center">
-                      <CheckCircle size={20} className="text-emerald-500" />
-                      <span>All donors have paid for this month! No reminders needed.</span>
-                    </div>
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                ) : pendingDonors.length > 0 ? (
+                  pendingDonors.map((userObj) => (
+                    <tr key={userObj._id} className="hover:bg-slate-50/60 transition-colors">
+                      <td className="py-3 px-4">
+                        <div className="font-semibold text-slate-700 uppercase tracking-wide">{userObj.name}</div>
+                        <div className="text-[10px] text-slate-400 font-medium mt-0.5">{userObj.mobile || "N/A"}</div>
+                      </td>
+                      <td className="py-3 px-4">
+                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded font-semibold text-[10px] bg-rose-50 text-rose-700 border border-rose-100">
+                          <AlertCircle size={10} />
+                          Not Paid
+                        </span>
+                      </td>
+                      <td className="py-3 px-4 text-center">
+                        <button
+                          onClick={() => { sendWhatsAppReminder(userObj); toast.success(`✉️ Opened chat for ${userObj.name}`); }}
+                          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-600 text-emerald-700 hover:text-white border border-emerald-100 hover:border-emerald-600 font-semibold text-xs transition active:scale-95 cursor-pointer"
+                        >
+                          <MessageSquare size={12} className="fill-current stroke-none" />
+                          <span>Send WhatsApp</span>
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={3} className="py-8 text-center text-emerald-600 font-medium">
+                      <div className="flex flex-col items-center gap-1 justify-center">
+                        <CheckCircle size={18} className="text-emerald-500" />
+                        <span>All donors have paid for this month! No reminders needed.</span>
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
 
+      </div>
     </div>
   );
 };

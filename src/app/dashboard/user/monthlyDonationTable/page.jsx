@@ -114,258 +114,207 @@ const MonthlyDonationTable = () => {
     }, 0);
   };
 
-  // Clean Modern Styles
-  const cardShadow = {
-    boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05)",
-    backgroundColor: "#ffffff",
-    border: "1px solid #e2e8f0",
-  };
-
-  const inputShadow = {
-    backgroundColor: "#ffffff",
-    border: "1px solid #cbd5e1",
-  };
-
-  const headerIconShadow = {
-    boxShadow: "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
-    backgroundColor: "#ffffff",
-    border: "1px solid #e2e8f0",
-  };
-
-  const prevButtonShadow = {
-    backgroundColor: "#ffffff",
-    border: "1px solid #e2e8f0",
-  };
-
-  const nextButtonShadow = {
-    backgroundColor: "#ffffff",
-    border: "1px solid #e2e8f0",
-  };
-
-  /* ================= LOADER ================= */
-  if (loading && rows.length === 0) {
-    return <FullScreenLoader text="Loading monthly donations..." />;
-  }
-
   return (
-    <div className="min-h-screen w-full bg-white p-1 sm:p-8 space-y-8 flex flex-col justify-start font-sans text-slate-800">
+    <div className="min-h-screen bg-slate-50/30 p-4 sm:p-8 space-y-6 text-slate-800 font-sans">
+      <div className="w-full max-w-6xl mx-auto space-y-6">
 
-      {/* ================= HEADER ================= */}
-      <div className="flex flex-col items-center text-center sm:flex-row sm:text-left sm:items-center gap-3 px-2">
-        <div 
-          className="p-3.5 rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0"
-          style={headerIconShadow}
-        >
-          <BarChart3 className="text-cyan-600 animate-pulse" size={24} />
-        </div>
-        <div>
-          <h2 className="text-2xl font-extrabold text-slate-800 tracking-tight">
-            Monthly Donation Table
-          </h2>
-          <p className="text-slate-500 text-sm mt-0.5 font-medium">Consolidated view of monthly budgets allocations</p>
-        </div>
-      </div>
-
-      {/* ================= FILTER BAR ================= */}
-      <div 
-        className="rounded-3xl p-6 transition-all duration-300"
-        style={cardShadow}
-      >
-        <div className="flex flex-col md:flex-row gap-4 items-center">
-
-          {/* SEARCH */}
-          <div className="relative flex-1 w-full">
-            <Search
-              size={18}
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
-            />
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search name or mobile..."
-              className="w-full pl-11 pr-4 py-3.5 rounded-2xl text-slate-800 outline-none placeholder:text-gray-400 font-semibold text-sm transition-all"
-              style={inputShadow}
-            />
+        {/* ================= HEADER ================= */}
+        <div className="flex flex-col items-center text-center sm:flex-row sm:text-left sm:items-center gap-3 px-1">
+          <div className="p-3 rounded-lg border border-primary/10 bg-primary/5 text-primary flex items-center justify-center">
+            <BarChart3 size={20} />
           </div>
+          <div>
+            <h2 className="text-xl font-semibold text-slate-800 tracking-tight">
+              Monthly Donation Table
+            </h2>
+            <p className="text-slate-400 text-xs mt-0.5 font-medium">Consolidated view of monthly budgets allocations</p>
+          </div>
+        </div>
 
-          {/* YEAR */}
-          <div className="relative w-full md:w-auto flex-1">
-            <Calendar
-              size={18}
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
-            />
+        {/* ================= FILTER BAR ================= */}
+        <div className="rounded-xl p-4 sm:p-5 border border-slate-200/50 bg-white shadow-sm">
+          <div className="flex flex-col md:flex-row gap-4 items-center">
+
+            {/* SEARCH */}
+            <div className="relative flex-1 w-full">
+              <Search
+                size={16}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+              />
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search name or mobile..."
+                className="w-full pl-9 pr-4 py-2 border border-slate-200 focus:border-primary/45 rounded-lg text-slate-800 outline-none placeholder:text-slate-400 font-medium text-xs transition-colors bg-white"
+              />
+            </div>
+
+            {/* YEAR */}
+            <div className="relative w-full md:w-auto flex-1">
+              <Calendar
+                size={16}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+              />
+              <select
+                value={year}
+                onChange={(e) => {
+                  setPage(1);
+                  setYear(Number(e.target.value));
+                }}
+                className="w-full pl-9 pr-4 py-2 border border-slate-200 focus:border-primary/45 rounded-lg text-slate-800 outline-none cursor-pointer font-medium text-xs transition-colors bg-white"
+              >
+                {availableYears.map((y) => (
+                  <option key={y} value={y}>
+                    {y}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* MONTH */}
             <select
-              value={year}
+              value={month}
               onChange={(e) => {
                 setPage(1);
-                setYear(Number(e.target.value));
+                setMonth(e.target.value);
               }}
-              className="w-full pl-11 pr-4 py-3.5 rounded-2xl text-slate-800 outline-none cursor-pointer font-semibold text-sm transition-all"
-              style={inputShadow}
+              className="w-full md:w-auto flex-1 px-3 py-2 border border-slate-200 focus:border-primary/45 rounded-lg text-slate-800 outline-none cursor-pointer font-medium text-xs transition-colors bg-white"
             >
-              {availableYears.map((y) => (
-                <option key={y} value={y}>
-                  {y}
+              <option value="ALL">All Months</option>
+              {months.map((m) => (
+                <option key={m.key} value={m.key}>
+                  {m.label}
                 </option>
               ))}
             </select>
+
+            {/* PAYMENT STATUS */}
+            <select
+              value={paymentStatus}
+              onChange={(e) => {
+                setPage(1);
+                setPaymentStatus(e.target.value);
+              }}
+              className="w-full md:w-auto flex-1 px-3 py-2 border border-slate-200 focus:border-primary/45 rounded-lg text-slate-800 outline-none cursor-pointer font-medium text-xs transition-colors bg-white"
+            >
+              <option value="ALL">All Payments</option>
+              <option value="PAID">Paid</option>
+              <option value="UNPAID">Unpaid</option>
+            </select>
+          </div>
+        </div>
+
+        {/* ================= TABLE ================= */}
+        <div className="rounded-xl p-5 sm:p-6 space-y-6 border border-slate-200/50 bg-white shadow-sm">
+          <div className="overflow-x-auto rounded-lg border border-slate-200/40 pb-1">
+            <table className="min-w-full text-left text-slate-800 border-collapse">
+              <thead className="bg-gradient-to-r from-[var(--sidebar-from)] via-[var(--sidebar-via)] to-[var(--sidebar-to)] text-white text-xs font-semibold">
+                <tr>
+                  <th className="py-3 px-4 sticky left-0 bg-[var(--sidebar-via)] text-white z-10 font-semibold border-b border-slate-200/10">Donor Details</th>
+                  {visibleMonths.map((m) => (
+                    <th key={m.key} className="py-3 px-3 text-center font-semibold border-b border-slate-200/10">
+                      {m.label}
+                    </th>
+                  ))}
+                  <th className="py-3 px-4 text-right bg-[var(--sidebar-to)] text-white font-semibold border-b border-slate-200/10">Total</th>
+                </tr>
+              </thead>
+
+              <tbody className="divide-y divide-slate-100">
+                {rows.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={visibleMonths.length + 2}
+                      className="p-8 text-center text-slate-400 font-medium text-xs"
+                    >
+                      No records found
+                    </td>
+                  </tr>
+                ) : (
+                  rows.map((u, i) => {
+                    const total = calculateTotal(u);
+
+                    return (
+                      <tr
+                        key={u._id}
+                        className="hover:bg-slate-50/60 transition-colors group"
+                      >
+                        {/* USER */}
+                        <td className="py-3.5 px-4 sticky left-0 bg-white group-hover:bg-slate-50/60 z-10 transition-colors">
+                          <div className="flex items-center gap-3">
+                            <img
+                              src={getAvatarUrl(u)}
+                              alt={u.name}
+                              className="w-8 h-8 rounded-full object-cover border border-slate-200/60"
+                            />
+                            <div>
+                              <div className="font-semibold text-slate-700 text-xs tracking-wide uppercase whitespace-nowrap">{u.name}</div>
+                              <div className="text-[10px] text-slate-400 font-medium mt-0.5">{u.mobile}</div>
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* MONTHS */}
+                        {visibleMonths.map((m) => (
+                          <td
+                            key={m.key}
+                            className={`py-3.5 px-3 text-center text-xs ${
+                              u[m.key] > 0
+                                ? "text-emerald-600 font-semibold"
+                                : "text-slate-400 font-medium"
+                            }`}
+                          >
+                            {u[m.key] > 0 ? `₹${u[m.key].toLocaleString("en-IN")}` : "-"}
+                          </td>
+                        ))}
+
+                        {/* TOTAL */}
+                        <td className="py-3.5 px-4 font-semibold text-right text-xs text-primary bg-white group-hover:bg-slate-50/60 transition-colors">
+                          ₹{total.toLocaleString("en-IN")}
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
           </div>
 
-          {/* MONTH */}
-          <select
-            value={month}
-            onChange={(e) => {
-              setPage(1);
-              setMonth(e.target.value);
-            }}
-            className="w-full md:w-auto flex-1 px-4 py-3.5 rounded-2xl text-slate-800 outline-none cursor-pointer font-semibold text-sm transition-all"
-            style={inputShadow}
-          >
-            <option value="ALL">All Months</option>
-            {months.map((m) => (
-              <option key={m.key} value={m.key}>
-                {m.label}
-              </option>
-            ))}
-          </select>
+          {/* ================= PAGINATION ================= */}
+          {pages > 1 && (
+            <div className="flex justify-end items-center gap-3 pt-2">
+              <PaginationButton
+                onClick={() => setPage((p) => Math.max(p - 1, 1))}
+                disabled={page === 1}
+                icon={<ChevronLeft size={14} />}
+              />
 
-          {/* PAYMENT STATUS */}
-          <select
-            value={paymentStatus}
-            onChange={(e) => {
-              setPage(1);
-              setPaymentStatus(e.target.value);
-            }}
-            className="w-full md:w-auto flex-1 px-4 py-3.5 rounded-2xl text-slate-800 outline-none cursor-pointer font-semibold text-sm transition-all"
-            style={inputShadow}
-          >
-            <option value="ALL">All</option>
-            <option value="PAID">Paid</option>
-            <option value="UNPAID">Unpaid</option>
-          </select>
+              <span className="text-xs text-slate-500 font-medium px-1">
+                Page {page} of {pages}
+              </span>
+
+              <PaginationButton
+                onClick={() => setPage((p) => Math.min(p + 1, pages))}
+                disabled={page === pages}
+                icon={<ChevronRight size={14} />}
+              />
+            </div>
+          )}
         </div>
       </div>
-
-      {/* ================= TABLE ================= */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs">
-        <div className="overflow-x-auto custom-scrollbar pb-2 rounded-xl border border-slate-100">
-          <table className="min-w-full text-left text-slate-800 border-collapse">
-            <thead className="bg-gradient-to-r from-[var(--sidebar-from)] via-[var(--sidebar-via)] to-[var(--sidebar-to)] text-white border-b border-teal-950/20 text-xs font-semibold">
-              <tr>
-                <th className="py-3 px-4 bg-[var(--sidebar-from)] text-white z-10 w-16 text-center font-semibold">#</th>
-                <th className="py-3 px-4 sticky left-0 bg-[var(--sidebar-via)] text-white z-10 font-semibold">Donor Details</th>
-                {visibleMonths.map((m) => (
-                  <th key={m.key} className="py-3 px-3 text-center font-semibold">
-                    {m.label}
-                  </th>
-                ))}
-                <th className="py-3 px-4 text-right bg-[var(--sidebar-to)] text-white font-semibold">Total</th>
-              </tr>
-            </thead>
-
-            <tbody className="divide-y divide-slate-100">
-              {rows.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={visibleMonths.length + 3}
-                    className="p-8 text-center text-slate-500 font-bold"
-                  >
-                    No data found
-                  </td>
-                </tr>
-              ) : (
-                rows.map((u, i) => {
-                  const total = calculateTotal(u);
-
-                  return (
-                    <tr
-                      key={u._id}
-                      className="hover:bg-slate-50 transition-colors group"
-                    >
-                      {/* INDEX */}
-                      <td className="py-3 px-4 bg-white group-hover:bg-slate-50 font-bold text-slate-500 text-sm text-center">
-                        {i + 1 + (page - 1) * 10}
-                      </td>
-
-                      {/* USER */}
-                      <td className="py-3 px-4 sticky left-0 bg-white group-hover:bg-slate-50 z-10">
-                        <div className="flex items-center gap-3">
-                          <img
-                            src={getAvatarUrl(u)}
-                            alt={u.name}
-                            className="w-10 h-10 rounded-full object-cover border border-slate-300/40"
-                          />
-                          <div>
-                            <div className="font-bold text-slate-800 text-sm tracking-wide uppercase">{u.name}</div>
-                            <div className="text-[11px] text-slate-400 font-medium mt-0.5">{u.mobile}</div>
-                          </div>
-                        </div>
-                      </td>
-
-                      {/* MONTHS */}
-                      {visibleMonths.map((m) => (
-                        <td
-                          key={m.key}
-                          className={`py-3 px-3 text-center text-[13px] ${
-                            u[m.key] > 0
-                              ? "text-emerald-500 font-bold"
-                              : "text-slate-500 font-medium"
-                          }`}
-                        >
-                          {u[m.key] > 0 ? `₹${u[m.key].toLocaleString("en-IN")}` : "-"}
-                        </td>
-                      ))}
-
-                      {/* TOTAL */}
-                      <td className="py-3 px-4 font-extrabold text-right text-base text-cyan-600 bg-white group-hover:bg-slate-50">
-                        ₹{total.toLocaleString("en-IN")}
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* ================= PAGINATION ================= */}
-      {pages > 1 && (
-        <div className="flex justify-center gap-4 mt-4">
-          <button
-            disabled={page === 1}
-            onClick={() => setPage((p) => p - 1)}
-            onMouseDown={() => setPrevPressed(true)}
-            onMouseUp={() => setPrevPressed(false)}
-            onMouseLeave={() => setPrevPressed(false)}
-            className="p-2.5 rounded-2xl text-slate-600 hover:text-slate-850 active:scale-95 disabled:opacity-40 disabled:hover:text-slate-600 disabled:active:scale-100 transition-all cursor-pointer"
-            style={prevButtonShadow}
-          >
-            <ChevronLeft size={20} />
-          </button>
-
-          <span 
-            className="text-slate-755 text-sm font-bold px-4 py-2.5 rounded-2xl flex items-center"
-            style={inputShadow}
-          >
-            Page {page} of {pages}
-          </span>
-
-          <button
-            disabled={page === pages}
-            onClick={() => setPage((p) => p + 1)}
-            onMouseDown={() => setNextPressed(true)}
-            onMouseUp={() => setNextPressed(false)}
-            onMouseLeave={() => setNextPressed(false)}
-            className="p-2.5 rounded-2xl text-slate-600 hover:text-slate-850 active:scale-95 disabled:opacity-40 disabled:hover:text-slate-600 disabled:active:scale-100 transition-all cursor-pointer"
-            style={nextButtonShadow}
-          >
-            <ChevronRight size={20} />
-          </button>
-        </div>
-      )}
     </div>
   );
 };
+
+/* CLEAN PAGINATION BUTTON */
+const PaginationButton = ({ icon, disabled, onClick }) => (
+  <button
+    disabled={disabled}
+    onClick={onClick}
+    className="p-1.5 rounded-lg text-slate-600 border border-slate-200 bg-white hover:bg-slate-50 active:bg-slate-100 transition-colors disabled:opacity-40 disabled:hover:bg-white cursor-pointer disabled:cursor-not-allowed"
+  >
+    {icon}
+  </button>
+);
 
 export default MonthlyDonationTable;

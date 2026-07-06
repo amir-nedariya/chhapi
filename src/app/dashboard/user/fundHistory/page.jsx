@@ -98,8 +98,8 @@ const FundHistory = () => {
                         {item.note}
                       </td>
 
-                      <td className="px-4 py-3.5 text-slate-700 font-medium">
-                        <div className="flex items-center gap-2 flex-wrap">
+                      <td className="px-4 py-3.5 text-slate-700 font-medium whitespace-nowrap">
+                        <div className="flex items-center gap-2">
                           <span>{item.usedBy?.name}</span>
                           <span 
                             className={`text-[9px] px-1.5 py-0.5 rounded font-semibold uppercase border ${
