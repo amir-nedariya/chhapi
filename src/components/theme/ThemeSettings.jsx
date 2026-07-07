@@ -26,8 +26,66 @@ const ThemeSettings = () => {
     window.dispatchEvent(new Event("sidebar-theme-changed"));
   };
 
+  const [customColor, setCustomColor] = useState(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const custom = JSON.parse(localStorage.getItem("custom-theme-colors"));
+        if (custom) return custom.color;
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    return "#0ea5e9";
+  });
+
+  const adjustBrightness = (hex, percent) => {
+    let num = parseInt(hex.replace("#", ""), 16),
+      amt = Math.round(2.55 * percent),
+      R = (num >> 16) + amt,
+      G = ((num >> 8) & 0x00ff) + amt,
+      B = (num & 0x0000ff) + amt;
+    return (
+      "#" +
+      (
+        0x1000000 +
+        (R < 255 ? (R < 0 ? 0 : R) : 255) * 0x10000 +
+        (G < 255 ? (G < 0 ? 0 : G) : 255) * 0x100 +
+        (B < 255 ? (B < 0 ? 0 : B) : 255)
+      )
+        .toString(16)
+        .slice(1)
+    );
+  };
+
+  const handleCustomChange = (colorHex) => {
+    setCustomColor(colorHex);
+    const customTheme = {
+      name: "Custom Design",
+      category: "CUSTOM DESIGN",
+      color: colorHex,
+      from: colorHex,
+      via: adjustBrightness(colorHex, -12),
+      to: adjustBrightness(colorHex, -12),
+      teal: colorHex
+    };
+    applyTheme(customTheme);
+    localStorage.setItem("custom-theme-colors", JSON.stringify(customTheme));
+    setActiveTheme("Custom Design");
+    window.dispatchEvent(new Event("sidebar-theme-changed"));
+  };
+
   // Find the selected theme object for live preview
-  const selectedThemeObj = themes.find((t) => t.name === activeTheme) || themes[themes.length - 1];
+  let selectedThemeObj = themes.find((t) => t.name === activeTheme);
+  if (!selectedThemeObj && activeTheme === "Custom Design") {
+    try {
+      selectedThemeObj = JSON.parse(localStorage.getItem("custom-theme-colors"));
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  if (!selectedThemeObj) {
+    selectedThemeObj = themes[0];
+  }
 
   const renderGroup = (category) => {
     const groupThemes = themes.filter((t) => t.category === category);
@@ -89,6 +147,49 @@ const ThemeSettings = () => {
 
         {renderGroup("SINGLE COLOR")}
         {renderGroup("VISION ASSISTIVE")}
+
+        {/* Custom Color Creator Section */}
+        <div className="space-y-4 pt-4 border-t border-slate-200/50">
+          <h4 className="text-[11px] font-black tracking-widest text-slate-400 uppercase">
+            Custom Design
+          </h4>
+          <div className="bg-white border border-slate-200/80 rounded-3xl p-5 flex flex-col sm:flex-row items-center gap-6 shadow-xs">
+            <div className="relative flex-shrink-0 flex items-center justify-center">
+              <input
+                type="color"
+                value={customColor}
+                onChange={(e) => handleCustomChange(e.target.value)}
+                className="w-14 h-14 rounded-full border border-slate-200 cursor-pointer p-0 bg-transparent outline-none overflow-hidden"
+                title="Choose Base Color"
+              />
+              <div 
+                className="absolute inset-0 rounded-full border-2 border-white pointer-events-none mix-blend-difference" 
+                style={{ width: "3.5rem", height: "3.5rem" }} 
+              />
+            </div>
+            <div className="flex-1 space-y-1 text-center sm:text-left">
+              <h4 className="font-extrabold text-slate-800 text-sm">Create Your Own Theme</h4>
+              <p className="text-xs text-slate-500">
+                Click on the color circle to pick any base color. The sidebar gradients and buttons will automatically update in real-time as you drag the color selector!
+              </p>
+            </div>
+            <div className="flex flex-col gap-2 items-end">
+              <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-100 px-2 py-0.5 rounded">
+                Hex: {customColor.toUpperCase()}
+              </span>
+              <button
+                onClick={() => handleCustomChange(customColor)}
+                className={`px-5 py-2.5 rounded-xl font-bold text-xs cursor-pointer transition active:scale-95 whitespace-nowrap ${
+                  activeTheme === "Custom Design"
+                    ? "bg-[#0ea5e9] text-white shadow-md shadow-[#0ea5e9]/20"
+                    : "bg-slate-100 hover:bg-slate-200 text-slate-700"
+                }`}
+              >
+                {activeTheme === "Custom Design" ? "Active Custom Theme" : "Apply Custom Theme"}
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Live Preview Section */}

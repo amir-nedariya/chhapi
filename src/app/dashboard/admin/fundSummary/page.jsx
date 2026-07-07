@@ -162,9 +162,9 @@ const FundSummary = () => {
         </div>
 
         {/* FUND DETAILS */}
-        <div className="rounded-xl p-6 sm:p-8 space-y-6 border border-slate-200/50 bg-white shadow-sm">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-            <h3 className="text-slate-800 font-semibold text-base">Fund Details</h3>
+        <div className="space-y-6">
+          <div className="flex items-center justify-between border-b border-slate-200/60 pb-3 px-1">
+            <h3 className="text-slate-850 font-bold text-base">Fund Details</h3>
             <span className="text-xs font-medium text-slate-400">
               Showing {paginatedFunds.length} of {filteredFunds.length} entries
             </span>

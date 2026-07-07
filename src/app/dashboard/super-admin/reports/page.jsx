@@ -119,11 +119,10 @@ const SuperAdminReports = () => {
     doc.text(`RS. ${grand.toLocaleString()}`, pageWidth - 75, 30);
 
     // Table
-    const headers = [["#", "DONOR NAME", "MOBILE", ...tableMonths, "TOTAL"]];
+    const headers = [["DONOR NAME", "MOBILE", ...tableMonths, "TOTAL"]];
     const body = processedData.map((d, i) => {
       const total = tableMonths.reduce((sum, m) => sum + (d[m] || 0), 0);
       return [
-        i + 1, // Serial #
         d.donor.toUpperCase(),
         d.mobile,
         ...tableMonths.map((m) => (d[m] > 0 ? `${d[m]}` : "-")),
@@ -139,7 +138,7 @@ const SuperAdminReports = () => {
       headStyles: { fillColor: [15, 23, 42], textColor: [0, 204, 255], fontSize: 8 },
       styles: { fontSize: 7, halign: "center" },
       columnStyles: { 
-        1: { halign: "left", fontStyle: "bold" }, // Donor name
+        0: { halign: "left", fontStyle: "bold" }, // Donor name
         [headers[0].length - 1]: { 
           fontStyle: "bold",
           textColor: filterMonth === "All" ? [16, 185, 129] : [0, 204, 255] // green if all months
@@ -227,7 +226,6 @@ const SuperAdminReports = () => {
           <table className="w-full text-left">
             <thead className="bg-slate-50 text-slate-500 text-[11px] font-bold uppercase tracking-[0.15em] border-b border-gray-200">
               <tr>
-                <th className="px-6 py-6 bg-slate-50 text-center w-16">#</th>
                 <th className="px-6 py-6 sticky left-0 bg-slate-50 z-10">Donor Details</th>
                 {(filterMonth === "All" ? months : [filterMonth.slice(0,3)]).map(m => (
                   <th key={m} className="px-3 py-6 text-center">{m}</th>
@@ -241,10 +239,9 @@ const SuperAdminReports = () => {
                 const total = tableMonths.reduce((sum, m) => sum + (d[m] || 0), 0);
                 return (
                   <tr key={i} className="hover:bg-slate-50 transition-colors group">
-                    <td className="px-6 py-5 bg-white group-hover:bg-slate-50 font-black text-slate-600 text-lg text-center">{i + 1}</td>
-                    <td className="px-6 py-5 sticky left-0 bg-white group-hover:bg-slate-50 z-10">
-                      <div className="font-black text-slate-700 text-sm tracking-wide uppercase">{d.donor}</div>
-                      <div className="text-[11px] text-slate-400 font-medium mt-0.5">{d.mobile}</div>
+                    <td className="px-6 py-5 sticky left-0 bg-white group-hover:bg-slate-50 z-10 whitespace-nowrap">
+                      <div className="font-black text-slate-700 text-sm tracking-wide uppercase whitespace-nowrap">{d.donor}</div>
+                      <div className="text-[11px] text-slate-400 font-medium mt-0.5 whitespace-nowrap">{d.mobile}</div>
                     </td>
                     {tableMonths.map(m => (
                       <td key={m} className={`px-3 py-5 text-center text-[13px] ${d[m] === 50 ? 'text-emerald-500 font-bold' : 'text-slate-500 font-medium'}`}>

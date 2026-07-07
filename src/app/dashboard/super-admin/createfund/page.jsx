@@ -102,7 +102,7 @@ const CreateFund = () => {
           {/* TITLE */}
           <div>
             <label className="block text-sm font-bold text-slate-600 mb-2 px-1">
-              Fund Title
+              Fund Title <span className="text-rose-500 ml-0.5">*</span>
             </label>
             <input
               type="text"
@@ -119,7 +119,7 @@ const CreateFund = () => {
             {/* YEAR */}
             <div>
               <label className="block text-sm font-bold text-slate-600 mb-2 px-1">
-                Year
+                Year <span className="text-rose-500 ml-0.5">*</span>
               </label>
               <input
                 type="number"
@@ -134,7 +134,7 @@ const CreateFund = () => {
             {/* MONTH */}
             <div>
               <label className="block text-sm font-bold text-slate-600 mb-2 px-1">
-                Month
+                Month <span className="text-rose-500 ml-0.5">*</span>
               </label>
               <select
                 name="month"
@@ -168,7 +168,7 @@ const CreateFund = () => {
           {/* AMOUNT */}
           <div>
             <label className="block text-sm font-bold text-slate-600 mb-2 px-1">
-              Total Amount (₹)
+              Total Amount (₹) <span className="text-rose-500 ml-0.5">*</span>
             </label>
             <input
               type="number"

@@ -48,22 +48,22 @@ const SuperAdminSettings = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white p-4 sm:p-8 flex justify-center items-start font-sans text-slate-800">
-      <div className="w-full max-w-4xl space-y-8 mt-6">
+    <div className="min-h-screen bg-slate-50/30 p-4 sm:p-8 flex justify-center items-start font-sans text-slate-800">
+      <div className="w-full max-w-4xl space-y-8 mt-4">
         
         {/* HEADER */}
         <div className="px-2">
-          <h2 className="text-3xl font-extrabold text-slate-800 tracking-tight">Account Settings</h2>
-          <p className="text-slate-500 text-sm mt-1 font-medium">Manage your profile details and security settings</p>
+          <h2 className="text-2xl font-black text-slate-900 tracking-tight">Account Settings</h2>
+          <p className="text-slate-500 text-xs mt-1 font-semibold">Manage your profile details and security settings</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
           
           {/* Profile Details Card */}
-          <div className="w-full bg-white border border-slate-200 rounded-3xl p-8 flex flex-col items-center gap-6 shadow-sm hover:shadow-md transition-shadow">
+          <div className="w-full bg-white border border-slate-100 rounded-[2rem] p-8 flex flex-col items-center gap-6 shadow-xs hover:shadow-sm transition-all duration-300">
             <div className="relative group">
               <div 
-                className="absolute inset-0 rounded-full bg-gradient-to-r from-[var(--sidebar-from)] to-[var(--sidebar-to)] opacity-20 blur-sm group-hover:opacity-40 transition-opacity"
+                className="absolute inset-0 rounded-full bg-gradient-to-r from-[var(--sidebar-from)] to-[var(--sidebar-via)] opacity-20 blur-md group-hover:opacity-40 transition-opacity"
               />
               <img
                 src={user?.profilePhoto?.url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || "User")}&background=${sidebarColor}&color=fff`}
@@ -106,7 +106,7 @@ const SuperAdminSettings = () => {
             {/* Action Buttons */}
             <button
               onClick={() => setShowLogoutConfirm(true)}
-              className="flex items-center justify-center gap-2 w-full mt-4 py-3.5 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-100 font-bold rounded-2xl transition shadow-xs active:scale-98 cursor-pointer"
+              className="flex items-center justify-center gap-2 w-full mt-4 py-4 bg-rose-50 hover:bg-rose-100/80 active:scale-[0.98] text-rose-600 border border-rose-100/60 font-bold rounded-2xl transition duration-200 shadow-xs cursor-pointer"
             >
               <LogOut size={18} />
               Logout
@@ -115,13 +115,15 @@ const SuperAdminSettings = () => {
 
           {/* Change Password Form */}
           <form
-            className="w-full flex flex-col gap-5 bg-white border border-slate-200 rounded-3xl p-8 shadow-sm"
+            className="w-full flex flex-col gap-5 bg-white border border-slate-100 rounded-[2rem] p-8 shadow-xs"
             onSubmit={handleChangePassword}
           >
-            <h3 className="text-xl font-bold text-slate-800 mb-1">Change Password</h3>
+            <h3 className="text-xl font-bold text-slate-850 border-b border-slate-100 pb-3">Change Password</h3>
             
             <div className="space-y-1">
-              <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider">Old Password</label>
+              <label className="block text-[10px] font-bold text-slate-450 uppercase tracking-wider mb-1">
+                Old Password <span className="text-rose-500 ml-0.5">*</span>
+              </label>
               <input
                 type="password"
                 name="oldPassword"
@@ -129,12 +131,14 @@ const SuperAdminSettings = () => {
                 value={passwordData.oldPassword}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-800 placeholder-slate-400 outline-none focus:ring-2 focus:ring-slate-300 transition font-semibold text-sm"
+                className="w-full px-5 py-3.5 rounded-2xl bg-white border border-slate-200 text-slate-800 placeholder-slate-400 outline-none focus:border-cyan-500/50 focus:ring-4 focus:ring-cyan-500/5 transition-all font-semibold text-sm shadow-xs"
               />
             </div>
             
             <div className="space-y-1">
-              <label className="block text-xs font-bold text-slate-450 uppercase tracking-wider">New Password</label>
+              <label className="block text-[10px] font-bold text-slate-450 uppercase tracking-wider mb-1">
+                New Password <span className="text-rose-500 ml-0.5">*</span>
+              </label>
               <input
                 type="password"
                 name="newPassword"
@@ -142,12 +146,14 @@ const SuperAdminSettings = () => {
                 value={passwordData.newPassword}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-800 placeholder-slate-400 outline-none focus:ring-2 focus:ring-slate-300 transition font-semibold text-sm"
+                className="w-full px-5 py-3.5 rounded-2xl bg-white border border-slate-200 text-slate-800 placeholder-slate-400 outline-none focus:border-cyan-500/50 focus:ring-4 focus:ring-cyan-500/5 transition-all font-semibold text-sm shadow-xs"
               />
             </div>
             
             <div className="space-y-1">
-              <label className="block text-xs font-bold text-slate-455 uppercase tracking-wider">Confirm New Password</label>
+              <label className="block text-[10px] font-bold text-slate-450 uppercase tracking-wider mb-1">
+                Confirm New Password <span className="text-rose-500 ml-0.5">*</span>
+              </label>
               <input
                 type="password"
                 name="confirmPassword"
@@ -155,14 +161,14 @@ const SuperAdminSettings = () => {
                 value={passwordData.confirmPassword}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-800 placeholder-slate-400 outline-none focus:ring-2 focus:ring-slate-300 transition font-semibold text-sm"
+                className="w-full px-5 py-3.5 rounded-2xl bg-white border border-slate-200 text-slate-800 placeholder-slate-400 outline-none focus:border-cyan-500/50 focus:ring-4 focus:ring-cyan-500/5 transition-all font-semibold text-sm shadow-xs"
               />
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="flex items-center justify-center gap-2 w-full mt-3 py-3.5 bg-gradient-to-r from-[var(--sidebar-from)] via-[var(--sidebar-via)] to-[var(--sidebar-to)] text-white font-bold rounded-2xl shadow-md hover:opacity-95 transition active:scale-98 disabled:opacity-50 cursor-pointer"
+              className="flex items-center justify-center gap-2 w-full mt-3 py-4 bg-gradient-to-r from-[var(--sidebar-from)] to-[var(--sidebar-via)] hover:brightness-105 active:scale-[0.98] text-white font-bold rounded-2xl shadow-md shadow-slate-900/5 transition-all cursor-pointer disabled:opacity-50"
             >
               <Key size={18} />
               {loading ? "Updating..." : "Update Password"}
