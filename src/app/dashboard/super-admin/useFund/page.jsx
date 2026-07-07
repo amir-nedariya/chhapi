@@ -127,23 +127,19 @@ const UseFund = () => {
 
   // Clean Modern Styles
   const cardShadow = {
-    boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05)",
+    boxShadow: "0 10px 25px -5px rgba(0,0,0,0.03), 0 8px 10px -6px rgba(0,0,0,0.03)",
     backgroundColor: "#ffffff",
-    border: "1px solid #e2e8f0",
+    border: "1px solid #f1f5f9",
   };
 
   const inputShadow = {
     backgroundColor: "#ffffff",
-    border: "1px solid #cbd5e1",
-  };
-
-  const buttonShadow = {
-    backgroundColor: "#ffffff",
     border: "1px solid #e2e8f0",
+    boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.02)",
   };
 
   return (
-    <div className="min-h-screen bg-white p-2 sm:p-8 space-y-6 text-slate-800 font-sans">
+    <div className="min-h-screen bg-slate-50/30 p-4 sm:p-8 space-y-6 text-slate-800 font-sans">
       <div className="max-w-6xl mx-auto space-y-8">
         
         {/* HEADER */}
@@ -163,22 +159,22 @@ const UseFund = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
           {/* ================= USE FUND FORM ================= */}
-          <div className="rounded-3xl p-6 lg:col-span-1 space-y-4" style={cardShadow}>
-            <h3 className="text-slate-700 font-extrabold text-lg mb-2">
+          <div className="rounded-3xl p-6 lg:col-span-1 space-y-5" style={cardShadow}>
+            <h3 className="text-slate-800 font-extrabold text-lg mb-2 border-b border-slate-100 pb-3">
               Transaction Details
             </h3>
 
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
                 <label className="text-sm font-bold text-slate-600 block mb-2 px-1">
-                  Total Amount (₹)
+                  Total Amount (₹) <span className="text-rose-500 ml-0.5">*</span>
                 </label>
                 <input
                   type="number"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   disabled={loading}
-                  className="w-full px-5 py-3 rounded-2xl text-slate-800 outline-none transition-all placeholder:text-gray-400 font-semibold"
+                  className="w-full px-5 py-3 rounded-2xl text-slate-800 outline-none border border-slate-200 focus:border-cyan-500/50 focus:ring-4 focus:ring-cyan-500/5 transition-all placeholder:text-gray-400 font-semibold"
                   style={inputShadow}
                   placeholder="e.g., 500"
                 />
@@ -186,13 +182,13 @@ const UseFund = () => {
 
               <div>
                 <label className="text-sm font-bold text-slate-600 block mb-2 px-1">
-                  Usage Note / Remarks
+                  Usage Note / Remarks <span className="text-rose-500 ml-0.5">*</span>
                 </label>
                 <input
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
                   disabled={loading}
-                  className="w-full px-5 py-3 rounded-2xl text-slate-800 outline-none transition-all placeholder:text-gray-400 font-semibold"
+                  className="w-full px-5 py-3 rounded-2xl text-slate-800 outline-none border border-slate-200 focus:border-cyan-500/50 focus:ring-4 focus:ring-cyan-500/5 transition-all placeholder:text-gray-400 font-semibold"
                   style={inputShadow}
                   placeholder="e.g., Medicine Purchase"
                 />
@@ -201,11 +197,7 @@ const UseFund = () => {
               <div className="pt-2">
                 <button
                   disabled={loading}
-                  onMouseDown={() => setButtonPressed(true)}
-                  onMouseUp={() => setButtonPressed(false)}
-                  onMouseLeave={() => setButtonPressed(false)}
-                  className="w-full text-cyan-600 py-3.5 rounded-2xl font-extrabold transition-all active:scale-[0.99] disabled:opacity-50"
-                  style={buttonShadow}
+                  className="w-full bg-gradient-to-r from-[var(--sidebar-from)] via-[var(--sidebar-via)] to-[var(--sidebar-to)] hover:brightness-105 active:scale-[0.98] text-white py-4 rounded-2xl font-bold transition-all disabled:opacity-50 shadow-md shadow-slate-900/10 cursor-pointer"
                 >
                   {loading ? "Processing..." : "Submit Transaction"}
                 </button>
@@ -214,77 +206,82 @@ const UseFund = () => {
           </div>
 
           {/* ================= SELECT FUNDS ================= */}
-          <div className="rounded-3xl p-6 lg:col-span-2" style={cardShadow}>
-            <h3 className="text-slate-700 font-extrabold text-lg mb-4">
+          <div className="rounded-3xl p-6 lg:col-span-2 space-y-5" style={cardShadow}>
+            <h3 className="text-slate-800 font-extrabold text-lg mb-2 border-b border-slate-100 pb-3">
               Select Active Funds to Draw From
             </h3>
 
-            <div className="overflow-x-auto rounded-2xl" style={{ boxShadow: "inset 2px 2px 5px #d1d9e6, inset -2px -2px 5px #ffffff" }}>
+            <div className="overflow-x-auto rounded-2xl border border-slate-200/50 bg-white">
               <table className="w-full text-sm">
-                <thead className="bg-gradient-to-r from-[var(--sidebar-from)] via-[var(--sidebar-via)] to-[var(--sidebar-to)] text-white text-[10px] font-black uppercase tracking-widest border-b border-teal-950/20">
+                <thead className="bg-gradient-to-r from-[var(--sidebar-from)] via-[var(--sidebar-via)] to-[var(--sidebar-to)] text-white text-[10px] font-black uppercase tracking-widest">
                   <tr>
-                    <th className="px-5 py-4 text-center w-16">Select</th>
+                    <th className="px-5 py-4 text-center w-20 rounded-l-2xl">Select</th>
                     <th className="px-5 py-4 text-left">Fund Title</th>
                     <th className="px-5 py-4 text-center">Month</th>
-                    <th className="px-5 py-4 text-right">Available Balance</th>
+                    <th className="px-5 py-4 text-right rounded-r-2xl">Available Balance</th>
                   </tr>
                 </thead>
 
-                <tbody className="divide-y divide-gray-200/30">
-                  {paginatedFunds.map((fund) => (
-                    <tr
-                      key={fund._id}
-                      className="hover:bg-slate-200/20 transition-colors"
-                    >
-                      <td className="px-5 py-4 text-center">
-                        <input
-                          type="checkbox"
-                          checked={selectedFunds.some(f => f._id === fund._id)}
-                          onChange={() => toggleFund(fund)}
-                          disabled={loading}
-                          className="w-4 h-4 rounded text-cyan-600 border-gray-300 focus:ring-cyan-500 cursor-pointer"
-                        />
-                      </td>
+                <tbody className="divide-y divide-slate-100 text-slate-600">
+                  {paginatedFunds.map((fund) => {
+                    const isSelected = selectedFunds.some(f => f._id === fund._id);
+                    return (
+                      <tr
+                        key={fund._id}
+                        className={`transition-colors hover:bg-slate-50/60 ${
+                          isSelected ? "bg-slate-50/90 font-medium" : ""
+                        }`}
+                      >
+                        <td className="px-5 py-4 text-center">
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={() => toggleFund(fund)}
+                            disabled={loading}
+                            className="w-4 h-4 rounded text-cyan-600 border-slate-300 focus:ring-cyan-500 cursor-pointer"
+                          />
+                        </td>
 
-                      <td className="px-5 py-4 text-slate-700 font-bold">
-                        {fund.title}
-                      </td>
+                        <td className="px-5 py-4 text-slate-700 font-bold uppercase text-xs">
+                          {fund.title}
+                        </td>
 
-                      <td className="px-5 py-4 text-slate-500 text-center font-bold">
-                        {monthNames[fund.month - 1]} {fund.year}
-                      </td>
+                        <td className="px-5 py-4 text-slate-500 text-center font-semibold text-xs">
+                          {monthNames[fund.month - 1]} {fund.year}
+                        </td>
 
-                      <td className="px-5 py-4 text-right text-emerald-600 font-black">
-                        ₹{fund.remainingAmount.toLocaleString()}
-                      </td>
-                    </tr>
-                  ))}
+                        <td className="px-5 py-4 text-right text-emerald-600 font-bold text-xs">
+                          ₹{fund.remainingAmount.toLocaleString("en-IN")}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
 
               {!paginatedFunds.length && (
-                <div className="p-12 text-center text-slate-400 font-bold">
+                <div className="p-16 text-center text-slate-400 font-semibold text-xs uppercase tracking-wider">
                   No active funds available. Please create a new fund first.
                 </div>
               )}
             </div>
 
             {totalPages > 1 && (
-              <div className="flex justify-end items-center gap-3 mt-6">
+              <div className="flex justify-end items-center gap-3 mt-4">
                 <PaginationButton
                   disabled={page === 1}
                   onClick={() => setPage(p => p - 1)}
-                  icon={<ChevronLeft size={16} />}
+                  icon={<ChevronLeft size={15} />}
                 />
 
-                <span className="text-sm text-slate-600 font-bold px-1">
+                <span className="text-xs text-slate-500 font-bold px-2 py-1 bg-slate-50 rounded-lg border border-slate-200/50">
                   Page {page} of {totalPages}
                 </span>
 
                 <PaginationButton
                   disabled={page === totalPages}
                   onClick={() => setPage(p => p + 1)}
-                  icon={<ChevronRight size={16} />}
+                  icon={<ChevronRight size={15} />}
                 />
               </div>
             )}
@@ -295,28 +292,15 @@ const UseFund = () => {
   );
 };
 
-/* NEUMORPHIC PAGINATION BUTTON */
-const PaginationButton = ({ icon, disabled, onClick }) => {
-  const [pressed, setPressed] = useState(false);
-  return (
-    <button
-      disabled={disabled}
-      onClick={onClick}
-      onMouseDown={() => setPressed(true)}
-      onMouseUp={() => setPressed(false)}
-      onMouseLeave={() => setPressed(false)}
-      onTouchStart={() => setPressed(true)}
-      onTouchEnd={() => setPressed(false)}
-      className="p-2.5 rounded-2xl text-slate-700 transition duration-300 disabled:opacity-40"
-      style={
-        pressed
-          ? { backgroundColor: "#f1f5f9", border: "1px solid #cbd5e1" }
-          : { backgroundColor: "#ffffff", border: "1px solid #cbd5e1" }
-      }
-    >
-      {icon}
-    </button>
-  );
-};
+/* CLEAN PAGINATION BUTTON */
+const PaginationButton = ({ icon, disabled, onClick }) => (
+  <button
+    disabled={disabled}
+    onClick={onClick}
+    className="p-2 rounded-xl text-slate-600 border border-slate-200 bg-white hover:bg-slate-50 active:bg-slate-100 transition-colors disabled:opacity-40 disabled:hover:bg-white cursor-pointer disabled:cursor-not-allowed"
+  >
+    {icon}
+  </button>
+);
 
 export default UseFund;

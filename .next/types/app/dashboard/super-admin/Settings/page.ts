@@ -1,10 +1,10 @@
-// File: C:\Users\Asus\Desktop\chhapi\chhapi\src\app\dashboard\super-admin\Settings\page.jsx
-import * as entry from '../../../../../../src/app/dashboard/super-admin/Settings/page.js'
+// File: C:\Users\Asus\Desktop\chhapi\chhapi\src\app\dashboard\super-admin\settings\page.jsx
+import * as entry from '../../../../../../src/app/dashboard/super-admin/settings/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
 import type { InstantConfigForTypeCheckInternal } from 'next/dist/build/segment-config/app/app-segment-config.js'
 
-type TEntry = typeof import('../../../../../../src/app/dashboard/super-admin/Settings/page.js')
+type TEntry = typeof import('../../../../../../src/app/dashboard/super-admin/settings/page.js')
 
 type SegmentParams<T extends Object = any> = T extends Record<string, any>
   ? { [K in keyof T]: T[K] extends string ? string | string[] | undefined : never }

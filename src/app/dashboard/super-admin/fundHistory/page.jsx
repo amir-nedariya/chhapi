@@ -72,7 +72,6 @@ const FundHistory = () => {
               <table className="w-full text-xs text-left border-collapse">
                 <thead className="bg-gradient-to-r from-[var(--sidebar-from)] via-[var(--sidebar-via)] to-[var(--sidebar-to)] text-white font-semibold uppercase tracking-wider border-b border-slate-200/20">
                   <tr>
-                    <th className="px-4 py-3 w-16 text-center">#</th>
                     <th className="px-4 py-3">Amount</th>
                     <th className="px-4 py-3 text-left">Usage Note</th>
                     <th className="px-4 py-3">Authorized By</th>
@@ -86,9 +85,6 @@ const FundHistory = () => {
                       key={item._id}
                       className="hover:bg-slate-50/60 transition-colors"
                     >
-                      <td className="px-4 py-3.5 text-center text-slate-400 font-medium">
-                        {startIndex + index + 1}
-                      </td>
 
                       <td className="px-4 py-3.5 font-semibold text-rose-600">
                         ₹{item.amount.toLocaleString()}

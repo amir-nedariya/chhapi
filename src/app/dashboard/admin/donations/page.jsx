@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import { getAllDonationsAPI } from "../../../../api/donation.api";
 import { FileText, ChevronLeft, ChevronRight, Search, Landmark, TrendingUp, Users, Clock } from "lucide-react";
+import { useSidebarColor } from "../../../../hooks/useSidebarColor";
 
 /* ================= STYLES ================= */
 const statusStyles = {
@@ -36,6 +37,7 @@ const TableLoader = ({ text = "Loading..." }) => (
 );
 
 const AllDonations = () => {
+  const sidebarColor = useSidebarColor();
   const [donations, setDonations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -299,23 +301,23 @@ const AllDonations = () => {
         </button>
       </div>
 
-      {/* ================= DESKTOP TABLE ================= */}
+      {/* ================= UNIFIED RESPONSIVE TABLE ================= */}
       <div 
-        className="hidden md:block overflow-hidden rounded-3xl p-6 transition-all duration-300"
+        className="overflow-x-auto rounded-3xl p-5 sm:p-6 transition-all duration-300 w-full"
         style={cardShadow}
       >
-        <table className="w-full text-sm text-slate-800 border-collapse">
-          <thead className="bg-gradient-to-r from-[var(--sidebar-from)] via-[var(--sidebar-via)] to-[var(--sidebar-to)] text-white">
-            <tr className="font-bold uppercase tracking-wider text-xs border-b border-teal-950/20">
-              <th className="py-4 px-4 text-left">Donor</th>
+        <table className="min-w-full text-sm text-slate-800 border-collapse">
+          <thead className="bg-gradient-to-r from-[var(--sidebar-from)] via-[var(--sidebar-via)] to-[var(--sidebar-to)] text-white text-xs font-semibold">
+            <tr className="font-bold uppercase tracking-wider text-xs border-b border-slate-200/10">
+              <th className="py-4 px-4 text-left rounded-l-2xl">Donor Details</th>
               <th className="py-4 px-4 text-right">Amount</th>
               <th className="py-4 px-4 text-left">Collected By</th>
               <th className="py-4 px-4 text-left">Approved By</th>
               <th className="py-4 px-4 text-center">Status</th>
-              <th className="py-4 px-4 text-left">Month</th>
+              <th className="py-4 px-4 text-left rounded-r-2xl">Month</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-350/20">
+          <tbody className="divide-y divide-slate-100">
             {loading ? (
               <tr>
                 <td colSpan="6">
@@ -324,34 +326,65 @@ const AllDonations = () => {
               </tr>
             ) : paginatedData.length === 0 ? (
               <tr>
-                <td colSpan="6" className="p-8 text-center text-slate-500 font-bold">
-                  No donations found
+                <td colSpan="6" className="p-12 text-center text-slate-400 font-semibold text-xs">
+                  No records found
                 </td>
               </tr>
             ) : (
               paginatedData.map((d) => (
-                <tr key={d._id} className="hover:bg-[#e4ebf0] transition-colors">
-                  <td className="py-4 px-4 font-semibold text-slate-800 text-[14px]">{d.donor?.name || "N/A"}</td>
-                  <td className={`py-4 px-4 text-right ${amountStyles[(d.status || "").toUpperCase()] || "text-slate-800"}`}>
+                <tr key={d._id} className="hover:bg-slate-50/60 transition-colors group">
+                  {/* Donor Details */}
+                  <td className="py-4 px-4">
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={`https://ui-avatars.com/api/?name=${encodeURIComponent(d.donor?.name || "N/A")}&background=${sidebarColor}&color=fff&rounded=true`}
+                        alt={d.donor?.name || "User"}
+                        className="w-8 h-8 rounded-full border border-slate-100/60 object-cover flex-shrink-0"
+                      />
+                      <div>
+                        <div className="font-bold text-slate-700 text-xs tracking-wide uppercase whitespace-nowrap">
+                          {d.donor?.name || "N/A"}
+                        </div>
+                        <div className="text-[10px] text-slate-400 font-semibold mt-0.5 whitespace-nowrap">
+                          {d.donor?.mobile || "No Mobile"}
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  
+                  {/* Amount */}
+                  <td className={`py-4 px-4 text-right font-bold text-xs ${amountStyles[(d.status || "").toUpperCase()] || "text-slate-800"}`}>
                     ₹{(Number(d.amount) || 0).toLocaleString("en-IN")}
                   </td>
-                  <td className="py-4 px-4 text-slate-600 font-semibold">{d.collectedBy?.name || "-"}</td>
-                  <td className="py-4 px-4">
-                    {d.approvedBy?.name ? (
-                      <>
-                        <p className="font-bold text-slate-700">{d.approvedBy.name}</p>
-                        <p className="text-[11px] text-slate-400 font-medium mt-0.5">
-                          {new Date(d.approvedAt).toLocaleString()}
-                        </p>
-                      </>
-                    ) : <span className="text-slate-400">—</span>}
+
+                  {/* Collected By */}
+                  <td className="py-4 px-4 text-slate-600 font-semibold text-xs whitespace-nowrap">
+                    {d.collectedBy?.name || "—"}
                   </td>
+
+                  {/* Approved By */}
+                  <td className="py-4 px-4 text-xs whitespace-nowrap">
+                    {d.approvedBy?.name ? (
+                      <div>
+                        <p className="font-bold text-slate-700">{d.approvedBy.name}</p>
+                        <p className="text-[10px] text-slate-400 font-medium mt-0.5">
+                          {new Date(d.approvedAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                    ) : (
+                      <span className="text-slate-400">—</span>
+                    )}
+                  </td>
+
+                  {/* Status */}
                   <td className="py-4 px-4 text-center">
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${statusStyles[(d.status || "").toUpperCase()] || "bg-slate-100 text-slate-700 border-slate-200"}`}>
+                    <span className={`inline-block px-3.5 py-1 rounded-full text-[10px] font-bold border whitespace-nowrap ${statusStyles[(d.status || "").toUpperCase()] || "bg-slate-100 text-slate-700 border-slate-200"}`}>
                       {d.status}
                     </span>
                   </td>
-                  <td className="py-4 px-4 text-slate-500 font-semibold">
+
+                  {/* Month */}
+                  <td className="py-4 px-4 text-slate-500 font-semibold text-xs whitespace-nowrap">
                     {months[d.month - 1]} {d.year}
                   </td>
                 </tr>
@@ -359,42 +392,6 @@ const AllDonations = () => {
             )}
           </tbody>
         </table>
-      </div>
-
-      {/* ================= MOBILE ================= */}
-      {loading && (
-        <div className="md:hidden">
-          <TableLoader text="Loading donations..." />
-        </div>
-      )}
-
-      <div className="md:hidden space-y-5">
-        {paginatedData.map((d) => (
-          <div 
-            key={d._id} 
-            className="rounded-3xl p-5 space-y-4"
-            style={cardShadow}
-          >
-            <div className="flex justify-between items-center border-b border-slate-350/20 pb-3">
-              <p className="font-bold text-slate-800 text-[14px]">{d.donor?.name}</p>
-              <p className={`text-base ${amountStyles[(d.status || "").toUpperCase()] || "text-slate-800"}`}>
-                ₹{(Number(d.amount) || 0).toLocaleString("en-IN")}
-              </p>
-            </div>
-            <p className="text-sm text-slate-600 flex justify-between">
-              <span className="text-slate-400 font-semibold">Collected by:</span>
-              <span className="font-bold text-slate-700">{d.collectedBy?.name || "-"}</span>
-            </p>
-            <div className="flex justify-between items-center pt-3 border-t border-slate-350/20">
-              <span className={`px-2.5 py-1 rounded-full text-xs font-semibold border ${statusStyles[(d.status || "").toUpperCase()] || "bg-slate-100 text-slate-700 border-slate-200"}`}>
-                {d.status}
-              </span>
-              <span className="text-xs font-bold text-slate-500">
-                {months[d.month - 1]} {d.year}
-              </span>
-            </div>
-          </div>
-        ))}
       </div>
 
       {/* ================= PAGINATION ================= */}

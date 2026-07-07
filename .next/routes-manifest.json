@@ -197,10 +197,10 @@
       "namedRegex": "^/dashboard/super\\-admin/reports(?:/)?$"
     },
     {
-      "page": "/dashboard/super-admin/Settings",
-      "regex": "^/dashboard/super\\-admin/Settings(?:/)?$",
+      "page": "/dashboard/super-admin/settings",
+      "regex": "^/dashboard/super\\-admin/settings(?:/)?$",
       "routeKeys": {},
-      "namedRegex": "^/dashboard/super\\-admin/Settings(?:/)?$"
+      "namedRegex": "^/dashboard/super\\-admin/settings(?:/)?$"
     },
     {
       "page": "/dashboard/super-admin/useFund",
