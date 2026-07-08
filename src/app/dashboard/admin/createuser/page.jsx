@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import { createUserAPI, createAdminAPI } from "../../../../api/user.api";
 import { useAuth } from "../../../../context/AuthContext";
 import { X } from "lucide-react";
+import { fireConfetti } from "../../../../utils/confetti";
 
 const CreateUser = () => {
   const router = useRouter();
@@ -21,7 +22,7 @@ const CreateUser = () => {
   const [loading, setLoading] = useState(false);
 
   const handleCancel = () => {
-    router.push(isSuperAdmin ? "/dashboard/super-admin" : "/dashboard/admin");
+    router.push(isSuperAdmin ? "/dashboard/super-admin/usersList" : "/dashboard/admin/GetAllUser");
   };
 
   /* ================= HANDLE CHANGE ================= */
@@ -75,6 +76,10 @@ const CreateUser = () => {
       }
 
       setForm({ name: "", mobile: "", password: "", role: "USER" });
+      fireConfetti();
+      setTimeout(() => {
+        router.push(isSuperAdmin ? "/dashboard/super-admin/usersList" : "/dashboard/admin/GetAllUser");
+      }, 500);
     } catch (err) {
       toast.error(err?.response?.data?.message || "Creation failed", {
         id: toastId,

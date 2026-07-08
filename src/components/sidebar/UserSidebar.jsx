@@ -232,6 +232,22 @@ const UserSidebar = ({ collapsed, setCollapsed, mobile, sidebarOpen, setSidebarO
                 </NavLink>
               ))}
 
+              {/* REQUEST FUNDS */}
+              <NavLink
+                to="/dashboard/user/fund-request"
+                onClick={() => mobile && setSidebarOpen(false)}
+                className={({ isActive }) => getLinkClass(isActive)}
+              >
+                {({ isActive }) => (
+                  <>
+                    <div className={collapsed ? "" : (isActive ? "sidebar-icon-container-active" : "sidebar-icon-container-inactive")}>
+                      <Landmark size={18} />
+                    </div>
+                    {!collapsed && <span className="text-sm font-semibold">Request Funds</span>}
+                  </>
+                )}
+              </NavLink>
+
               {/* APPEARANCE */}
               <NavLink
                 to="/dashboard/user/appearance"

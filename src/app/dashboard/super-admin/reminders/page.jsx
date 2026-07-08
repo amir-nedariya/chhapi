@@ -176,8 +176,8 @@ const RemindersPage = () => {
         </div>
 
         {/* Donors List Table */}
-        <div className="rounded-xl p-5 sm:p-6 space-y-6 border border-slate-200/50 bg-white shadow-sm">
-          <div className="flex justify-between items-center mb-1">
+        <div className="rounded-xl py-5 sm:py-6 space-y-6 border border-slate-200/50 bg-white shadow-sm overflow-hidden">
+          <div className="flex justify-between items-center mb-1 px-5 sm:px-6">
             <h3 className="text-slate-800 font-semibold text-xs uppercase tracking-wider">
               Pending Donors ({pendingDonors.length})
             </h3>
@@ -186,7 +186,7 @@ const RemindersPage = () => {
             </span>
           </div>
 
-          <div className="overflow-x-auto rounded-lg border border-slate-200/40">
+          <div className="overflow-x-auto border-t border-slate-200/40">
             <table className="w-full text-xs text-left text-slate-700 border-collapse">
               <thead className="bg-gradient-to-r from-[var(--sidebar-from)] via-[var(--sidebar-via)] to-[var(--sidebar-to)] text-white text-xs font-semibold">
                 <tr>

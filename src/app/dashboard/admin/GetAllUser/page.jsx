@@ -5,7 +5,7 @@ import {
   getAllAdminsOnlyAPI,
   getAllSuperAdminsOnlyAPI,
 } from "../../../../api/user.api";
-import { ChevronLeft, ChevronRight, Eye } from "lucide-react";
+import { ChevronLeft, ChevronRight, Eye, UserPlus } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useAuth } from "../../../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -112,7 +112,7 @@ const GetAllUser = () => {
       </div>
 
       {/* SEARCH + FILTERS */}
-      <div className="flex flex-col md:flex-row gap-3 mb-5">
+      <div className="flex flex-col md:flex-row gap-3 mb-5 items-stretch md:items-center">
         <input
           value={search}
           onChange={(e) => {
@@ -127,7 +127,7 @@ const GetAllUser = () => {
         <select
           value={roleFilter}
           onChange={(e) => setRoleFilter(e.target.value)}
-          className="px-4 py-2 rounded-lg bg-white border border-gray-300 text-slate-800 focus:outline-none focus:ring-2 focus:ring-cyan-500 shadow-sm transition"
+          className="px-4 py-2 rounded-lg bg-white border border-gray-300 text-slate-800 focus:outline-none focus:ring-2 focus:ring-cyan-500 shadow-sm transition h-10"
         >
           <option value="ALL">All Roles</option>
           <option value="USER">USER</option>
@@ -139,7 +139,7 @@ const GetAllUser = () => {
         <select
           value={createdByFilter}
           onChange={(e) => setCreatedByFilter(e.target.value)}
-          className="px-4 py-2 rounded-lg bg-white border border-gray-300 text-slate-800 focus:outline-none focus:ring-2 focus:ring-cyan-500 shadow-sm transition"
+          className="px-4 py-2 rounded-lg bg-white border border-gray-300 text-slate-800 focus:outline-none focus:ring-2 focus:ring-cyan-500 shadow-sm transition h-10"
         >
           <option value="ALL">All Creators</option>
           {createdByList.map((name) => (
@@ -148,6 +148,15 @@ const GetAllUser = () => {
             </option>
           ))}
         </select>
+
+        {/* CREATE USER BUTTON */}
+        <button
+          onClick={() => navigate("/dashboard/admin/createuser")}
+          className="md:ml-auto w-full md:w-auto h-10 px-6 flex items-center justify-center gap-2 bg-gradient-to-r from-[var(--sidebar-from)] to-[var(--sidebar-via)] text-white hover:brightness-105 active:scale-[0.98] font-bold text-xs uppercase tracking-wider rounded-xl shadow-md transition-all cursor-pointer"
+        >
+          <UserPlus size={14} />
+          <span>Create User</span>
+        </button>
       </div>
 
       {/* DESKTOP TABLE */}

@@ -170,11 +170,10 @@ const AdminDashboard = () => {
       </div>
 
       {/* Transactions Section */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs">
-        <h3 className="text-slate-800 font-semibold mb-4 text-base">Recent Donations Slips</h3>
-        <div className="overflow-x-auto rounded-xl border border-slate-100">
+      <div className="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden">
+        <div className="overflow-x-auto">
           <table className="w-full text-sm text-left text-slate-700">
-            <thead className="bg-slate-50 border-b border-slate-100 text-slate-500 font-semibold text-xs">
+            <thead className="bg-gradient-to-r from-[var(--sidebar-from)] via-[var(--sidebar-via)] to-[var(--sidebar-to)] text-white font-semibold text-xs border-b border-white/10">
               <tr>
                 <th className="py-3 px-4">Donor</th>
                 <th className="py-3 px-4">Campaign</th>
