@@ -303,18 +303,18 @@ const AllDonations = () => {
 
       {/* ================= UNIFIED RESPONSIVE TABLE ================= */}
       <div 
-        className="overflow-x-auto rounded-3xl p-5 sm:p-6 transition-all duration-300 w-full"
+        className="overflow-x-auto rounded-3xl transition-all duration-300 w-full"
         style={cardShadow}
       >
         <table className="min-w-full text-sm text-slate-800 border-collapse">
           <thead className="bg-gradient-to-r from-[var(--sidebar-from)] via-[var(--sidebar-via)] to-[var(--sidebar-to)] text-white text-xs font-semibold">
             <tr className="font-bold uppercase tracking-wider text-xs border-b border-slate-200/10">
-              <th className="py-4 px-4 text-left rounded-l-2xl">Donor Details</th>
+              <th className="py-4 px-4 text-left">Donor Details</th>
               <th className="py-4 px-4 text-right">Amount</th>
               <th className="py-4 px-4 text-left">Collected By</th>
               <th className="py-4 px-4 text-left">Approved By</th>
               <th className="py-4 px-4 text-center">Status</th>
-              <th className="py-4 px-4 text-left rounded-r-2xl">Month</th>
+              <th className="py-4 px-4 text-left">Month</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">

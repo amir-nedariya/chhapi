@@ -58,7 +58,7 @@ const FundHistory = () => {
         </div>
 
         {/* TABLE CONTAINER */}
-        <div className="rounded-xl p-5 sm:p-6 space-y-6 border border-slate-200/50 bg-white shadow-sm">
+        <div className="rounded-xl space-y-6 border border-slate-200/50 bg-white shadow-sm overflow-hidden">
           {loading ? (
             <div className="p-12 text-center text-slate-400 font-medium text-sm">
               Loading fund history...
@@ -68,7 +68,7 @@ const FundHistory = () => {
               No fund usage records found
             </div>
           ) : (
-            <div className="overflow-x-auto rounded-lg border border-slate-200/40">
+            <div className="overflow-x-auto">
               <table className="w-full text-xs text-left border-collapse">
                 <thead className="bg-gradient-to-r from-[var(--sidebar-from)] via-[var(--sidebar-via)] to-[var(--sidebar-to)] text-white font-semibold uppercase tracking-wider border-b border-slate-200/20">
                   <tr>
@@ -124,7 +124,7 @@ const FundHistory = () => {
 
           {/* PAGINATION */}
           {!loading && totalPages > 1 && (
-            <div className="flex justify-end items-center gap-3 pt-2">
+            <div className="flex justify-end items-center gap-3 pb-5 px-5 sm:pb-6 sm:px-6">
               <PaginationButton
                 onClick={() => setPage((p) => Math.max(p - 1, 1))}
                 disabled={page === 1}

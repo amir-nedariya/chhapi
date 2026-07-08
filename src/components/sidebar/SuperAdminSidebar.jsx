@@ -32,6 +32,18 @@ const SuperAdminSidebar = ({ collapsed, setCollapsed, mobile, sidebarOpen, setSi
   const sidebarColor = useSidebarColor();
   const [currentTheme, setCurrentTheme] = useState("Clear Ocean");
 
+  const [pendingRequestsCount, setPendingRequestsCount] = useState(0);
+
+  const updatePendingCount = () => {
+    try {
+      const data = JSON.parse(localStorage.getItem("chhapi_fund_requests") || "[]");
+      const pending = data.filter((req) => req.status === "Pending");
+      setPendingRequestsCount(pending.length);
+    } catch {
+      setPendingRequestsCount(0);
+    }
+  };
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       initTheme();
@@ -43,8 +55,13 @@ const SuperAdminSidebar = ({ collapsed, setCollapsed, mobile, sidebarOpen, setSi
         setCurrentTheme(current);
       };
 
+      updatePendingCount();
       window.addEventListener("sidebar-theme-changed", handleExternalChange);
-      return () => window.removeEventListener("sidebar-theme-changed", handleExternalChange);
+      window.addEventListener("chhapi_new_fund_request", updatePendingCount);
+      return () => {
+        window.removeEventListener("sidebar-theme-changed", handleExternalChange);
+        window.removeEventListener("chhapi_new_fund_request", updatePendingCount);
+      };
     }
   }, []);
 
@@ -316,6 +333,31 @@ const SuperAdminSidebar = ({ collapsed, setCollapsed, mobile, sidebarOpen, setSi
                   )}
                 </NavLink>
               ))}
+
+              {/* FUND REQUESTS */}
+              <NavLink
+                to="/dashboard/super-admin/fund-requests"
+                onClick={() => mobile && setSidebarOpen(false)}
+                className={({ isActive }) => getLinkClass(isActive)}
+              >
+                {({ isActive }) => (
+                  <>
+                    <div className={collapsed ? "" : (isActive ? "sidebar-icon-container-active" : "sidebar-icon-container-inactive")}>
+                      <Landmark size={18} />
+                    </div>
+                    {!collapsed && (
+                      <div className="flex-1 flex items-center justify-between">
+                        <span className="text-sm font-semibold">Fund Requests</span>
+                        {pendingRequestsCount > 0 && (
+                          <span className="bg-amber-500 text-white font-extrabold text-[10px] px-2 py-0.5 rounded-full mr-4 shadow-sm animate-pulse">
+                            {pendingRequestsCount}
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </>
+                )}
+              </NavLink>
 
               {/* APPEARANCE */}
               <NavLink

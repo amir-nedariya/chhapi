@@ -294,10 +294,10 @@ const MyDonations = () => {
 
       {/* ===== TABLE ===== */}
       <div 
-        className="overflow-hidden rounded-3xl p-6 transition-all duration-300"
+        className="overflow-hidden rounded-3xl transition-all duration-300"
         style={cardShadow}
       >
-        <div className="overflow-x-auto rounded-xl border border-slate-100">
+        <div className="overflow-x-auto">
           <table className="w-full text-sm text-slate-800 border-collapse">
             <thead className="bg-gradient-to-r from-[var(--sidebar-from)] via-[var(--sidebar-via)] to-[var(--sidebar-to)] text-white">
               <tr className="font-bold uppercase tracking-wider text-xs border-b border-teal-950/20">

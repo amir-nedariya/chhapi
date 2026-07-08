@@ -205,8 +205,8 @@ const MonthlyDonationTable = () => {
         </div>
 
         {/* ================= TABLE ================= */}
-        <div className="rounded-xl p-5 sm:p-6 space-y-6 border border-slate-200/50 bg-white shadow-sm">
-          <div className="overflow-x-auto rounded-lg border border-slate-200/40 pb-1">
+        <div className="rounded-xl space-y-6 border border-slate-200/50 bg-white shadow-sm overflow-hidden">
+          <div className="overflow-x-auto pb-1">
             <table className="min-w-full text-left text-slate-800 border-collapse">
               <thead className="bg-gradient-to-r from-[var(--sidebar-from)] via-[var(--sidebar-via)] to-[var(--sidebar-to)] text-white text-xs font-semibold">
                 <tr>
@@ -282,7 +282,7 @@ const MonthlyDonationTable = () => {
 
           {/* ================= PAGINATION ================= */}
           {pages > 1 && (
-            <div className="flex justify-end items-center gap-3 pt-2">
+            <div className="flex justify-end items-center gap-3 pb-5 px-5 sm:pb-6 sm:px-6">
               <PaginationButton
                 onClick={() => setPage((p) => Math.max(p - 1, 1))}
                 disabled={page === 1}

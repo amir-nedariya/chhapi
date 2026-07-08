@@ -224,13 +224,13 @@ const SuperAdminReports = () => {
       <div className="bg-white rounded-3xl border border-gray-200 overflow-hidden shadow-sm">
         <div className="overflow-x-auto custom-scrollbar pb-2">
           <table className="w-full text-left">
-            <thead className="bg-slate-50 text-slate-500 text-[11px] font-bold uppercase tracking-[0.15em] border-b border-gray-200">
+            <thead className="bg-gradient-to-r from-[var(--sidebar-from)] via-[var(--sidebar-via)] to-[var(--sidebar-to)] text-white text-[11px] font-bold uppercase tracking-[0.15em] border-b border-white/10">
               <tr>
-                <th className="px-6 py-6 sticky left-0 bg-slate-50 z-10">Donor Details</th>
+                <th className="px-6 py-6 sticky left-0 bg-[var(--sidebar-via)] text-white z-10">Donor Details</th>
                 {(filterMonth === "All" ? months : [filterMonth.slice(0,3)]).map(m => (
                   <th key={m} className="px-3 py-6 text-center">{m}</th>
                 ))}
-                <th className="px-8 py-6 text-right bg-slate-50/50">Total</th>
+                <th className="px-8 py-6 text-right bg-[var(--sidebar-to)] text-white">Total</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
