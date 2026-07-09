@@ -12,6 +12,7 @@ import {
   History,
   CalendarRange,
   X,
+  ScrollText,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useState, useEffect } from "react";
@@ -244,6 +245,22 @@ const UserSidebar = ({ collapsed, setCollapsed, mobile, sidebarOpen, setSidebarO
                       <Landmark size={18} />
                     </div>
                     {!collapsed && <span className="text-sm font-semibold">Request Funds</span>}
+                  </>
+                )}
+              </NavLink>
+
+              {/* RULES & REGULATIONS */}
+              <NavLink
+                to="/dashboard/user/rules"
+                onClick={() => mobile && setSidebarOpen(false)}
+                className={({ isActive }) => getLinkClass(isActive)}
+              >
+                {({ isActive }) => (
+                  <>
+                    <div className={collapsed ? "" : (isActive ? "sidebar-icon-container-active" : "sidebar-icon-container-inactive")}>
+                      <ScrollText size={18} />
+                    </div>
+                    {!collapsed && <span className="text-sm font-semibold">Rules & Regulations</span>}
                   </>
                 )}
               </NavLink>
