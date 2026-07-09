@@ -1,7 +1,7 @@
 {
-  "/login/page": "app/login/page.js",
-  "/dashboard/user/page": "app/dashboard/user/page.js",
-  "/dashboard/user/settings/page": "app/dashboard/user/settings/page.js",
-  "/dashboard/user/appearance/page": "app/dashboard/user/appearance/page.js",
-  "/dashboard/user/rules/page": "app/dashboard/user/rules/page.js"
+  "/dashboard/super-admin/page": "app/dashboard/super-admin/page.js",
+  "/dashboard/super-admin/fund-requests/page": "app/dashboard/super-admin/fund-requests/page.js",
+  "/dashboard/super-admin/fundSummary/page": "app/dashboard/super-admin/fundSummary/page.js",
+  "/dashboard/super-admin/fundHistory/page": "app/dashboard/super-admin/fundHistory/page.js",
+  "/dashboard/super-admin/settings/page": "app/dashboard/super-admin/settings/page.js"
 }

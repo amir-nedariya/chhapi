@@ -83,6 +83,12 @@
       "namedRegex": "^/dashboard/admin/donations(?:/)?$"
     },
     {
+      "page": "/dashboard/admin/fund-request",
+      "regex": "^/dashboard/admin/fund\\-request(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/admin/fund\\-request(?:/)?$"
+    },
+    {
       "page": "/dashboard/admin/fundHistory",
       "regex": "^/dashboard/admin/fundHistory(?:/)?$",
       "routeKeys": {},
@@ -117,6 +123,12 @@
       "regex": "^/dashboard/admin/reminders(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/dashboard/admin/reminders(?:/)?$"
+    },
+    {
+      "page": "/dashboard/admin/rules",
+      "regex": "^/dashboard/admin/rules(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/admin/rules(?:/)?$"
     },
     {
       "page": "/dashboard/admin/settings",
@@ -161,6 +173,12 @@
       "namedRegex": "^/dashboard/super\\-admin/createfund(?:/)?$"
     },
     {
+      "page": "/dashboard/super-admin/fund-requests",
+      "regex": "^/dashboard/super\\-admin/fund\\-requests(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/super\\-admin/fund\\-requests(?:/)?$"
+    },
+    {
       "page": "/dashboard/super-admin/fundHistory",
       "regex": "^/dashboard/super\\-admin/fundHistory(?:/)?$",
       "routeKeys": {},
@@ -195,6 +213,12 @@
       "regex": "^/dashboard/super\\-admin/reports(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/dashboard/super\\-admin/reports(?:/)?$"
+    },
+    {
+      "page": "/dashboard/super-admin/rules",
+      "regex": "^/dashboard/super\\-admin/rules(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/super\\-admin/rules(?:/)?$"
     },
     {
       "page": "/dashboard/super-admin/settings",
@@ -239,6 +263,12 @@
       "namedRegex": "^/dashboard/user/donations(?:/)?$"
     },
     {
+      "page": "/dashboard/user/fund-request",
+      "regex": "^/dashboard/user/fund\\-request(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/user/fund\\-request(?:/)?$"
+    },
+    {
       "page": "/dashboard/user/fundHistory",
       "regex": "^/dashboard/user/fundHistory(?:/)?$",
       "routeKeys": {},
@@ -255,6 +285,12 @@
       "regex": "^/dashboard/user/monthlyDonationTable(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/dashboard/user/monthlyDonationTable(?:/)?$"
+    },
+    {
+      "page": "/dashboard/user/rules",
+      "regex": "^/dashboard/user/rules(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/user/rules(?:/)?$"
     },
     {
       "page": "/dashboard/user/settings",
