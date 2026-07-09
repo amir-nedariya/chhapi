@@ -20,6 +20,7 @@ import {
   CalendarRange,
   MessageCircle,
   X,
+  ScrollText,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useState, useEffect } from "react";
@@ -355,6 +356,22 @@ const SuperAdminSidebar = ({ collapsed, setCollapsed, mobile, sidebarOpen, setSi
                         )}
                       </div>
                     )}
+                  </>
+                )}
+              </NavLink>
+
+              {/* RULES & REGULATIONS */}
+              <NavLink
+                to="/dashboard/super-admin/rules"
+                onClick={() => mobile && setSidebarOpen(false)}
+                className={({ isActive }) => getLinkClass(isActive)}
+              >
+                {({ isActive }) => (
+                  <>
+                    <div className={collapsed ? "" : (isActive ? "sidebar-icon-container-active" : "sidebar-icon-container-inactive")}>
+                      <ScrollText size={18} />
+                    </div>
+                    {!collapsed && <span className="text-sm font-semibold">Rules & Regulations</span>}
                   </>
                 )}
               </NavLink>
