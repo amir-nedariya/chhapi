@@ -18,6 +18,7 @@ import {
   MessageCircle,
   X,
   ScrollText,
+  Target,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useState, useEffect } from "react";
@@ -344,6 +345,22 @@ const AdminSidebar = ({ collapsed, setCollapsed, mobile, sidebarOpen, setSidebar
                       <ScrollText size={18} />
                     </div>
                     {!collapsed && <span className="text-sm font-semibold">Rules & Regulations</span>}
+                  </>
+                )}
+              </NavLink>
+
+              {/* LEADS */}
+              <NavLink
+                to="/dashboard/admin/leads"
+                onClick={() => mobile && setSidebarOpen(false)}
+                className={({ isActive }) => getLinkClass(isActive)}
+              >
+                {({ isActive }) => (
+                  <>
+                    <div className={collapsed ? "" : (isActive ? "sidebar-icon-container-active" : "sidebar-icon-container-inactive")}>
+                      <Target size={18} />
+                    </div>
+                    {!collapsed && <span className="text-sm font-semibold">Leads</span>}
                   </>
                 )}
               </NavLink>

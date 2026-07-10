@@ -1,7 +1,10 @@
 {
-  "/dashboard/super-admin/page": "app/dashboard/super-admin/page.js",
-  "/dashboard/super-admin/fund-requests/page": "app/dashboard/super-admin/fund-requests/page.js",
-  "/dashboard/super-admin/fundSummary/page": "app/dashboard/super-admin/fundSummary/page.js",
-  "/dashboard/super-admin/fundHistory/page": "app/dashboard/super-admin/fundHistory/page.js",
-  "/dashboard/super-admin/settings/page": "app/dashboard/super-admin/settings/page.js"
+  "/dashboard/user/rules/page": "app/dashboard/user/rules/page.js",
+  "/dashboard/user/fund-request/page": "app/dashboard/user/fund-request/page.js",
+  "/dashboard/user/fundSummary/page": "app/dashboard/user/fundSummary/page.js",
+  "/dashboard/user/fundHistory/page": "app/dashboard/user/fundHistory/page.js",
+  "/dashboard/user/all-users/page": "app/dashboard/user/all-users/page.js",
+  "/dashboard/user/page": "app/dashboard/user/page.js",
+  "/dashboard/user/all-donations/page": "app/dashboard/user/all-donations/page.js",
+  "/dashboard/user/monthlyDonationTable/page": "app/dashboard/user/monthlyDonationTable/page.js"
 }

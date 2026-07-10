@@ -13,6 +13,8 @@ import {
   CalendarRange,
   X,
   ScrollText,
+  Target,
+  UserPlus,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useState, useEffect } from "react";
@@ -261,6 +263,38 @@ const UserSidebar = ({ collapsed, setCollapsed, mobile, sidebarOpen, setSidebarO
                       <ScrollText size={18} />
                     </div>
                     {!collapsed && <span className="text-sm font-semibold">Rules & Regulations</span>}
+                  </>
+                )}
+              </NavLink>
+
+              {/* ALL USERS */}
+              <NavLink
+                to="/dashboard/user/all-users"
+                onClick={() => mobile && setSidebarOpen(false)}
+                className={({ isActive }) => getLinkClass(isActive)}
+              >
+                {({ isActive }) => (
+                  <>
+                    <div className={collapsed ? "" : (isActive ? "sidebar-icon-container-active" : "sidebar-icon-container-inactive")}>
+                      <UserPlus size={18} />
+                    </div>
+                    {!collapsed && <span className="text-sm font-semibold">All Users</span>}
+                  </>
+                )}
+              </NavLink>
+
+              {/* LEADS */}
+              <NavLink
+                to="/dashboard/user/leads"
+                onClick={() => mobile && setSidebarOpen(false)}
+                className={({ isActive }) => getLinkClass(isActive)}
+              >
+                {({ isActive }) => (
+                  <>
+                    <div className={collapsed ? "" : (isActive ? "sidebar-icon-container-active" : "sidebar-icon-container-inactive")}>
+                      <Target size={18} />
+                    </div>
+                    {!collapsed && <span className="text-sm font-semibold">Leads</span>}
                   </>
                 )}
               </NavLink>
