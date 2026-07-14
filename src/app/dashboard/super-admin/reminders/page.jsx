@@ -33,6 +33,11 @@ const RemindersPage = () => {
   // Set current month as default (0 = Jan, 5 = June, etc.)
   const currentMonthIndex = new Date().getMonth();
   const [selectedMonth, setSelectedMonth] = useState(monthKeys[currentMonthIndex]);
+  const [selectedUserIds, setSelectedUserIds] = useState([]);
+
+  useEffect(() => {
+    setSelectedUserIds([]);
+  }, [selectedMonth, searchTerm, users]);
 
   const fetchUsers = async () => {
     try {
@@ -87,23 +92,24 @@ const RemindersPage = () => {
     window.open(whatsappUrl, "_blank");
   };
 
-  // Bulk send reminders with a 1-second delay
-  const sendAllReminders = () => {
-    if (pendingDonors.length === 0) {
-      toast.error("❌ No pending donors to remind for this month.");
+  // Bulk send reminders to selected donors
+  const sendSelectedReminders = () => {
+    const selectedDonors = pendingDonors.filter(u => selectedUserIds.includes(u._id));
+    if (selectedDonors.length === 0) {
+      toast.error("❌ Please select at least one donor.");
       return;
     }
 
-    const confirmSend = window.confirm(`This will open WhatsApp tabs for ${pendingDonors.length} donors. Please allow pop-ups in your browser. Do you want to proceed?`);
+    const confirmSend = window.confirm(`This will open WhatsApp tabs for ${selectedDonors.length} selected donors. Please allow pop-ups in your browser. Do you want to proceed?`);
     if (!confirmSend) return;
 
-    pendingDonors.forEach((userObj, index) => {
+    selectedDonors.forEach((userObj, index) => {
       setTimeout(() => {
         sendWhatsAppReminder(userObj);
       }, index * 1000); // 1-second staggered delay
     });
 
-    toast.success(`🚀 Opening WhatsApp tabs for ${pendingDonors.length} donors...`);
+    toast.success(`🚀 Opening WhatsApp tabs for ${selectedDonors.length} selected donors...`);
   };
 
   return (
@@ -135,11 +141,12 @@ const RemindersPage = () => {
             
             {pendingDonors.length > 0 && (
               <button 
-                onClick={sendAllReminders}
-                className="flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition cursor-pointer shadow-sm hover:shadow active:scale-98"
+                onClick={sendSelectedReminders}
+                disabled={selectedUserIds.length === 0}
+                className="flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition cursor-pointer shadow-sm hover:shadow active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Send size={12} />
-                <span>Send to All ({pendingDonors.length})</span>
+                <span>Send to Selected ({selectedUserIds.length})</span>
               </button>
             )}
           </div>
@@ -190,6 +197,20 @@ const RemindersPage = () => {
             <table className="w-full text-xs text-left text-slate-700 border-collapse">
               <thead className="bg-gradient-to-r from-[var(--sidebar-from)] via-[var(--sidebar-via)] to-[var(--sidebar-to)] text-white text-xs font-semibold">
                 <tr>
+                  <th className="py-3 px-4 w-12 text-center border-b border-slate-200/10">
+                    <input
+                      type="checkbox"
+                      checked={pendingDonors.length > 0 && selectedUserIds.length === pendingDonors.length}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedUserIds(pendingDonors.map(u => u._id));
+                        } else {
+                          setSelectedUserIds([]);
+                        }
+                      }}
+                      className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer accent-emerald-600"
+                    />
+                  </th>
                   <th className="py-3 px-4 font-semibold border-b border-slate-200/10">Donor Details</th>
                   <th className="py-3 px-4 font-semibold border-b border-slate-200/10">Donation Status</th>
                   <th className="py-3 px-4 text-center font-semibold border-b border-slate-200/10">Action</th>
@@ -198,13 +219,27 @@ const RemindersPage = () => {
               <tbody className="divide-y divide-slate-100">
                 {loading ? (
                   <tr>
-                    <td colSpan={3} className="py-8 text-center text-slate-400 font-medium">
+                    <td colSpan={4} className="py-8 text-center text-slate-400 font-medium">
                       Loading donor records...
                     </td>
                   </tr>
                 ) : pendingDonors.length > 0 ? (
                   pendingDonors.map((userObj) => (
                     <tr key={userObj._id} className="hover:bg-slate-50/60 transition-colors">
+                      <td className="py-3 px-4 text-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedUserIds.includes(userObj._id)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedUserIds(prev => [...prev, userObj._id]);
+                            } else {
+                              setSelectedUserIds(prev => prev.filter(id => id !== userObj._id));
+                            }
+                          }}
+                          className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer accent-emerald-600"
+                        />
+                      </td>
                       <td className="py-3 px-4">
                         <div className="font-semibold text-slate-700 uppercase tracking-wide">{userObj.name}</div>
                         <div className="text-[10px] text-slate-400 font-medium mt-0.5">{userObj.mobile || "N/A"}</div>
@@ -228,7 +263,7 @@ const RemindersPage = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={3} className="py-8 text-center text-emerald-600 font-medium">
+                    <td colSpan={4} className="py-8 text-center text-emerald-600 font-medium">
                       <div className="flex flex-col items-center gap-1 justify-center">
                         <CheckCircle size={18} className="text-emerald-500" />
                         <span>All donors have paid for this month! No reminders needed.</span>

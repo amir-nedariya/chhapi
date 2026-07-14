@@ -65,6 +65,7 @@ const UserDetails = ({ currentRole }) => {
   const [editYear, setEditYear] = useState(now.getFullYear());
   const [editStatus, setEditStatus] = useState("Success");
   const [editDonationLoading, setEditDonationLoading] = useState(false);
+  const [selectedYear, setSelectedYear] = useState(now.getFullYear());
 
   const fetchDonations = async () => {
     try {
@@ -153,6 +154,18 @@ const UserDetails = ({ currentRole }) => {
     }
   };
 
+  const handleCardAction = (monthNum) => {
+    const d = donations.find(x => x.year === selectedYear && x.month === monthNum);
+    if (d) {
+      handleOpenEdit(d);
+    } else {
+      setMonth(monthNum);
+      setYear(selectedYear);
+      setAmount("50");
+      setShowModal(true);
+    }
+  };
+
 
 
   if (loading) {
@@ -238,72 +251,81 @@ const UserDetails = ({ currentRole }) => {
       </div>
 
       {/* ===== DONATION HISTORY ===== */}
-      <div className="rounded-xl bg-white border border-slate-200/50 p-5 sm:p-6 shadow-xs space-y-4">
-        <div className="flex justify-between items-center border-b border-slate-100 pb-3">
+      <div className="rounded-xl bg-white border border-slate-200/50 py-5 sm:py-6 shadow-xs space-y-4">
+        <div className="flex justify-between items-center border-b border-slate-100 pb-3 px-5 sm:px-6">
           <div>
             <h3 className="text-slate-800 font-semibold text-xs uppercase tracking-wider">Donation History</h3>
-            <p className="text-slate-400 text-[10px] mt-0.5 font-medium">Manage and view all recorded donation entries for this user</p>
+            <p className="text-slate-400 text-[10px] mt-0.5 font-medium">Monthly giving status and record for the selected year</p>
+          </div>
+          <div>
+            <select
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(Number(e.target.value))}
+              className="px-3 py-1.5 text-xs font-semibold rounded-xl bg-slate-50 border border-slate-200 text-slate-700 outline-none focus:ring-2 focus:ring-cyan-500 cursor-pointer transition"
+            >
+              {(() => {
+                const donationYears = [...new Set(donations.map((d) => d.year))];
+                if (!donationYears.includes(now.getFullYear())) {
+                  donationYears.push(now.getFullYear());
+                }
+                donationYears.sort((a, b) => b - a);
+                return donationYears.map((y) => (
+                  <option key={y} value={y}>
+                    {y}
+                  </option>
+                ));
+              })()}
+            </select>
           </div>
         </div>
 
-        {donations.length === 0 ? (
-          <div className="text-center py-10 text-slate-400 font-medium bg-slate-50/50 rounded-lg border border-dashed border-slate-200">
-            No donations recorded yet.
-          </div>
-        ) : (
-          <div className="overflow-x-auto rounded-lg border border-slate-200/40">
-            <table className="w-full text-xs text-slate-800 border-collapse">
-              <thead className="bg-gradient-to-r from-[var(--sidebar-from)] via-[var(--sidebar-via)] to-[var(--sidebar-to)] text-white border-b border-teal-950/20 text-xs font-semibold">
-                <tr>
-                  <th className="py-3 px-4 text-left font-semibold border-b border-slate-200/10">Month & Year</th>
-                  <th className="py-3 px-4 text-right font-semibold border-b border-slate-200/10">Amount</th>
-                  <th className="py-3 px-4 text-left font-semibold border-b border-slate-200/10">Remarks</th>
-                  <th className="py-3 px-4 text-center font-semibold border-b border-slate-200/10">Status</th>
-                  {currentRole !== "USER" && (
-                    <th className="py-3 px-4 text-center font-semibold border-b border-slate-200/10">Action</th>
-                  )}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {donations.map((d) => (
-                  <tr key={d._id} className="hover:bg-slate-50/60 transition-colors">
-                    <td className="py-3 px-4 font-semibold text-slate-700">
-                      {months[d.month - 1]} {d.year}
-                    </td>
-                    <td className="py-3 px-4 text-right font-semibold text-slate-900">
-                      ₹{d.amount.toLocaleString("en-IN")}
-                    </td>
-                    <td className="py-3 px-4 text-slate-500 max-w-[200px] truncate">
-                      {d.remarks || <span className="text-slate-350 italic">None</span>}
-                    </td>
-                    <td className="py-3 px-4 text-center">
-                      <span className={`px-2 py-0.5 rounded font-semibold text-[10px] border ${
-                        d.status === "Success" || d.status === "Approved"
-                          ? "bg-emerald-50 text-emerald-700 border-emerald-100"
-                          : d.status === "Pending"
-                          ? "bg-amber-50 text-amber-700 border-amber-100"
-                          : "bg-rose-50 text-rose-700 border-rose-100"
-                      }`}>
-                        {d.status || "Success"}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 px-5 sm:px-6">
+          {(() => {
+            const monthNamesShort = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            return monthNamesShort.map((monthName, monthIndex) => {
+              const donationForMonth = donations.find(
+                (d) => d.year === selectedYear && d.month === monthIndex + 1
+              );
+              const isPaid = donationForMonth && (donationForMonth.status === "Success" || donationForMonth.status === "Approved");
+              
+              const cardBg = isPaid 
+                ? "bg-emerald-50/40 hover:bg-emerald-50/70 border-emerald-100/70 text-emerald-800" 
+                : "bg-rose-50/40 hover:bg-rose-50/70 border-rose-100/70 text-rose-800";
+              const monthColor = isPaid ? "text-emerald-500 font-bold" : "text-rose-400 font-bold";
+              const amountColor = isPaid ? "text-emerald-700 font-bold" : "text-rose-600 font-bold";
+
+              return (
+                <div 
+                  key={monthIndex} 
+                  className={`p-4 rounded-xl border flex items-center justify-between transition duration-200 ${cardBg}`}
+                >
+                  <div className="flex flex-col gap-0.5 min-w-0">
+                    <span className={`text-[10px] uppercase tracking-wider ${monthColor}`}>
+                      {monthName.toUpperCase()}
+                    </span>
+                    <span className={`text-base ${amountColor}`}>
+                      ₹{(donationForMonth?.amount || 0).toLocaleString("en-IN")}
+                    </span>
+                    {donationForMonth?.remarks && (
+                      <span className="text-[9px] text-slate-400 truncate max-w-[100px]" title={donationForMonth.remarks}>
+                        {donationForMonth.remarks}
                       </span>
-                    </td>
-                    {currentRole !== "USER" && (
-                      <td className="py-3 px-4 text-center">
-                        <button
-                          onClick={() => handleOpenEdit(d)}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-cyan-600 hover:bg-cyan-50 transition cursor-pointer"
-                          title="Edit Donation"
-                        >
-                          <Edit size={14} />
-                        </button>
-                      </td>
                     )}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+                  </div>
+                  {currentRole !== "USER" && (
+                    <button
+                      onClick={() => handleCardAction(monthIndex + 1)}
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-cyan-600 hover:bg-cyan-50 transition cursor-pointer flex-shrink-0"
+                      title={donationForMonth ? "Edit Donation" : "Record Donation"}
+                    >
+                      <Edit size={14} />
+                    </button>
+                  )}
+                </div>
+              );
+            });
+          })()}
+        </div>
       </div>
 
       {/* ===== ADD MODAL ===== */}

@@ -37,6 +37,14 @@
         "nxtPid": "nxtPid"
       },
       "namedRegex": "^/dashboard/super\\-admin/usersList/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/dashboard/user/users/[id]",
+      "regex": "^/dashboard/user/users/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/dashboard/user/users/(?<nxtPid>[^/]+?)(?:/)?$"
     }
   ],
   "staticRoutes": [
@@ -71,12 +79,6 @@
       "namedRegex": "^/dashboard/admin/appearance(?:/)?$"
     },
     {
-      "page": "/dashboard/admin/createuser",
-      "regex": "^/dashboard/admin/createuser(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/dashboard/admin/createuser(?:/)?$"
-    },
-    {
       "page": "/dashboard/admin/donations",
       "regex": "^/dashboard/admin/donations(?:/)?$",
       "routeKeys": {},
@@ -105,6 +107,12 @@
       "regex": "^/dashboard/admin/GetAllUser(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/dashboard/admin/GetAllUser(?:/)?$"
+    },
+    {
+      "page": "/dashboard/admin/leads",
+      "regex": "^/dashboard/admin/leads(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/admin/leads(?:/)?$"
     },
     {
       "page": "/dashboard/admin/monthlyDonationTable",
@@ -191,6 +199,12 @@
       "namedRegex": "^/dashboard/super\\-admin/fundSummary(?:/)?$"
     },
     {
+      "page": "/dashboard/super-admin/leads",
+      "regex": "^/dashboard/super\\-admin/leads(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/super\\-admin/leads(?:/)?$"
+    },
+    {
       "page": "/dashboard/super-admin/monthlyDonationTable",
       "regex": "^/dashboard/super\\-admin/monthlyDonationTable(?:/)?$",
       "routeKeys": {},
@@ -251,6 +265,12 @@
       "namedRegex": "^/dashboard/user/all\\-donations(?:/)?$"
     },
     {
+      "page": "/dashboard/user/all-users",
+      "regex": "^/dashboard/user/all\\-users(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/user/all\\-users(?:/)?$"
+    },
+    {
       "page": "/dashboard/user/appearance",
       "regex": "^/dashboard/user/appearance(?:/)?$",
       "routeKeys": {},
@@ -279,6 +299,12 @@
       "regex": "^/dashboard/user/fundSummary(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/dashboard/user/fundSummary(?:/)?$"
+    },
+    {
+      "page": "/dashboard/user/leads",
+      "regex": "^/dashboard/user/leads(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/user/leads(?:/)?$"
     },
     {
       "page": "/dashboard/user/monthlyDonationTable",

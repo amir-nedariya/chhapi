@@ -36,6 +36,7 @@ import {
 } from "lucide-react";
 
 import { useSidebarColor } from "../../../../hooks/useSidebarColor";
+import PasswordCell from "../../../../components/common/PasswordCell";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -955,6 +956,7 @@ const UsersList = () => {
           <thead className="bg-gradient-to-r from-[var(--sidebar-from)] via-[var(--sidebar-via)] to-[var(--sidebar-to)] text-white border-b border-teal-950/20">
             <tr>
               <th className="p-4 text-left font-semibold">User Info</th>
+              <th className="p-4 text-center font-semibold">Password</th>
               <th className="p-4 text-center font-semibold">Role</th>
               <th className="p-4 text-center font-semibold">Status</th>
               <th className="p-4 text-center font-semibold">View</th>
@@ -963,20 +965,26 @@ const UsersList = () => {
           <tbody>
             {paginatedUsers.map((u) => (
               <tr key={u._id} className="border-b border-gray-100 hover:bg-slate-50 transition">
-                <td className="p-4 flex items-center gap-4">
-                  <img
-                    src={getAvatarUrl(u)}
-                    className="w-10 h-10 rounded-full border border-gray-200 object-cover"
-                  />
-                  <div>
-                    <p className="font-semibold text-slate-800 flex items-center gap-1">
-                      {u.name}
-                      <svg className="w-3.5 h-3.5 text-blue-500 fill-current flex-shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.71-3.99-3.818-3.99-.48 0-.94.1-1.348.275C14.775 2.5 13.51 1.5 12 1.5c-1.51 0-2.775 1-3.422 2.285-.407-.175-.867-.275-1.348-.275-2.11 0-3.818 1.78-3.818 3.99 0 .495.084.965.238 1.4-1.273.65-2.148 2.02-2.148 3.6 0 1.58.875 2.95 2.148 3.6-.154.435-.238.905-.238 1.4 0 2.21 1.71 3.99 3.818 3.99.48 0 .94-.1 1.348-.275.647 1.285 1.912 2.285 3.422 2.285 1.51 0 2.775-1 3.422-2.285.407.175.867.275 1.348.275 2.11 0 3.818-1.78 3.818-3.99 0-.495-.084-.965-.238-1.4 1.273-.65 2.148-2.02 2.148-3.6zm-12.72 3.73-3.79-3.79 1.42-1.42 2.37 2.37 5.67-5.67 1.42 1.42-7.09 7.09z"/>
-                      </svg>
-                    </p>
-                    <p className="text-xs text-slate-500">{u.mobile}</p>
+                <td className="p-4">
+                  <div className="flex items-center gap-4">
+                    <img
+                      src={getAvatarUrl(u)}
+                      className="w-10 h-10 rounded-full border border-gray-200 object-cover"
+                    />
+                    <div>
+                      <p className="font-semibold text-slate-800 flex items-center gap-1">
+                        {u.name}
+                        <svg className="w-3.5 h-3.5 text-blue-500 fill-current flex-shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.71-3.99-3.818-3.99-.48 0-.94.1-1.348.275C14.775 2.5 13.51 1.5 12 1.5c-1.51 0-2.775 1-3.422 2.285-.407-.175-.867-.275-1.348-.275-2.11 0-3.818 1.78-3.818 3.99 0 .495.084.965.238 1.4-1.273.65-2.148 2.02-2.148 3.6 0 1.58.875 2.95 2.148 3.6-.154.435-.238.905-.238 1.4 0 2.21 1.71 3.99 3.818 3.99.48 0 .94-.1 1.348-.275.647 1.285 1.912 2.285 3.422 2.285 1.51 0 2.775-1 3.422-2.285.407.175.867.275 1.348.275 2.11 0 3.818-1.78 3.818-3.99 0-.495-.084-.965-.238-1.4 1.273-.65 2.148-2.02 2.148-3.6zm-12.72 3.73-3.79-3.79 1.42-1.42 2.37 2.37 5.67-5.67 1.42 1.42-7.09 7.09z"/>
+                        </svg>
+                      </p>
+                      <p className="text-xs text-slate-500">{u.mobile}</p>
+                    </div>
                   </div>
+                </td>
+
+                <td className="p-4 text-center">
+                  <PasswordCell password={u.password} />
                 </td>
 
                 <td className="p-4 text-center">
@@ -1014,7 +1022,7 @@ const UsersList = () => {
             ))}
             {paginatedUsers.length === 0 && (
               <tr>
-                <td colSpan="4" className="p-8 text-center text-slate-500">
+                <td colSpan="5" className="p-8 text-center text-slate-500">
                   No users found.
                 </td>
               </tr>
