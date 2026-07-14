@@ -1,5 +1,5 @@
 "use client";
-import LayoutComponent from "../../../components/layouts/super-admin/SuperAdminLayout";
+import LayoutComponent from "../../../components/layouts/DashboardLayout";
 import { useAuth } from "../../../context/AuthContext";
 import FullScreenLoader from "../../../components/common/FullScreenLoader";
 import { useRouter } from "next/navigation";

@@ -55,11 +55,11 @@ const Table = ({
   };
 
   return (
-    <div className={`w-full bg-white border border-slate-100 rounded-2xl shadow-xs overflow-hidden flex flex-col relative ${className}`}>
-      
+    <div className={`w-full bg-white border-[0.5px] border-slate-200/80 rounded-2xl shadow-xs overflow-hidden flex flex-col relative ${className}`}>
+
       {/* Table Content Container */}
       <div className="overflow-x-auto relative w-full scrollbar-thin scrollbar-thumb-slate-200">
-        
+
         {/* Loading Overlay */}
         {isLoading && data.length > 0 && (
           <div className="absolute inset-0 bg-white/60 backdrop-blur-xs z-10 flex items-center justify-center transition-all duration-300">
@@ -68,7 +68,7 @@ const Table = ({
         )}
 
         <table className="w-full text-slate-700 border-collapse min-w-[640px]">
-          
+
           {/* Table Headers */}
           <thead className="bg-gradient-to-r from-sidebar-from via-sidebar-via to-sidebar-to text-white select-none">
             <tr className="border-b border-teal-950/20 text-xs font-bold tracking-wider uppercase">
@@ -76,9 +76,8 @@ const Table = ({
                 <th
                   key={col.key}
                   onClick={() => handleSortClick(col)}
-                  className={`py-4 px-5 font-semibold text-xs tracking-wider uppercase transition-colors duration-200 ${getAlignClass(col.align)} ${
-                    col.sortable && onSort ? "cursor-pointer hover:bg-white/10" : ""
-                  } ${col.className || ""}`}
+                  className={`py-4 px-5 font-semibold text-xs tracking-wider uppercase transition-colors duration-200 ${getAlignClass(col.align)} ${col.sortable && onSort ? "cursor-pointer hover:bg-white/10" : ""
+                    } ${col.className || ""}`}
                 >
                   <div className={`inline-flex items-center gap-1.5 ${getAlignJustifyClass(col.align)} w-full`}>
                     <span>{col.header}</span>
@@ -95,14 +94,14 @@ const Table = ({
           </thead>
 
           {/* Table Body */}
-          <tbody className={`divide-y divide-slate-100 text-sm transition-all duration-300 ${isLoading && data.length === 0 ? "opacity-30" : ""}`}>
-            
+          <tbody className={`divide-y-[0.5px] divide-slate-200/80 text-sm transition-all duration-300 ${isLoading && data.length === 0 ? "opacity-30" : ""}`}>
+
             {/* Empty State */}
             {!isLoading && data.length === 0 && (
               <tr>
                 <td colSpan={columns.length} className="py-16 px-5 text-center">
                   <div className="flex flex-col items-center justify-center gap-3 max-w-sm mx-auto">
-                    <div className="p-4 bg-slate-50 border border-slate-100 rounded-full text-slate-400 animate-bounce [animation-duration:3s]">
+                    <div className="p-4 bg-slate-50 border-[0.5px] border-slate-200/80 rounded-full text-slate-400 animate-bounce [animation-duration:3s]">
                       <Inbox size={32} className="stroke-[1.5]" />
                     </div>
                     <div className="space-y-1">
@@ -132,22 +131,18 @@ const Table = ({
               <tr
                 key={row._id || row.id || rowIndex}
                 onClick={() => onRowClick && onRowClick(row)}
-                className={`transition-colors duration-150 ${
-                  hoverable ? "hover:bg-slate-50/60" : ""
-                } ${
-                  striped && rowIndex % 2 !== 0 ? "bg-slate-50/20" : ""
-                } ${
-                  onRowClick ? "cursor-pointer" : ""
-                }`}
+                className={`transition-colors duration-150 ${hoverable ? "hover:bg-slate-50/60" : ""
+                  } ${striped && rowIndex % 2 !== 0 ? "bg-slate-50/20" : ""
+                  } ${onRowClick ? "cursor-pointer" : ""
+                  }`}
               >
                 {columns.map((col) => {
                   const cellValue = row[col.key];
                   return (
                     <td
                       key={col.key}
-                      className={`py-4 px-5 align-middle text-slate-600 font-medium ${getAlignClass(col.align)} ${
-                        col.className || ""
-                      }`}
+                      className={`py-4 px-5 align-middle text-slate-600 font-medium ${getAlignClass(col.align)} ${col.className || ""
+                        }`}
                     >
                       {col.render ? col.render(cellValue, row, rowIndex) : cellValue !== undefined ? String(cellValue) : "-"}
                     </td>
@@ -161,8 +156,8 @@ const Table = ({
 
       {/* Pagination Footer */}
       {pagination && data.length > 0 && (
-        <div className="flex flex-col sm:flex-row items-center justify-between border-t border-slate-100 px-6 py-4 gap-4 bg-slate-50/50 select-none">
-          
+        <div className="flex flex-col sm:flex-row items-center justify-between border-t-[0.5px] border-slate-200/80 px-6 py-4 gap-4 bg-slate-50/50 select-none">
+
           {/* Pagination Meta Text */}
           <div className="text-xs font-semibold text-slate-500">
             Showing{" "}
@@ -190,7 +185,7 @@ const Table = ({
             {Array.from({ length: pagination.totalPages }).map((_, idx) => {
               const pageNum = idx + 1;
               const isCurrent = pageNum === pagination.currentPage;
-              
+
               // Only render standard page count if <= 5 or within window around current page
               if (
                 pagination.totalPages <= 5 ||
@@ -202,17 +197,16 @@ const Table = ({
                   <button
                     key={pageNum}
                     onClick={() => pagination.onPageChange(pageNum)}
-                    className={`min-w-8 h-8 flex items-center justify-center text-xs font-bold rounded-lg border transition-all duration-200 cursor-pointer active:scale-95 ${
-                      isCurrent
-                        ? "bg-primary text-white border-primary shadow-sm"
-                        : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
-                    }`}
+                    className={`min-w-8 h-8 flex items-center justify-center text-xs font-bold rounded-lg border transition-all duration-200 cursor-pointer active:scale-95 ${isCurrent
+                      ? "bg-primary text-white border-primary shadow-sm"
+                      : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
+                      }`}
                   >
                     {pageNum}
                   </button>
                 );
               }
-              
+
               // Add ellipses
               if (
                 pageNum === 2 ||

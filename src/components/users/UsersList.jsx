@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 
 import { useSidebarColor } from "../../hooks/useSidebarColor";
 import CreateUserModal from "../common/CreateUserModal";
+import PasswordCell from "../common/PasswordCell";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -179,7 +180,8 @@ const UsersList = ({ currentRole }) => {
             <tr>
               <th className="p-4 text-left font-semibold">User</th>
               <th className="p-4 font-semibold">Mobile</th>
-              <th className="p-4 font-semibold">Role</th>
+              {currentRole === "SUPER_ADMIN" && <th className="p-4 font-semibold text-center">Password</th>}
+              <th className="p-4 font-semibold text-center">Role</th>
               <th className="p-4 font-semibold">Created By</th>
               <th className="p-4 text-center font-semibold">Status</th>
               <th className="p-4 text-center font-semibold">View Profile</th>
@@ -189,7 +191,7 @@ const UsersList = ({ currentRole }) => {
           <tbody>
             {loading && (
               <tr>
-                <td colSpan="6" className="p-6 text-center text-slate-500">
+                <td colSpan={currentRole === "SUPER_ADMIN" ? 7 : 6} className="p-6 text-center text-slate-500">
                   Loading...
                 </td>
               </tr>
@@ -201,16 +203,24 @@ const UsersList = ({ currentRole }) => {
                   key={u._id}
                   className="border-b border-gray-100 hover:bg-slate-50 transition"
                 >
-                  <td className="p-4 flex items-center gap-3">
-                    <img
-                      src={getAvatarUrl(u)}
-                      className="w-9 h-9 rounded-full border border-gray-200 object-cover"
-                      alt=""
-                    />
-                    <span className="font-medium text-slate-800">{u.name}</span>
+                  <td className="p-4">
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={getAvatarUrl(u)}
+                        className="w-9 h-9 rounded-full border border-gray-200 object-cover"
+                        alt=""
+                      />
+                      <span className="font-medium text-slate-800">{u.name}</span>
+                    </div>
                   </td>
 
                   <td className="p-4">{u.mobile}</td>
+
+                  {currentRole === "SUPER_ADMIN" && (
+                    <td className="p-4 text-center">
+                      <PasswordCell password={u.password} />
+                    </td>
+                  )}
 
                   <td className="p-4">
                     <span
@@ -258,7 +268,7 @@ const UsersList = ({ currentRole }) => {
               ))}
               {!loading && paginatedUsers.length === 0 && (
                 <tr>
-                  <td colSpan="6" className="p-8 text-center text-slate-500">
+                  <td colSpan={currentRole === "SUPER_ADMIN" ? 7 : 6} className="p-8 text-center text-slate-500">
                     No users found.
                   </td>
                 </tr>

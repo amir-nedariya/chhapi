@@ -269,9 +269,13 @@ export const dummyUsers = [
     isActive: false,
     createdAt: "2025-05-20T11:30:00.000Z",
     createdByName: "Demo Admin",
-    createdByRole: "ADMIN"
   }
 ];
+
+dummyUsers.forEach(u => {
+  if (!u.password) u.password = "password123";
+});
+
 
 export const getAllUsersAPI = async () => {
   return { data: { data: dummyUsers.filter(u => !u.isDeleted) } };
@@ -311,6 +315,7 @@ export const createAdminAPI = async (data) => {
     name: data.name,
     mobile: data.mobile,
     role: "ADMIN",
+    password: data.password || "password123",
     isActive: true,
     createdAt: new Date().toISOString(),
     createdBy: "Demo Super Admin",
@@ -330,6 +335,7 @@ export const createUserAPI = async (data) => {
     name: data.name,
     mobile: data.mobile,
     role: data.role || "USER",
+    password: data.password || "password123",
     isActive: true,
     createdAt: new Date().toISOString(),
     createdBy: "Demo Super Admin",

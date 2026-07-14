@@ -111,33 +111,33 @@ const AllDonations = () => {
   const cardShadow = {
     boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05)",
     backgroundColor: "#ffffff",
-    border: "1px solid #e2e8f0",
+    border: "0.5px solid rgba(226, 232, 240, 0.8)",
   };
 
   const inputShadow = {
     backgroundColor: "#ffffff",
-    border: "1px solid #cbd5e1",
+    border: "0.5px solid rgba(203, 213, 225, 0.8)",
   };
 
   const headerIconShadow = {
     boxShadow: "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
     backgroundColor: "#ffffff",
-    border: "1px solid #e2e8f0",
+    border: "0.5px solid rgba(226, 232, 240, 0.8)",
   };
 
   const currentMonthButtonShadow = {
     backgroundColor: "#ffffff",
-    border: "1px solid #e2e8f0",
+    border: "0.5px solid rgba(226, 232, 240, 0.8)",
   };
 
   const prevButtonShadow = {
     backgroundColor: "#ffffff",
-    border: "1px solid #e2e8f0",
+    border: "0.5px solid rgba(226, 232, 240, 0.8)",
   };
 
   const nextButtonShadow = {
     backgroundColor: "#ffffff",
-    border: "1px solid #e2e8f0",
+    border: "0.5px solid rgba(226, 232, 240, 0.8)",
   };
 
   return (
