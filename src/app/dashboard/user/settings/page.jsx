@@ -50,7 +50,7 @@ const UserSettings = () => {
   return (
     <div className="min-h-screen bg-slate-50/30 p-4 sm:p-8 flex justify-center items-start font-sans text-slate-800">
       <div className="w-full max-w-4xl space-y-8 mt-4">
-        
+
         {/* HEADER */}
         <div className="px-2">
           <h2 className="text-2xl font-black text-slate-900 tracking-tight">Account Settings</h2>
@@ -58,11 +58,11 @@ const UserSettings = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-          
+
           {/* Profile Details Card */}
           <div className="w-full bg-white border border-slate-100 rounded-[2rem] p-8 flex flex-col items-center gap-6 shadow-xs hover:shadow-sm transition-all duration-300">
             <div className="relative group">
-              <div 
+              <div
                 className="absolute inset-0 rounded-full bg-gradient-to-r from-[var(--sidebar-from)] to-[var(--sidebar-via)] opacity-20 blur-md group-hover:opacity-40 transition-opacity"
               />
               <img
@@ -72,19 +72,18 @@ const UserSettings = () => {
                 className="relative w-32 h-32 rounded-full object-cover border-4 shadow-md transition-transform transform group-hover:scale-105"
               />
               <span
-                className={`absolute bottom-2 right-2 w-5 h-5 rounded-full border-2 border-white ${
-                  user?.isActive ? "bg-emerald-500 animate-pulse" : "bg-slate-300"
-                }`}
+                className={`absolute bottom-2 right-2 w-5 h-5 rounded-full border-2 border-white ${user?.isActive ? "bg-emerald-500 animate-pulse" : "bg-slate-300"
+                  }`}
                 title={user?.isActive ? "Active" : "Inactive"}
               />
             </div>
-            
+
             <div className="text-center space-y-3 w-full">
               <p className="text-2xl font-extrabold text-slate-800 tracking-tight">{user?.name}</p>
               <div className="flex flex-col items-center gap-2">
                 <p className="text-sm text-slate-400 font-bold tracking-wide uppercase">Mobile: {user?.mobile}</p>
                 <div className="flex justify-center gap-2 mt-1">
-                  <span 
+                  <span
                     style={{
                       color: `#${sidebarColor}`,
                       borderColor: `#${sidebarColor}30`,
@@ -94,15 +93,14 @@ const UserSettings = () => {
                   >
                     Role: {user?.role}
                   </span>
-                  <span className={`text-xs font-bold px-3.5 py-1 rounded-full border uppercase tracking-wider ${
-                    user?.isActive ? "bg-emerald-50 text-emerald-700 border-emerald-100" : "bg-slate-100 text-slate-500 border-slate-200"
-                  }`}>
+                  <span className={`text-xs font-bold px-3.5 py-1 rounded-full border uppercase tracking-wider ${user?.isActive ? "bg-emerald-50 text-emerald-700 border-emerald-100" : "bg-slate-100 text-slate-500 border-slate-200"
+                    }`}>
                     {user?.isActive ? "Active" : "Inactive"}
                   </span>
                 </div>
               </div>
             </div>
-            
+
             {/* Action Buttons */}
             <button
               onClick={() => setShowLogoutConfirm(true)}
@@ -119,7 +117,7 @@ const UserSettings = () => {
             onSubmit={handleChangePassword}
           >
             <h3 className="text-xl font-bold text-slate-850 border-b border-slate-100 pb-3">Change Password</h3>
-            
+
             <div className="space-y-1">
               <label className="block text-[10px] font-bold text-slate-450 uppercase tracking-wider mb-1">
                 Old Password <span className="text-rose-500 ml-0.5">*</span>
@@ -134,7 +132,7 @@ const UserSettings = () => {
                 className="w-full px-5 py-3.5 rounded-2xl bg-white border border-slate-200 text-slate-800 placeholder-slate-400 outline-none focus:border-cyan-500/50 focus:ring-4 focus:ring-cyan-500/5 transition-all font-semibold text-sm shadow-xs"
               />
             </div>
-            
+
             <div className="space-y-1">
               <label className="block text-[10px] font-bold text-slate-450 uppercase tracking-wider mb-1">
                 New Password <span className="text-rose-500 ml-0.5">*</span>
@@ -149,7 +147,7 @@ const UserSettings = () => {
                 className="w-full px-5 py-3.5 rounded-2xl bg-white border border-slate-200 text-slate-800 placeholder-slate-400 outline-none focus:border-cyan-500/50 focus:ring-4 focus:ring-cyan-500/5 transition-all font-semibold text-sm shadow-xs"
               />
             </div>
-            
+
             <div className="space-y-1">
               <label className="block text-[10px] font-bold text-slate-450 uppercase tracking-wider mb-1">
                 Confirm New Password <span className="text-rose-500 ml-0.5">*</span>

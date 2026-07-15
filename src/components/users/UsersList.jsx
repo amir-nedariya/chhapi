@@ -5,7 +5,7 @@ import {
   getAllAdminsOnlyAPI,
   getAllSuperAdminsOnlyAPI,
 } from "../../api/user.api";
-import { ChevronLeft, ChevronRight, Eye, UserPlus } from "lucide-react";
+import { ChevronLeft, ChevronRight, Eye, UserPlus, BadgeCheck, AlertCircle, XCircle } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -40,6 +40,31 @@ const UsersList = ({ currentRole }) => {
       return userObj.profilePhoto.url;
     }
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(userObj?.name || "User")}&background=${sidebarColor}&color=fff`;
+  };
+
+  const getPaymentBadge = (userObj) => {
+    if (userObj.role !== "USER") return null;
+    
+    if (userObj.paymentStatus === "REGULAR") {
+      return (
+        <span title="Regular Donor" className="flex items-center">
+          <BadgeCheck className="text-blue-500" size={18} fill="currentColor" stroke="white" />
+        </span>
+      );
+    } else if (userObj.paymentStatus === "PARTIAL") {
+      return (
+        <span title="Partial Donor" className="flex items-center">
+          <AlertCircle className="text-amber-500" size={16} />
+        </span>
+      );
+    } else if (userObj.paymentStatus === "NONE") {
+      return (
+        <span title="No Donation" className="flex items-center">
+          <XCircle className="text-rose-500" size={16} />
+        </span>
+      );
+    }
+    return null;
   };
 
   const [users, setUsers] = useState([]);
@@ -210,7 +235,10 @@ const UsersList = ({ currentRole }) => {
                         className="w-9 h-9 rounded-full border border-gray-200 object-cover"
                         alt=""
                       />
-                      <span className="font-medium text-slate-800">{u.name}</span>
+                      <div className="font-medium text-slate-800 flex items-center gap-1.5">
+                        {u.name}
+                        {getPaymentBadge(u)}
+                      </div>
                     </div>
                   </td>
 
@@ -291,7 +319,10 @@ const UsersList = ({ currentRole }) => {
                 alt=""
               />
               <div>
-                <p className="font-semibold text-slate-800">{u.name}</p>
+                <div className="font-semibold text-slate-800 flex items-center gap-1.5">
+                  {u.name}
+                  {getPaymentBadge(u)}
+                </div>
                 <p className="text-xs text-slate-500">{u.mobile}</p>
                 <p className="text-xs text-slate-500 mt-0.5">
                   Created By: <span className="font-medium text-slate-700">{u.createdByName || "SYSTEM"}</span>
