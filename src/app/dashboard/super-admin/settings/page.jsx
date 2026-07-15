@@ -7,6 +7,7 @@ import { changePasswordAPI } from "../../../../api/auth.api";
 import toast from "react-hot-toast";
 import { useSidebarColor } from "../../../../hooks/useSidebarColor";
 
+// Force rebuild to clear hosting cache for case-sensitive route rename
 const SuperAdminSettings = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
