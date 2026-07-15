@@ -6,7 +6,7 @@ export const dummyUsers = [
     name: "Demo Admin",
     mobile: "123456890",
     role: "ADMIN",
-    isActive: true,
+    isActive: true, paymentStatus: ['REGULAR', 'PARTIAL', 'NONE'][Math.floor(Math.random() * 3)],
     createdAt: "2025-02-15T11:45:00.000Z",
     createdByName: "SYSTEM",
     createdByRole: "SYSTEM"
@@ -16,7 +16,7 @@ export const dummyUsers = [
     name: "Demo Super Admin",
     mobile: "9999999999",
     role: "SUPER_ADMIN",
-    isActive: true,
+    isActive: true, paymentStatus: ['REGULAR', 'PARTIAL', 'NONE'][Math.floor(Math.random() * 3)],
     createdAt: "2025-01-10T08:30:00.000Z",
     createdByName: "SYSTEM",
     createdByRole: "SYSTEM"
@@ -26,7 +26,7 @@ export const dummyUsers = [
     name: "Rahul Sharma",
     mobile: "9876543210",
     role: "USER",
-    isActive: true,
+    isActive: true, paymentStatus: ['REGULAR', 'PARTIAL', 'NONE'][Math.floor(Math.random() * 3)],
     createdAt: "2025-03-20T14:20:00.000Z",
     createdByName: "Demo Admin",
     createdByRole: "ADMIN"
@@ -36,7 +36,7 @@ export const dummyUsers = [
     name: "Priya Singh",
     mobile: "8765432109",
     role: "USER",
-    isActive: true,
+    isActive: true, paymentStatus: ['REGULAR', 'PARTIAL', 'NONE'][Math.floor(Math.random() * 3)],
     createdAt: "2025-03-22T10:15:00.000Z",
     createdByName: "Demo Admin",
     createdByRole: "ADMIN"
@@ -46,7 +46,7 @@ export const dummyUsers = [
     name: "Amit Kumar",
     mobile: "7654321098",
     role: "USER",
-    isActive: true,
+    isActive: true, paymentStatus: ['REGULAR', 'PARTIAL', 'NONE'][Math.floor(Math.random() * 3)],
     createdAt: "2025-03-25T16:40:00.000Z",
     createdByName: "Demo Admin",
     createdByRole: "ADMIN"
@@ -56,7 +56,7 @@ export const dummyUsers = [
     name: "Sunita Devi",
     mobile: "6543210987",
     role: "USER",
-    isActive: true,
+    isActive: true, paymentStatus: ['REGULAR', 'PARTIAL', 'NONE'][Math.floor(Math.random() * 3)],
     createdAt: "2025-03-28T09:30:00.000Z",
     createdByName: "Demo Admin",
     createdByRole: "ADMIN"
@@ -66,7 +66,7 @@ export const dummyUsers = [
     name: "Vikram Raj",
     mobile: "5432109876",
     role: "USER",
-    isActive: true,
+    isActive: true, paymentStatus: ['REGULAR', 'PARTIAL', 'NONE'][Math.floor(Math.random() * 3)],
     createdAt: "2025-04-01T11:20:00.000Z",
     createdByName: "Demo Admin",
     createdByRole: "ADMIN"
@@ -76,7 +76,7 @@ export const dummyUsers = [
     name: "Rohan Verma",
     mobile: "9812345678",
     role: "USER",
-    isActive: true,
+    isActive: true, paymentStatus: ['REGULAR', 'PARTIAL', 'NONE'][Math.floor(Math.random() * 3)],
     createdAt: "2025-04-03T14:15:00.000Z",
     createdByName: "Demo Admin",
     createdByRole: "ADMIN"
@@ -86,7 +86,7 @@ export const dummyUsers = [
     name: "Neha Gupta",
     mobile: "8723456789",
     role: "USER",
-    isActive: true,
+    isActive: true, paymentStatus: ['REGULAR', 'PARTIAL', 'NONE'][Math.floor(Math.random() * 3)],
     createdAt: "2025-04-05T10:45:00.000Z",
     createdByName: "Demo Admin",
     createdByRole: "ADMIN"
@@ -96,7 +96,7 @@ export const dummyUsers = [
     name: "Sandeep Mishra",
     mobile: "7634567890",
     role: "USER",
-    isActive: true,
+    isActive: true, paymentStatus: ['REGULAR', 'PARTIAL', 'NONE'][Math.floor(Math.random() * 3)],
     createdAt: "2025-04-08T15:30:00.000Z",
     createdByName: "Demo Admin",
     createdByRole: "ADMIN"
@@ -106,7 +106,7 @@ export const dummyUsers = [
     name: "Anjali Rao",
     mobile: "6545678901",
     role: "USER",
-    isActive: true,
+    isActive: true, paymentStatus: ['REGULAR', 'PARTIAL', 'NONE'][Math.floor(Math.random() * 3)],
     createdAt: "2025-04-10T12:00:00.000Z",
     createdByName: "Demo Admin",
     createdByRole: "ADMIN"
@@ -116,7 +116,7 @@ export const dummyUsers = [
     name: "Karan Johar",
     mobile: "9456789012",
     role: "USER",
-    isActive: true,
+    isActive: true, paymentStatus: ['REGULAR', 'PARTIAL', 'NONE'][Math.floor(Math.random() * 3)],
     createdAt: "2025-04-12T16:50:00.000Z",
     createdByName: "Demo Admin",
     createdByRole: "ADMIN"
@@ -126,7 +126,7 @@ export const dummyUsers = [
     name: "Meera Patel",
     mobile: "8367890123",
     role: "USER",
-    isActive: true,
+    isActive: true, paymentStatus: ['REGULAR', 'PARTIAL', 'NONE'][Math.floor(Math.random() * 3)],
     createdAt: "2025-04-15T09:10:00.000Z",
     createdByName: "Demo Admin",
     createdByRole: "ADMIN"
@@ -136,7 +136,7 @@ export const dummyUsers = [
     name: "Aarav Mehta",
     mobile: "9876500111",
     role: "USER",
-    isActive: true,
+    isActive: true, paymentStatus: ['REGULAR', 'PARTIAL', 'NONE'][Math.floor(Math.random() * 3)],
     createdAt: "2025-04-18T14:22:00.000Z",
     createdByName: "Demo Admin",
     createdByRole: "ADMIN"
@@ -146,7 +146,7 @@ export const dummyUsers = [
     name: "Deepika Padukone",
     mobile: "8765400222",
     role: "USER",
-    isActive: true,
+    isActive: true, paymentStatus: ['REGULAR', 'PARTIAL', 'NONE'][Math.floor(Math.random() * 3)],
     createdAt: "2025-04-20T11:05:00.000Z",
     createdByName: "Demo Admin",
     createdByRole: "ADMIN"
@@ -156,7 +156,7 @@ export const dummyUsers = [
     name: "Sanjay Dutt",
     mobile: "7654300333",
     role: "USER",
-    isActive: true,
+    isActive: true, paymentStatus: ['REGULAR', 'PARTIAL', 'NONE'][Math.floor(Math.random() * 3)],
     createdAt: "2025-04-22T15:35:00.000Z",
     createdByName: "Demo Admin",
     createdByRole: "ADMIN"
@@ -166,7 +166,7 @@ export const dummyUsers = [
     name: "Kriti Sanon",
     mobile: "6543200444",
     role: "USER",
-    isActive: true,
+    isActive: true, paymentStatus: ['REGULAR', 'PARTIAL', 'NONE'][Math.floor(Math.random() * 3)],
     createdAt: "2025-04-25T10:12:00.000Z",
     createdByName: "Demo Admin",
     createdByRole: "ADMIN"
@@ -176,7 +176,7 @@ export const dummyUsers = [
     name: "Ranbir Kapoor",
     mobile: "9988700555",
     role: "USER",
-    isActive: true,
+    isActive: true, paymentStatus: ['REGULAR', 'PARTIAL', 'NONE'][Math.floor(Math.random() * 3)],
     createdAt: "2025-04-28T16:45:00.000Z",
     createdByName: "Demo Admin",
     createdByRole: "ADMIN"
@@ -186,7 +186,7 @@ export const dummyUsers = [
     name: "Alia Bhatt",
     mobile: "8877600666",
     role: "USER",
-    isActive: true,
+    isActive: true, paymentStatus: ['REGULAR', 'PARTIAL', 'NONE'][Math.floor(Math.random() * 3)],
     createdAt: "2025-05-01T09:55:00.000Z",
     createdByName: "Demo Admin",
     createdByRole: "ADMIN"
@@ -196,7 +196,7 @@ export const dummyUsers = [
     name: "Gaurav Sen",
     mobile: "7766500777",
     role: "USER",
-    isActive: true,
+    isActive: true, paymentStatus: ['REGULAR', 'PARTIAL', 'NONE'][Math.floor(Math.random() * 3)],
     createdAt: "2025-05-03T11:30:00.000Z",
     createdByName: "Demo Admin",
     createdByRole: "ADMIN"
@@ -206,7 +206,7 @@ export const dummyUsers = [
     name: "Siddharth Malhotra",
     mobile: "6655400888",
     role: "USER",
-    isActive: true,
+    isActive: true, paymentStatus: ['REGULAR', 'PARTIAL', 'NONE'][Math.floor(Math.random() * 3)],
     createdAt: "2025-05-05T14:18:00.000Z",
     createdByName: "Demo Admin",
     createdByRole: "ADMIN"
@@ -216,7 +216,7 @@ export const dummyUsers = [
     name: "Vikram Malhotra",
     mobile: "9876500999",
     role: "USER",
-    isActive: true,
+    isActive: true, paymentStatus: ['REGULAR', 'PARTIAL', 'NONE'][Math.floor(Math.random() * 3)],
     createdAt: "2025-05-08T16:00:00.000Z",
     createdByName: "Demo Admin",
     createdByRole: "ADMIN"
@@ -226,7 +226,7 @@ export const dummyUsers = [
     name: "Preeti Desai",
     mobile: "8765400888",
     role: "USER",
-    isActive: true,
+    isActive: true, paymentStatus: ['REGULAR', 'PARTIAL', 'NONE'][Math.floor(Math.random() * 3)],
     createdAt: "2025-05-10T10:25:00.000Z",
     createdByName: "Demo Admin",
     createdByRole: "ADMIN"
@@ -236,7 +236,7 @@ export const dummyUsers = [
     name: "Ramesh Kumar",
     mobile: "7654300777",
     role: "USER",
-    isActive: true,
+    isActive: true, paymentStatus: ['REGULAR', 'PARTIAL', 'NONE'][Math.floor(Math.random() * 3)],
     createdAt: "2025-05-12T13:40:00.000Z",
     createdByName: "Demo Admin",
     createdByRole: "ADMIN"
@@ -246,7 +246,7 @@ export const dummyUsers = [
     name: "Suresh Singh",
     mobile: "6543200666",
     role: "USER",
-    isActive: true,
+    isActive: true, paymentStatus: ['REGULAR', 'PARTIAL', 'NONE'][Math.floor(Math.random() * 3)],
     createdAt: "2025-05-15T09:15:00.000Z",
     createdByName: "Demo Admin",
     createdByRole: "ADMIN"
@@ -256,7 +256,7 @@ export const dummyUsers = [
     name: "Kabir Roy",
     mobile: "9988700444",
     role: "USER",
-    isActive: true,
+    isActive: true, paymentStatus: ['REGULAR', 'PARTIAL', 'NONE'][Math.floor(Math.random() * 3)],
     createdAt: "2025-05-18T15:50:00.000Z",
     createdByName: "Demo Admin",
     createdByRole: "ADMIN"
@@ -266,7 +266,7 @@ export const dummyUsers = [
     name: "Zoya Khan",
     mobile: "8877600333",
     role: "USER",
-    isActive: false,
+    isActive: false, paymentStatus: ['REGULAR', 'PARTIAL', 'NONE'][Math.floor(Math.random() * 3)],
     createdAt: "2025-05-20T11:30:00.000Z",
     createdByName: "Demo Admin",
   }
@@ -316,7 +316,7 @@ export const createAdminAPI = async (data) => {
     mobile: data.mobile,
     role: "ADMIN",
     password: data.password || "password123",
-    isActive: true,
+    isActive: true, paymentStatus: ['REGULAR', 'PARTIAL', 'NONE'][Math.floor(Math.random() * 3)],
     createdAt: new Date().toISOString(),
     createdBy: "Demo Super Admin",
     totalDonations: 0,
@@ -336,7 +336,7 @@ export const createUserAPI = async (data) => {
     mobile: data.mobile,
     role: data.role || "USER",
     password: data.password || "password123",
-    isActive: true,
+    isActive: true, paymentStatus: ['REGULAR', 'PARTIAL', 'NONE'][Math.floor(Math.random() * 3)],
     createdAt: new Date().toISOString(),
     createdBy: "Demo Super Admin",
     totalDonations: 0,
