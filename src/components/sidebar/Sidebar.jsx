@@ -301,26 +301,47 @@ const Sidebar = ({ collapsed, setCollapsed, mobile, sidebarOpen, setSidebarOpen 
                     )}
                   </button>
 
-                  {userMgmtOpen && !collapsed && userMgmtMenu.map((sub) => (
-                    <NavLink
-                      key={sub.path}
-                      to={sub.path}
-                      onClick={() => mobile && setSidebarOpen(false)}
-                      className={({ isActive }) => getLinkClass(isActive)}
-                    >
-                      {({ isActive }) => (
-                        <>
-                          <div className={`
-                            ${isActive ? "sidebar-icon-container-active" : "sidebar-icon-container-inactive"}
-                            ml-4 flex-shrink-0
-                          `}>
-                            <sub.icon size={18} />
-                          </div>
-                          <span className="text-sm font-semibold pl-2 truncate">{sub.name}</span>
-                        </>
-                      )}
-                    </NavLink>
-                  ))}
+                  {userMgmtOpen && !collapsed && (
+                    <div className="relative ml-6 mr-3 my-1 flex flex-col">
+                      {/* Continuous Vertical Guide Line */}
+                      <div className="absolute left-[14px] top-0 bottom-0 w-[1px] bg-white/20 pointer-events-none" />
+
+                      {userMgmtMenu.map((sub) => (
+                        <NavLink
+                          key={sub.path}
+                          to={sub.path}
+                          onClick={() => mobile && setSidebarOpen(false)}
+                          className={({ isActive }) =>
+                            `group relative flex items-center py-3 pl-8 pr-3 transition-all duration-200 cursor-pointer ${
+                              isActive
+                                ? "text-white font-bold"
+                                : "text-white/60 hover:text-white"
+                            }`
+                          }
+                        >
+                          {({ isActive }) => (
+                            <>
+                              {/* Centered Timeline Dot Container */}
+                              <div className="absolute left-[2px] w-6.5 h-6.5 flex items-center justify-center pointer-events-none">
+                                {isActive ? (
+                                  <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center">
+                                    <div className="w-2.5 h-2.5 bg-white rounded-full shadow-[0_0_8px_rgba(255,255,255,0.7)]" />
+                                  </div>
+                                ) : (
+                                  <div className="w-3.5 h-3.5 rounded-full border-2 border-white/20 bg-[var(--sidebar-via)] group-hover:border-white/50 transition-colors" />
+                                )}
+                              </div>
+
+                              {/* Label Text */}
+                              <span className="text-sm truncate pl-1">
+                                {sub.name}
+                              </span>
+                            </>
+                          )}
+                        </NavLink>
+                      ))}
+                    </div>
+                  )}
                 </>
               )}
 
@@ -350,26 +371,47 @@ const Sidebar = ({ collapsed, setCollapsed, mobile, sidebarOpen, setSidebarOpen 
                     )}
                   </button>
 
-                  {allDonationOpen && !collapsed && allDonationMenu.map((sub) => (
-                    <NavLink
-                      key={sub.path}
-                      to={sub.path}
-                      onClick={() => mobile && setSidebarOpen(false)}
-                      className={({ isActive }) => getLinkClass(isActive)}
-                    >
-                      {({ isActive }) => (
-                        <>
-                          <div className={`
-                            ${isActive ? "sidebar-icon-container-active" : "sidebar-icon-container-inactive"}
-                            ml-4 flex-shrink-0
-                          `}>
-                            <sub.icon size={18} />
-                          </div>
-                          <span className="text-sm font-semibold pl-2 truncate">{sub.name}</span>
-                        </>
-                      )}
-                    </NavLink>
-                  ))}
+                  {allDonationOpen && !collapsed && (
+                    <div className="relative ml-6 mr-3 my-1 flex flex-col">
+                      {/* Continuous Vertical Guide Line */}
+                      <div className="absolute left-[14px] top-0 bottom-0 w-[1px] bg-white/20 pointer-events-none" />
+
+                      {allDonationMenu.map((sub) => (
+                        <NavLink
+                          key={sub.path}
+                          to={sub.path}
+                          onClick={() => mobile && setSidebarOpen(false)}
+                          className={({ isActive }) =>
+                            `group relative flex items-center py-3 pl-8 pr-3 transition-all duration-200 cursor-pointer ${
+                              isActive
+                                ? "text-white font-bold"
+                                : "text-white/60 hover:text-white"
+                            }`
+                          }
+                        >
+                          {({ isActive }) => (
+                            <>
+                              {/* Centered Timeline Dot Container */}
+                              <div className="absolute left-[2px] w-6.5 h-6.5 flex items-center justify-center pointer-events-none">
+                                {isActive ? (
+                                  <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center">
+                                    <div className="w-2.5 h-2.5 bg-white rounded-full shadow-[0_0_8px_rgba(255,255,255,0.7)]" />
+                                  </div>
+                                ) : (
+                                  <div className="w-3.5 h-3.5 rounded-full border-2 border-white/20 bg-[var(--sidebar-via)] group-hover:border-white/50 transition-colors" />
+                                )}
+                              </div>
+
+                              {/* Label Text */}
+                              <span className="text-sm truncate pl-1">
+                                {sub.name}
+                              </span>
+                            </>
+                          )}
+                        </NavLink>
+                      ))}
+                    </div>
+                  )}
                 </>
               )}
 
@@ -397,26 +439,47 @@ const Sidebar = ({ collapsed, setCollapsed, mobile, sidebarOpen, setSidebarOpen 
                 )}
               </button>
 
-              {fundOpen && !collapsed && fundMenu.map((sub) => (
-                <NavLink
-                  key={sub.path}
-                  to={sub.path}
-                  onClick={() => mobile && setSidebarOpen(false)}
-                  className={({ isActive }) => getLinkClass(isActive)}
-                >
-                  {({ isActive }) => (
-                    <>
-                      <div className={`
-                        ${isActive ? "sidebar-icon-container-active" : "sidebar-icon-container-inactive"}
-                        ml-4 flex-shrink-0
-                      `}>
-                        <sub.icon size={18} />
-                      </div>
-                      <span className="text-sm font-semibold pl-2 truncate">{sub.name}</span>
-                    </>
+                  {fundOpen && !collapsed && (
+                    <div className="relative ml-6 mr-3 my-1 flex flex-col">
+                      {/* Continuous Vertical Guide Line */}
+                      <div className="absolute left-[14px] top-0 bottom-0 w-[1px] bg-white/20 pointer-events-none" />
+
+                      {fundMenu.map((sub) => (
+                        <NavLink
+                          key={sub.path}
+                          to={sub.path}
+                          onClick={() => mobile && setSidebarOpen(false)}
+                          className={({ isActive }) =>
+                            `group relative flex items-center py-3 pl-8 pr-3 transition-all duration-200 cursor-pointer ${
+                              isActive
+                                ? "text-white font-bold"
+                                : "text-white/60 hover:text-white"
+                            }`
+                          }
+                        >
+                          {({ isActive }) => (
+                            <>
+                              {/* Centered Timeline Dot Container */}
+                              <div className="absolute left-[2px] w-6.5 h-6.5 flex items-center justify-center pointer-events-none">
+                                {isActive ? (
+                                  <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center">
+                                    <div className="w-2.5 h-2.5 bg-white rounded-full shadow-[0_0_8px_rgba(255,255,255,0.7)]" />
+                                  </div>
+                                ) : (
+                                  <div className="w-3.5 h-3.5 rounded-full border-2 border-white/20 bg-[var(--sidebar-via)] group-hover:border-white/50 transition-colors" />
+                                )}
+                              </div>
+
+                              {/* Label Text */}
+                              <span className="text-sm truncate pl-1">
+                                {sub.name}
+                              </span>
+                            </>
+                          )}
+                        </NavLink>
+                      ))}
+                    </div>
                   )}
-                </NavLink>
-              ))}
 
               {/* SUPER_ADMIN: Fund Requests (with pending count badge) */}
               {role === "SUPER_ADMIN" && (
