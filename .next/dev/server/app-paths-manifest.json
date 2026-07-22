@@ -1,5 +1,7 @@
 {
-  "/page": "app/page.js",
-  "/dashboard/super-admin/page": "app/dashboard/super-admin/page.js",
-  "/dashboard/super-admin/settings/page": "app/dashboard/super-admin/settings/page.js"
+  "/dashboard/admin/GetAllUser/page": "app/dashboard/admin/GetAllUser/page.js",
+  "/dashboard/admin/rules/page": "app/dashboard/admin/rules/page.js",
+  "/dashboard/admin/users/[id]/page": "app/dashboard/admin/users/[id]/page.js",
+  "/dashboard/admin/reminders/page": "app/dashboard/admin/reminders/page.js",
+  "/dashboard/admin/MyDonations/page": "app/dashboard/admin/MyDonations/page.js"
 }

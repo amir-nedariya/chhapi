@@ -186,7 +186,7 @@ const UsersList = ({ currentRole }) => {
           ))}
         </select>
 
-        {/* CREATE USER BUTTON - Only for Admins & Super Admins */}
+         {/* CREATE USER BUTTON - Only for Admins & Super Admins */}
         {currentRole !== "USER" && (
           <button
             onClick={() => setIsModalOpen(true)}
