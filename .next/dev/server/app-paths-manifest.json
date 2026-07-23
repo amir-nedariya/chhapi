@@ -1,7 +1,0 @@
-{
-  "/dashboard/admin/GetAllUser/page": "app/dashboard/admin/GetAllUser/page.js",
-  "/dashboard/admin/rules/page": "app/dashboard/admin/rules/page.js",
-  "/dashboard/admin/users/[id]/page": "app/dashboard/admin/users/[id]/page.js",
-  "/dashboard/admin/reminders/page": "app/dashboard/admin/reminders/page.js",
-  "/dashboard/admin/MyDonations/page": "app/dashboard/admin/MyDonations/page.js"
-}

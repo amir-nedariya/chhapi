@@ -386,3 +386,26 @@ export const hardDeleteUserAPI = async (id) => {
   }
   return { data: { message: "User permanently deleted" } };
 };
+
+export const updateUserStatsAPI = async (id, data) => {
+  const user = dummyUsers.find(u => u._id === id);
+  if (user) {
+    if (data.monthlyStats) {
+      user.monthlyStats = { ...user.monthlyStats, ...data.monthlyStats };
+    }
+    if (data.yearlyStats) {
+      user.yearlyStats = { ...user.yearlyStats, ...data.yearlyStats };
+    }
+    // Update stats:
+    const values = Object.values(user.monthlyStats || {});
+    user.totalDonations = values.reduce((a, b) => a + b, 0);
+    user.donationCount = values.filter(v => v > 0).length;
+    user.avgDonation = user.donationCount > 0 ? user.totalDonations / user.donationCount : 0;
+    
+    // Update yearly stats based on monthlyStats
+    const currentYear = new Date().getFullYear();
+    if (!user.yearlyStats) user.yearlyStats = {};
+    user.yearlyStats[String(currentYear)] = user.totalDonations;
+  }
+  return { data: { message: "Stats updated successfully" } };
+};
