@@ -195,32 +195,7 @@ const Sidebar = ({ collapsed, setCollapsed, mobile, sidebarOpen, setSidebarOpen 
               )}
             </div>
 
-            {/* PROFILE CARD */}
-            {!collapsed && (
-              <div className="flex items-center gap-4 mb-8 p-3.5 rounded-2xl bg-white/[0.04] backdrop-blur-md border border-white/10 hover:border-white/20 mr-4 ml-2 shadow-[0_4px_12px_rgba(0,0,0,0.1)] transition-all duration-300 hover:shadow-[0_8px_20px_rgba(0,0,0,0.15)] group">
-                <div className="relative">
-                  <img
-                    src={
-                      user?.profilePhoto?.url ||
-                      `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || defaultName)}&background=ffffff&color=${sidebarColor}`
-                    }
-                    alt="profile"
-                    className="w-12 h-12 rounded-full object-cover border-2 border-white/20 group-hover:border-teal-400/40 transition-colors duration-300"
-                  />
-                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-400 border-2 border-[#004e57] rounded-full animate-pulse" />
-                </div>
-                <div>
-                  <p className="text-sm font-extrabold text-white leading-tight transition-colors duration-300 group-hover:text-teal-200">
-                    {user?.name || defaultName}
-                  </p>
-                  <span className="text-[10px] text-teal-300 font-bold tracking-wider uppercase block mt-0.5">
-                    {role}
-                  </span>
-                </div>
-              </div>
-            )}
-
-            {/* MENU */}
+             {/* MENU */}
             <nav className="flex flex-col gap-1.5">
               {/* DASHBOARD */}
               <NavLink
@@ -609,6 +584,31 @@ const Sidebar = ({ collapsed, setCollapsed, mobile, sidebarOpen, setSidebarOpen 
               </NavLink>
             </nav>
           </div>
+
+          {/* PROFILE CARD */}
+          {!collapsed && (
+            <div className="flex items-center gap-4 mt-auto mb-2 p-3.5 rounded-2xl bg-white/[0.04] backdrop-blur-md border border-white/10 hover:border-white/20 mr-4 ml-2 shadow-[0_4px_12px_rgba(0,0,0,0.1)] transition-all duration-300 hover:shadow-[0_8px_20px_rgba(0,0,0,0.15)] group">
+              <div className="relative">
+                <img
+                  src={
+                    user?.profilePhoto?.url ||
+                    `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || defaultName)}&background=ffffff&color=${sidebarColor}`
+                  }
+                  alt="profile"
+                  className="w-12 h-12 rounded-full object-cover border-2 border-white/20 group-hover:border-teal-400/40 transition-colors duration-300"
+                />
+                <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-400 border-2 border-[#004e57] rounded-full animate-pulse" />
+              </div>
+              <div>
+                <p className="text-sm font-extrabold text-white leading-tight transition-colors duration-300 group-hover:text-teal-200">
+                  {user?.name || defaultName}
+                </p>
+                <span className="text-[10px] text-teal-300 font-bold tracking-wider uppercase block mt-0.5">
+                  {role}
+                </span>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Edge Toggle Button */}
