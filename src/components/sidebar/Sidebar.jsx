@@ -1,4 +1,4 @@
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   Users,
@@ -23,24 +23,30 @@ import {
   BarChart3,
   PlusCircle,
   Send,
+  User2,
+  LogOut,
+  Crown
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSidebarColor } from "../../hooks/useSidebarColor";
-import { themes, applyTheme, initTheme } from "../../utils/theme";
+import { applyTheme, initTheme } from "../../utils/theme";
 
 const Sidebar = ({ collapsed, setCollapsed, mobile, sidebarOpen, setSidebarOpen }) => {
   const { user } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const sidebarColor = useSidebarColor();
   const [currentTheme, setCurrentTheme] = useState("Clear Ocean");
-
   const [pendingRequestsCount, setPendingRequestsCount] = useState(0);
 
   const role = user?.role || "USER";
   const roleSegment = role === "SUPER_ADMIN" ? "super-admin" : role === "ADMIN" ? "admin" : "user";
   const pathPrefix = `/dashboard/${roleSegment}`;
   const defaultName = role === "SUPER_ADMIN" ? "Super Admin" : role === "ADMIN" ? "Admin" : "User";
+
+  const [openMenus, setOpenMenus] = useState([]);
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
 
   const updatePendingCount = () => {
     if (role !== "SUPER_ADMIN") return;
@@ -80,557 +86,333 @@ const Sidebar = ({ collapsed, setCollapsed, mobile, sidebarOpen, setSidebarOpen 
     }
   }, [role]);
 
-  const handleThemeChange = (t) => {
-    applyTheme(t);
-    setCurrentTheme(t.name);
-    window.dispatchEvent(new Event("sidebar-theme-changed"));
+  const toggleMenu = (name) => {
+    if (collapsed) setCollapsed(false);
+    setOpenMenus((prev) => (prev.includes(name) ? [] : [name]));
   };
 
-  // Dropdown states auto-initialization
-  const [fundOpen, setFundOpen] = useState(location.pathname.includes("/fund"));
-  const [userMgmtOpen, setUserMgmtOpen] = useState(
-    location.pathname.includes("/createAdmin") ||
-      location.pathname.includes("/usersList") ||
-      location.pathname.includes("/GetAllUser") ||
-      location.pathname.includes("/MyDonations") ||
-      location.pathname.includes("/pending-donations") ||
-      location.pathname.includes("/reports") ||
-      location.pathname.includes("/reminders")
-  );
-  const [allDonationOpen, setAllDonationOpen] = useState(
-    location.pathname.includes("/all-donations") ||
-      location.pathname.includes("/donations") ||
-      location.pathname.includes("/monthlyDonationTable")
-  );
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
 
-  // Dynamic menus configuration
-  const fundMenu = [
-    ...(role === "SUPER_ADMIN" ? [{ name: "Create Fund", path: `${pathPrefix}/createfund`, icon: PlusCircle }] : []),
-    { name: "Fund Summary", path: `${pathPrefix}/fundSummary`, icon: PieChart },
-    ...(role === "SUPER_ADMIN" ? [{ name: "Use Fund", path: `${pathPrefix}/useFund`, icon: Send }] : []),
-    { name: "Fund History", path: `${pathPrefix}/fundHistory`, icon: History },
+  const getInitials = (name) => {
+    if (!name) return "U";
+    return name
+      .split(" ")
+      .map((word) => word[0])
+      .join("")
+      .toUpperCase()
+      .substring(0, 2);
+  };
+
+  // Build the dynamic menu configuration similar to Zentro ERP
+  const menuItems = [
+    {
+      name: "Dashboard",
+      path: pathPrefix,
+      icon: LayoutDashboard,
+      exact: true
+    }
   ];
 
-  const userMgmtMenu =
-    role === "SUPER_ADMIN"
-      ? [
-          { name: "Users List", path: `${pathPrefix}/usersList`, icon: UserCheck },
-          { name: "Pending Donations", path: `${pathPrefix}/pending-donations`, icon: Clock },
-          { name: "Send Reminders", path: `${pathPrefix}/reminders`, icon: MessageCircle },
-          { name: "Reports", path: `${pathPrefix}/reports`, icon: BarChart3 },
-        ]
-      : role === "ADMIN"
-      ? [
-          { name: "Users List", path: `${pathPrefix}/GetAllUser`, icon: UserCheck },
-          { name: "Send Reminders", path: `${pathPrefix}/reminders`, icon: MessageCircle },
-          { name: "My Donations history", path: `${pathPrefix}/MyDonations`, icon: History },
-        ]
-      : [];
+  if (role === "USER") {
+    menuItems.push(
+      { name: "My Donations", path: `${pathPrefix}/all-donations`, icon: Wallet },
+      { name: "Monthly Report", path: `${pathPrefix}/monthlyDonationTable`, icon: CalendarRange }
+    );
+  }
 
-  const allDonationMenu =
-    role === "SUPER_ADMIN"
-      ? [
-          { name: "All Donations", path: `${pathPrefix}/all-donations`, icon: Coins },
-          { name: "Monthly Report", path: `${pathPrefix}/monthlyDonationTable`, icon: CalendarRange },
-        ]
-      : role === "ADMIN"
-      ? [
-          { name: "All Donations", path: `${pathPrefix}/donations`, icon: Coins },
-          { name: "Monthly Report", path: `${pathPrefix}/monthlyDonationTable`, icon: CalendarRange },
-        ]
-      : [];
-
-  const getLinkClass = (isActive) => {
-    if (collapsed) {
-      return isActive
-        ? "sidebar-link-collapsed-active"
-        : "sidebar-link-collapsed-inactive";
+  if (role !== "USER") {
+    const userMgmtChildren = [];
+    if (role === "SUPER_ADMIN") {
+      userMgmtChildren.push(
+        { name: "Users List", path: `${pathPrefix}/usersList` },
+        { name: "Pending Donations", path: `${pathPrefix}/pending-donations` },
+        { name: "Send Reminders", path: `${pathPrefix}/reminders` },
+        { name: "Reports", path: `${pathPrefix}/reports` }
+      );
+    } else if (role === "ADMIN") {
+      userMgmtChildren.push(
+        { name: "Users List", path: `${pathPrefix}/GetAllUser` },
+        { name: "Send Reminders", path: `${pathPrefix}/reminders` },
+        { name: "My Donations history", path: `${pathPrefix}/MyDonations` }
+      );
     }
-    return isActive
-      ? "sidebar-link sidebar-link-active"
-      : "sidebar-link sidebar-link-inactive";
+    menuItems.push({
+      name: "User Management",
+      icon: Users,
+      children: userMgmtChildren
+    });
+
+    const fundMgmtChildren = [];
+    if (role === "SUPER_ADMIN") {
+      fundMgmtChildren.push({ name: "Create Fund", path: `${pathPrefix}/createfund` });
+    }
+    fundMgmtChildren.push({ name: "Fund Summary", path: `${pathPrefix}/fundSummary` });
+    if (role === "SUPER_ADMIN") {
+      fundMgmtChildren.push({ name: "Use Fund", path: `${pathPrefix}/useFund` });
+    }
+    fundMgmtChildren.push({ name: "Fund History", path: `${pathPrefix}/fundHistory` });
+
+    menuItems.push({
+      name: "Fund Management",
+      icon: PieChart,
+      children: fundMgmtChildren
+    });
+
+    const donationChildren = [];
+    if (role === "SUPER_ADMIN") {
+      donationChildren.push(
+        { name: "All Donations", path: `${pathPrefix}/all-donations` },
+        { name: "Monthly Report", path: `${pathPrefix}/monthlyDonationTable` }
+      );
+    } else if (role === "ADMIN") {
+      donationChildren.push(
+        { name: "All Donations", path: `${pathPrefix}/donations` },
+        { name: "Monthly Report", path: `${pathPrefix}/monthlyDonationTable` }
+      );
+    }
+    menuItems.push({
+      name: "All Donation",
+      icon: Coins,
+      children: donationChildren
+    });
+  }
+
+  if (role === "SUPER_ADMIN") {
+    menuItems.push({ name: "Fund Requests", path: `${pathPrefix}/fund-requests`, icon: Landmark, badge: pendingRequestsCount });
+  } else {
+    menuItems.push({ name: "Request Funds", path: `${pathPrefix}/fund-request`, icon: Landmark });
+  }
+
+  menuItems.push({ name: "Rules & Regulations", path: `${pathPrefix}/rules`, icon: ScrollText });
+
+  if (role === "USER") {
+    menuItems.push({ name: "All Users", path: `${pathPrefix}/all-users`, icon: UserPlus });
+  }
+
+  menuItems.push(
+    { name: "Leads", path: `${pathPrefix}/leads`, icon: Target },
+    { name: "Appearance", path: `${pathPrefix}/appearance`, icon: Sun },
+    { name: "Settings", path: `${pathPrefix}/settings`, icon: Settings }
+  );
+
+  const isChildActive = (children) => {
+    return children.some((child) => location.pathname === child.path);
   };
 
   return (
     <>
-      <aside
-        className={`
-          h-screen text-white flex-shrink-0
-          bg-gradient-to-b from-[var(--sidebar-from)] via-[var(--sidebar-via)] to-[var(--sidebar-to)] border-none outline-none
-          transition-all duration-300 shadow-[6px_0_30px_rgba(0,0,0,0.2)]
-          ${mobile 
-            ? `fixed top-0 left-0 z-40 h-full w-72 ${!sidebarOpen ? "-translate-x-full pointer-events-none w-0" : "translate-x-0"}` 
-            : `relative ${collapsed ? "w-20" : "w-72"}`
-          }
-        `}
+      <div
+        className={`${collapsed ? "lg:w-[90px] w-0" : "lg:w-[250px] w-[280px]"} h-screen text-white flex flex-col pt-2 pb-4 pl-2 pr-0 overflow-hidden transition-all duration-500 shadow-xl z-40 fixed lg:relative ${mobile && !sidebarOpen ? "-translate-x-full" : "translate-x-0"}`}
+        style={{
+          background: currentTheme === "Custom" ? sidebarColor : `linear-gradient(to top, var(--sidebar-from), var(--sidebar-via), var(--sidebar-to))`
+        }}
       >
-        <div className="h-full overflow-y-auto overflow-x-hidden custom-scrollbar py-6 pl-2 pr-0 flex flex-col justify-between">
-          <div>
-            {/* BRAND HEADER */}
-            <div className="flex items-center justify-between gap-3 px-4 mb-8">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-teal-400 to-[#007380] flex items-center justify-center shadow-[0_8px_16px_rgba(0,115,128,0.25)] border border-teal-300/20 flex-shrink-0">
-                  <span className="text-white font-black text-xl tracking-wider">C</span>
-                </div>
-                {!collapsed && (
-                  <div className="flex flex-col">
-                    <span className="text-lg font-black tracking-widest bg-gradient-to-r from-white via-teal-100 to-white bg-clip-text text-transparent">
-                      CHHAPI
-                    </span>
-                    <span className="text-[9px] text-teal-300/80 font-bold tracking-widest uppercase">
-                      Donation Portal
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              {/* Mobile Close Button */}
-              {mobile && sidebarOpen && (
-                <button
-                  onClick={() => setSidebarOpen(false)}
-                  className="p-1.5 hover:bg-white/10 rounded-lg text-white/80 hover:text-white transition cursor-pointer flex-shrink-0"
-                >
-                  <X size={20} />
-                </button>
-              )}
+        <div className="mb-2 pb-2 flex-shrink-0 border-b border-white/10 relative flex items-center justify-between min-h-[48px] px-3">
+          <div
+            className={`transition-all duration-300 flex items-center gap-2 hover:bg-white/5 p-1 rounded-sm cursor-pointer ${(!collapsed || mobile) ? "opacity-100 w-auto" : "opacity-0 w-0 lg:opacity-100 lg:w-auto overflow-hidden"}`}
+          >
+            <div className="p-1 bg-teal-500/20 text-teal-300 rounded-sm flex items-center justify-center shrink-0">
+              <Crown size={18} />
             </div>
-
-             {/* MENU */}
-            <nav className="flex flex-col gap-1.5">
-              {/* DASHBOARD */}
-              <NavLink
-                to={pathPrefix}
-                end
-                onClick={() => mobile && setSidebarOpen(false)}
-                className={({ isActive }) => getLinkClass(isActive)}
-              >
-                {({ isActive }) => (
-                  <>
-                    <div className={collapsed ? "" : (isActive ? "sidebar-icon-container-active" : "sidebar-icon-container-inactive")}>
-                      <LayoutDashboard size={18} />
-                    </div>
-                    {!collapsed && <span className="text-sm font-semibold">Dashboard</span>}
-                  </>
-                )}
-              </NavLink>
-
-              {/* USER: My Donations (direct) */}
-              {role === "USER" && (
-                <NavLink
-                  to={`${pathPrefix}/all-donations`}
-                  onClick={() => mobile && setSidebarOpen(false)}
-                  className={({ isActive }) => getLinkClass(isActive)}
-                >
-                  {({ isActive }) => (
-                    <>
-                      <div className={collapsed ? "" : (isActive ? "sidebar-icon-container-active" : "sidebar-icon-container-inactive")}>
-                        <Wallet size={18} />
-                      </div>
-                      {!collapsed && <span className="text-sm font-semibold">My Donations</span>}
-                    </>
-                  )}
-                </NavLink>
-              )}
-
-              {/* USER: Monthly Report (direct) */}
-              {role === "USER" && (
-                <NavLink
-                  to={`${pathPrefix}/monthlyDonationTable`}
-                  onClick={() => mobile && setSidebarOpen(false)}
-                  className={({ isActive }) => getLinkClass(isActive)}
-                >
-                  {({ isActive }) => (
-                    <>
-                      <div className={collapsed ? "" : (isActive ? "sidebar-icon-container-active" : "sidebar-icon-container-inactive")}>
-                        <CalendarRange size={18} />
-                      </div>
-                      {!collapsed && <span className="text-sm font-semibold">Monthly Report</span>}
-                    </>
-                  )}
-                </NavLink>
-              )}
-
-              {/* USER MANAGEMENT (dropdown for Admins/Super Admins) */}
-              {role !== "USER" && (
-                <>
-                  <button
-                    onClick={() => setUserMgmtOpen(!userMgmtOpen)}
-                    className={`w-full flex items-center gap-3 py-3 transition-all duration-300 cursor-pointer
-                    ${collapsed ? "justify-center w-12 h-12 rounded-xl mx-auto" : "ml-2 pl-6 pr-4 rounded-l-full text-left"}
-                    ${userMgmtOpen && !collapsed
-                      ? "bg-white/[0.06] text-white font-bold"
-                      : "text-white/80 hover:bg-white/6 hover:text-white"
-                    }`}
-                  >
-                    <div className={collapsed ? "" : (userMgmtOpen ? "sidebar-icon-container-active" : "sidebar-icon-container-inactive")}>
-                      <Users size={18} />
-                    </div>
-                    {!collapsed && (
-                      <>
-                        <span className="flex-1 text-sm font-semibold">User Management</span>
-                        <ChevronDown
-                          size={16}
-                          className={`transition duration-300 text-white/60 ${userMgmtOpen ? "rotate-180 text-teal-300" : ""}`}
-                        />
-                      </>
-                    )}
-                  </button>
-
-                  {userMgmtOpen && !collapsed && (
-                    <div className="relative ml-6 mr-3 my-1 flex flex-col">
-                      {/* Continuous Vertical Guide Line */}
-                      <div className="absolute left-[14px] top-0 bottom-0 w-[1px] bg-white/20 pointer-events-none" />
-
-                      {userMgmtMenu.map((sub) => (
-                        <NavLink
-                          key={sub.path}
-                          to={sub.path}
-                          onClick={() => mobile && setSidebarOpen(false)}
-                          className={({ isActive }) =>
-                            `group relative flex items-center py-3 pl-8 pr-3 transition-all duration-200 cursor-pointer ${
-                              isActive
-                                ? "text-white font-bold"
-                                : "text-white/60 hover:text-white"
-                            }`
-                          }
-                        >
-                          {({ isActive }) => (
-                            <>
-                              {/* Centered Timeline Dot Container */}
-                              <div className="absolute left-[2px] w-6.5 h-6.5 flex items-center justify-center pointer-events-none">
-                                {isActive ? (
-                                  <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center">
-                                    <div className="w-2.5 h-2.5 bg-white rounded-full shadow-[0_0_8px_rgba(255,255,255,0.7)]" />
-                                  </div>
-                                ) : (
-                                  <div className="w-3.5 h-3.5 rounded-full border-2 border-white/20 bg-[var(--sidebar-via)] group-hover:border-white/50 transition-colors" />
-                                )}
-                              </div>
-
-                              {/* Label Text */}
-                              <span className="text-sm truncate pl-1">
-                                {sub.name}
-                              </span>
-                            </>
-                          )}
-                        </NavLink>
-                      ))}
-                    </div>
-                  )}
-                </>
-              )}
-
-              {/* ALL DONATIONS (dropdown for Admins/Super Admins) */}
-              {role !== "USER" && (
-                <>
-                  <button
-                    onClick={() => setAllDonationOpen(!allDonationOpen)}
-                    className={`w-full flex items-center gap-3 py-3 transition-all duration-300 cursor-pointer
-                    ${collapsed ? "justify-center w-12 h-12 rounded-xl mx-auto" : "ml-2 pl-6 pr-4 rounded-l-full text-left"}
-                    ${allDonationOpen && !collapsed
-                      ? "bg-white/[0.06] text-white font-bold"
-                      : "text-white/80 hover:bg-white/6 hover:text-white"
-                    }`}
-                  >
-                    <div className={collapsed ? "" : (allDonationOpen ? "sidebar-icon-container-active" : "sidebar-icon-container-inactive")}>
-                      <Wallet size={18} />
-                    </div>
-                    {!collapsed && (
-                      <>
-                        <span className="flex-1 text-sm font-semibold">All Donations</span>
-                        <ChevronDown
-                          size={16}
-                          className={`transition duration-300 text-white/60 ${allDonationOpen ? "rotate-180 text-teal-300" : ""}`}
-                        />
-                      </>
-                    )}
-                  </button>
-
-                  {allDonationOpen && !collapsed && (
-                    <div className="relative ml-6 mr-3 my-1 flex flex-col">
-                      {/* Continuous Vertical Guide Line */}
-                      <div className="absolute left-[14px] top-0 bottom-0 w-[1px] bg-white/20 pointer-events-none" />
-
-                      {allDonationMenu.map((sub) => (
-                        <NavLink
-                          key={sub.path}
-                          to={sub.path}
-                          onClick={() => mobile && setSidebarOpen(false)}
-                          className={({ isActive }) =>
-                            `group relative flex items-center py-3 pl-8 pr-3 transition-all duration-200 cursor-pointer ${
-                              isActive
-                                ? "text-white font-bold"
-                                : "text-white/60 hover:text-white"
-                            }`
-                          }
-                        >
-                          {({ isActive }) => (
-                            <>
-                              {/* Centered Timeline Dot Container */}
-                              <div className="absolute left-[2px] w-6.5 h-6.5 flex items-center justify-center pointer-events-none">
-                                {isActive ? (
-                                  <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center">
-                                    <div className="w-2.5 h-2.5 bg-white rounded-full shadow-[0_0_8px_rgba(255,255,255,0.7)]" />
-                                  </div>
-                                ) : (
-                                  <div className="w-3.5 h-3.5 rounded-full border-2 border-white/20 bg-[var(--sidebar-via)] group-hover:border-white/50 transition-colors" />
-                                )}
-                              </div>
-
-                              {/* Label Text */}
-                              <span className="text-sm truncate pl-1">
-                                {sub.name}
-                              </span>
-                            </>
-                          )}
-                        </NavLink>
-                      ))}
-                    </div>
-                  )}
-                </>
-              )}
-
-              {/* FUND MANAGEMENT */}
-              <button
-                onClick={() => setFundOpen(!fundOpen)}
-                className={`w-full flex items-center gap-3 py-3 transition-all duration-300 cursor-pointer
-                ${collapsed ? "justify-center w-12 h-12 rounded-xl mx-auto" : "ml-2 pl-6 pr-4 rounded-l-full text-left"}
-                ${fundOpen && !collapsed
-                  ? "bg-white/[0.06] text-white font-bold"
-                  : "text-white/80 hover:bg-white/6 hover:text-white"
-                }`}
-              >
-                <div className={collapsed ? "" : (fundOpen ? "sidebar-icon-container-active" : "sidebar-icon-container-inactive")}>
-                  <Landmark size={18} />
-                </div>
-                {!collapsed && (
-                  <>
-                    <span className="flex-1 text-sm font-semibold">Fund Management</span>
-                    <ChevronDown
-                      size={16}
-                      className={`transition duration-300 text-white/60 ${fundOpen ? "rotate-180 text-teal-300" : ""}`}
-                    />
-                  </>
-                )}
-              </button>
-
-                  {fundOpen && !collapsed && (
-                    <div className="relative ml-6 mr-3 my-1 flex flex-col">
-                      {/* Continuous Vertical Guide Line */}
-                      <div className="absolute left-[14px] top-0 bottom-0 w-[1px] bg-white/20 pointer-events-none" />
-
-                      {fundMenu.map((sub) => (
-                        <NavLink
-                          key={sub.path}
-                          to={sub.path}
-                          onClick={() => mobile && setSidebarOpen(false)}
-                          className={({ isActive }) =>
-                            `group relative flex items-center py-3 pl-8 pr-3 transition-all duration-200 cursor-pointer ${
-                              isActive
-                                ? "text-white font-bold"
-                                : "text-white/60 hover:text-white"
-                            }`
-                          }
-                        >
-                          {({ isActive }) => (
-                            <>
-                              {/* Centered Timeline Dot Container */}
-                              <div className="absolute left-[2px] w-6.5 h-6.5 flex items-center justify-center pointer-events-none">
-                                {isActive ? (
-                                  <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center">
-                                    <div className="w-2.5 h-2.5 bg-white rounded-full shadow-[0_0_8px_rgba(255,255,255,0.7)]" />
-                                  </div>
-                                ) : (
-                                  <div className="w-3.5 h-3.5 rounded-full border-2 border-white/20 bg-[var(--sidebar-via)] group-hover:border-white/50 transition-colors" />
-                                )}
-                              </div>
-
-                              {/* Label Text */}
-                              <span className="text-sm truncate pl-1">
-                                {sub.name}
-                              </span>
-                            </>
-                          )}
-                        </NavLink>
-                      ))}
-                    </div>
-                  )}
-
-              {/* SUPER_ADMIN: Fund Requests (with pending count badge) */}
-              {role === "SUPER_ADMIN" && (
-                <NavLink
-                  to={`${pathPrefix}/fund-requests`}
-                  onClick={() => mobile && setSidebarOpen(false)}
-                  className={({ isActive }) => getLinkClass(isActive)}
-                >
-                  {({ isActive }) => (
-                    <>
-                      <div className={collapsed ? "" : (isActive ? "sidebar-icon-container-active" : "sidebar-icon-container-inactive")}>
-                        <Landmark size={18} />
-                      </div>
-                      {!collapsed && (
-                        <div className="flex-1 flex items-center justify-between">
-                          <span className="text-sm font-semibold">Fund Requests</span>
-                          {pendingRequestsCount > 0 && (
-                            <span className="bg-amber-500 text-white font-extrabold text-[10px] px-2 py-0.5 rounded-full mr-4 shadow-sm animate-pulse">
-                              {pendingRequestsCount}
-                            </span>
-                          )}
-                        </div>
-                      )}
-                    </>
-                  )}
-                </NavLink>
-              )}
-
-              {/* ADMIN & USER: Request Funds (direct link) */}
-              {role !== "SUPER_ADMIN" && (
-                <NavLink
-                  to={`${pathPrefix}/fund-request`}
-                  onClick={() => mobile && setSidebarOpen(false)}
-                  className={({ isActive }) => getLinkClass(isActive)}
-                >
-                  {({ isActive }) => (
-                    <>
-                      <div className={collapsed ? "" : (isActive ? "sidebar-icon-container-active" : "sidebar-icon-container-inactive")}>
-                        <Landmark size={18} />
-                      </div>
-                      {!collapsed && <span className="text-sm font-semibold">Request Funds</span>}
-                    </>
-                  )}
-                </NavLink>
-              )}
-
-              {/* RULES & REGULATIONS */}
-              <NavLink
-                to={`${pathPrefix}/rules`}
-                onClick={() => mobile && setSidebarOpen(false)}
-                className={({ isActive }) => getLinkClass(isActive)}
-              >
-                {({ isActive }) => (
-                  <>
-                    <div className={collapsed ? "" : (isActive ? "sidebar-icon-container-active" : "sidebar-icon-container-inactive")}>
-                      <ScrollText size={18} />
-                    </div>
-                    {!collapsed && <span className="text-sm font-semibold">Rules & Regulations</span>}
-                  </>
-                )}
-              </NavLink>
-
-              {/* USER: All Users */}
-              {role === "USER" && (
-                <NavLink
-                  to={`${pathPrefix}/all-users`}
-                  onClick={() => mobile && setSidebarOpen(false)}
-                  className={({ isActive }) => getLinkClass(isActive)}
-                >
-                  {({ isActive }) => (
-                    <>
-                      <div className={collapsed ? "" : (isActive ? "sidebar-icon-container-active" : "sidebar-icon-container-inactive")}>
-                        <UserPlus size={18} />
-                      </div>
-                      {!collapsed && <span className="text-sm font-semibold">All Users</span>}
-                    </>
-                  )}
-                </NavLink>
-              )}
-
-              {/* LEADS */}
-              <NavLink
-                to={`${pathPrefix}/leads`}
-                onClick={() => mobile && setSidebarOpen(false)}
-                className={({ isActive }) => getLinkClass(isActive)}
-              >
-                {({ isActive }) => (
-                  <>
-                    <div className={collapsed ? "" : (isActive ? "sidebar-icon-container-active" : "sidebar-icon-container-inactive")}>
-                      <Target size={18} />
-                    </div>
-                    {!collapsed && <span className="text-sm font-semibold">Leads</span>}
-                  </>
-                )}
-              </NavLink>
-
-              {/* APPEARANCE */}
-              <NavLink
-                to={`${pathPrefix}/appearance`}
-                onClick={() => mobile && setSidebarOpen(false)}
-                className={({ isActive }) => getLinkClass(isActive)}
-              >
-                {({ isActive }) => (
-                  <>
-                    <div className={collapsed ? "" : (isActive ? "sidebar-icon-container-active" : "sidebar-icon-container-inactive")}>
-                      <Sun size={18} />
-                    </div>
-                    {!collapsed && <span className="text-sm font-semibold">Appearance</span>}
-                  </>
-                )}
-              </NavLink>
-
-              {/* SETTINGS */}
-              <NavLink
-                to={`${pathPrefix}/settings`}
-                onClick={() => mobile && setSidebarOpen(false)}
-                className={({ isActive }) => getLinkClass(isActive)}
-              >
-                {({ isActive }) => (
-                  <>
-                    <div className={collapsed ? "" : (isActive ? "sidebar-icon-container-active" : "sidebar-icon-container-inactive")}>
-                      <Settings size={18} />
-                    </div>
-                    {!collapsed && <span className="text-sm font-semibold">Settings</span>}
-                  </>
-                )}
-              </NavLink>
-            </nav>
-          </div>
-
-          {/* PROFILE CARD */}
-          {!collapsed && (
-            <div className="flex items-center gap-4 mt-auto mb-2 p-3.5 rounded-2xl bg-white/[0.04] backdrop-blur-md border border-white/10 hover:border-white/20 mr-4 ml-2 shadow-[0_4px_12px_rgba(0,0,0,0.1)] transition-all duration-300 hover:shadow-[0_8px_20px_rgba(0,0,0,0.15)] group">
-              <div className="relative">
-                <img
-                  src={
-                    user?.profilePhoto?.url ||
-                    `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || defaultName)}&background=ffffff&color=${sidebarColor}`
-                  }
-                  alt="profile"
-                  className="w-12 h-12 rounded-full object-cover border-2 border-white/20 group-hover:border-teal-400/40 transition-colors duration-300"
-                />
-                <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-400 border-2 border-[#004e57] rounded-full animate-pulse" />
-              </div>
-              <div>
-                <p className="text-sm font-extrabold text-white leading-tight transition-colors duration-300 group-hover:text-teal-200">
-                  {user?.name || defaultName}
-                </p>
-                <span className="text-[10px] text-teal-300 font-bold tracking-wider uppercase block mt-0.5">
-                  {role}
+            {!collapsed && (
+              <div className="flex flex-col">
+                <span className="text-[13px] font-bold tracking-wide text-white uppercase">
+                  CHHAPI
+                </span>
+                <span className="text-[9px] text-teal-200/80 font-bold uppercase tracking-wider">
+                  Donation Portal
                 </span>
               </div>
-            </div>
+            )}
+          </div>
+
+          {mobile && (
+            <button
+              onClick={() => setSidebarOpen(false)}
+              className="lg:hidden p-1 rounded-sm bg-white/10 hover:bg-white/20 transition-colors"
+            >
+              <X size={18} className="text-white" />
+            </button>
+          )}
+
+          {!mobile && setCollapsed && (
+            <button
+              onClick={() => setCollapsed(!collapsed)}
+              className="absolute -right-[12px] top-2 w-6 h-6 rounded-full bg-white text-teal-700 flex items-center justify-center shadow-md cursor-pointer transition-transform hover:scale-110 z-50"
+            >
+              {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+            </button>
           )}
         </div>
 
-        {/* Edge Toggle Button */}
-        {!mobile && setCollapsed && (
-          <button
-            onClick={() => setCollapsed(!collapsed)}
-            className="absolute right-[-16px] top-8 w-8 h-8 rounded-full bg-white text-[#007380] hover:text-[#005f6b] shadow-[0_4px_12px_rgba(0,115,128,0.2)] hover:shadow-[0_6px_20px_rgba(0,115,128,0.3)] flex items-center justify-center cursor-pointer transition-all duration-300 z-50 border border-teal-700/10 hover:scale-105 active:scale-95"
-          >
-            {collapsed ? (
-              <ChevronRight size={18} />
-            ) : (
-              <ChevronLeft size={18} />
-            )}
-          </button>
-        )}
-      </aside>
+        <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 flex flex-col gap-1 mt-2">
+          {menuItems.map((item, index) => {
+            const Icon = item.icon;
+            const hasChildren = item.children && item.children.length > 0;
+            const isOpen = openMenus.includes(item.name);
+            const isActive = item.exact 
+                ? location.pathname === item.path 
+                : location.pathname.startsWith(item.path) && (hasChildren ? isChildActive(item.children) : location.pathname === item.path);
 
-      {/* MOBILE OVERLAY */}
+            if (hasChildren) {
+              return (
+                <div key={index} className="flex flex-col gap-1">
+                  <div
+                    onClick={() => toggleMenu(item.name)}
+                    className={`flex items-center justify-between px-3 py-3 rounded-sm cursor-pointer transition-all
+                      ${isActive
+                        ? "bg-white text-teal-700 shadow-sm"
+                        : isOpen
+                        ? "bg-white/10 text-white"
+                        : "hover:bg-white/10 text-white"
+                      }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="flex-shrink-0 w-6 flex justify-center">
+                        <Icon size={18} className={isActive ? "text-teal-700" : "text-white"} />
+                      </div>
+                      {!collapsed && (
+                        <span className={`text-sm tracking-wide transition-all duration-300 whitespace-nowrap ${isActive ? "font-semibold" : "font-medium"}`}>
+                          {item.name}
+                        </span>
+                      )}
+                    </div>
+                    {!collapsed && (
+                      <ChevronRight
+                        size={16}
+                        className={`transition-all duration-300 ${isOpen ? "rotate-90" : ""} ${isActive ? "text-teal-700" : "text-white"}`}
+                      />
+                    )}
+                  </div>
+
+                  {!collapsed && (
+                    <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"}`}>
+                      <div className="relative ml-5 pl-6 border-l border-white/20 flex flex-col gap-1 py-1">
+                        {item.children.map((child, childIdx) => {
+                          const isChildActive = location.pathname === child.path;
+                          return (
+                            <NavLink
+                              key={childIdx}
+                              to={child.path}
+                              onClick={() => mobile && setSidebarOpen(false)}
+                              className="relative flex items-center group cursor-pointer"
+                            >
+                              <div
+                                className={`absolute -left-[29px] w-[10px] h-[10px] rounded-full border-2 transition-all
+                                  ${isChildActive
+                                    ? "bg-white border-white ring-4 ring-white/10"
+                                    : "bg-teal-600 border-white/30 group-hover:border-white/60"
+                                  }`}
+                              />
+                              <span
+                                className={`text-sm py-2 px-1 rounded-sm w-full transition-all whitespace-nowrap duration-300
+                                  ${isChildActive
+                                    ? "text-white font-medium"
+                                    : "text-white/70 hover:text-white font-medium"
+                                  }`}
+                              >
+                                {child.name}
+                              </span>
+                            </NavLink>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
+            return (
+              <NavLink
+                key={index}
+                to={item.path}
+                end={item.exact}
+                onClick={() => {
+                  if (mobile) setSidebarOpen(false);
+                  setOpenMenus([]);
+                }}
+                className={`flex items-center justify-between px-3 py-3 rounded-sm cursor-pointer transition-all
+                  ${isActive
+                    ? "bg-white text-teal-700 shadow-sm font-semibold"
+                    : "hover:bg-white/10 text-white font-medium"
+                  }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="flex-shrink-0 w-6 flex justify-center">
+                    <Icon size={18} className={isActive ? "text-teal-700" : "text-white"} />
+                  </div>
+                  {!collapsed && (
+                    <span className="text-sm tracking-wide whitespace-nowrap">
+                      {item.name}
+                    </span>
+                  )}
+                </div>
+                {!collapsed && item.badge > 0 && (
+                  <span className="bg-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full animate-pulse shadow-sm">
+                    {item.badge}
+                  </span>
+                )}
+              </NavLink>
+            );
+          })}
+        </div>
+
+        <div className="mt-3 pt-3 pr-2 flex-shrink-0 border-t border-white/10 relative">
+          <div
+            onClick={() => setProfileMenuOpen(!profileMenuOpen)}
+            className="flex items-center justify-between bg-black/10 hover:bg-black/20 p-2.5 rounded-sm border border-white/5 cursor-pointer transition-all shadow-sm"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 flex-shrink-0 rounded-sm bg-white/10 text-white flex items-center justify-center text-sm font-bold border border-white/20 shadow-inner">
+                {getInitials(user?.name || defaultName)}
+              </div>
+              {!collapsed && (
+                <div>
+                  <p className="text-[13px] font-semibold text-white tracking-wide">
+                    {user?.name || defaultName}
+                  </p>
+                  <p className="text-[10px] text-white/60 font-medium tracking-wider uppercase mt-0.5">
+                    {role}
+                  </p>
+                </div>
+              )}
+            </div>
+            {!collapsed && (
+              <ChevronDown size={15} className="text-white/40 group-hover:text-white/70" />
+            )}
+          </div>
+
+          {profileMenuOpen && !collapsed && (
+            <div className="absolute bottom-16 right-2 w-44 bg-white rounded-sm shadow-xl border border-gray-100 z-50 p-1.5 flex flex-col gap-1 animate-in fade-in zoom-in-95 duration-200">
+              <button
+                onClick={() => { setProfileMenuOpen(false); navigate(pathPrefix + '/settings'); }}
+                className="flex items-center gap-2.5 w-full text-left px-3 py-2 text-sm text-gray-700 font-medium hover:bg-gray-50 hover:text-gray-900 rounded-sm transition-colors"
+              >
+                <User2 size={16} className="text-gray-500" />
+                Profile
+              </button>
+              <div className="h-px bg-gray-100 my-0.5 mx-1" />
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-2.5 w-full text-left px-3 py-2 text-sm text-red-600 font-medium hover:bg-red-50 rounded-sm transition-colors"
+              >
+                <LogOut size={16} className="text-red-500" />
+                Logout
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
       {mobile && sidebarOpen && (
         <div
           onClick={() => setSidebarOpen(false)}
-          className="fixed inset-0 bg-black/40 z-30"
+          className="fixed inset-0 bg-black/40 z-30 lg:hidden"
         />
       )}
     </>

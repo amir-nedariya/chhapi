@@ -1,192 +1,119 @@
-import React from "react";
-import { ChevronLeft, ChevronRight, Inbox } from "lucide-react";
-import { TableLoader } from "./Loader";
+import React from 'react';
+import EmptyState from './EmptyState';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-/**
- * A highly customizable, accessible, and premium Table component.
- * Features built-in pagination controls, loading overlays, sorting indicators,
- * responsive design, and custom cell rendering.
- */
-const Table = ({
-  columns = [], // Array of: { key, header, render, align: 'left'|'center'|'right', className, sortable: bool }
-  data = [], // Array of row objects
+const Table = ({ 
+  columns = [], 
+  data = [], 
+  onRowClick = null, 
+  emptyStateProps = {},
   isLoading = false,
-  pagination = null, // { currentPage, totalPages, totalItems, itemsPerPage, onPageChange }
-  emptyMessage = "No records found",
-  emptySubMessage = "Try loosening your search keywords or switching filters.",
-  onRowClick = null,
-  hoverable = true,
-  striped = false,
-  sortBy = null, // Current active sort column key
-  sortOrder = "asc", // 'asc' | 'desc'
-  onSort = null, // Callback function: (columnKey, direction)
-  className = "",
+  pagination = null, // Support for chhapi pagination
+  emptyMessage,
+  emptySubMessage
 }) => {
-  const handleSortClick = (col) => {
-    if (!col.sortable || !onSort) return;
-    const isCurrent = sortBy === col.key;
-    const newOrder = isCurrent && sortOrder === "asc" ? "desc" : "asc";
-    onSort(col.key, newOrder);
-  };
 
-  // Helper to resolve cell alignment
-  const getAlignClass = (align) => {
-    switch (align) {
-      case "right":
-        return "text-right";
-      case "center":
-        return "text-center";
-      case "left":
-      default:
-        return "text-left";
-    }
-  };
+  const hasData = data && data.length > 0;
 
-  const getAlignJustifyClass = (align) => {
-    switch (align) {
-      case "right":
-        return "justify-end";
-      case "center":
-        return "justify-center";
-      case "left":
-      default:
-        return "justify-start";
-    }
-  };
+  if (!hasData && !isLoading) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center min-h-[400px] w-full bg-white border border-gray-200 rounded-sm">
+        <EmptyState 
+          entityName={emptyStateProps.entityName || "Records"} 
+          search={emptyStateProps.search}
+          {...(emptyMessage && !emptyStateProps.search ? { customMessage: emptyMessage } : {})}
+          {...emptyStateProps} 
+        />
+      </div>
+    );
+  }
 
   return (
-    <div className={`w-full bg-white border-[0.5px] border-slate-200/80 rounded-2xl shadow-xs overflow-hidden flex flex-col relative ${className}`}>
-
-      {/* Table Content Container */}
-      <div className="overflow-x-auto relative w-full scrollbar-thin scrollbar-thumb-slate-200">
-
+    <div className="w-full bg-white border border-gray-200 rounded-sm overflow-hidden flex flex-col relative shadow-sm">
+      <div className="overflow-x-auto custom-scrollbar flex-1">
+        
         {/* Loading Overlay */}
-        {isLoading && data.length > 0 && (
-          <div className="absolute inset-0 bg-white/60 backdrop-blur-xs z-10 flex items-center justify-center transition-all duration-300">
-            <TableLoader text="Synchronizing records..." subText="Updating latest data registers" />
+        {isLoading && hasData && (
+          <div className="absolute inset-0 bg-white/60 backdrop-blur-sm z-10 flex items-center justify-center">
+             <div className="text-teal-700 font-medium flex items-center gap-2">
+                <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Updating...
+             </div>
           </div>
         )}
 
-        <table className="w-full text-slate-700 border-collapse min-w-[640px]">
-
-          {/* Table Headers */}
-          <thead className="bg-gradient-to-r from-sidebar-from via-sidebar-via to-sidebar-to text-white select-none">
-            <tr className="border-b border-teal-950/20 text-xs font-bold tracking-wider uppercase">
-              {columns.map((col) => (
-                <th
-                  key={col.key}
-                  onClick={() => handleSortClick(col)}
-                  className={`py-4 px-5 font-semibold text-xs tracking-wider uppercase transition-colors duration-200 ${getAlignClass(col.align)} ${col.sortable && onSort ? "cursor-pointer hover:bg-white/10" : ""
-                    } ${col.className || ""}`}
-                >
-                  <div className={`inline-flex items-center gap-1.5 ${getAlignJustifyClass(col.align)} w-full`}>
-                    <span>{col.header}</span>
-                    {col.sortable && onSort && (
-                      <span className="flex flex-col text-[8px] opacity-70">
-                        <span className={`leading-none ${sortBy === col.key && sortOrder === "asc" ? "text-cyan-200 font-extrabold" : ""}`}>▲</span>
-                        <span className={`leading-none ${sortBy === col.key && sortOrder === "desc" ? "text-cyan-200 font-extrabold" : ""}`}>▼</span>
-                      </span>
-                    )}
-                  </div>
-                </th>
-              ))}
-            </tr>
-          </thead>
-
-          {/* Table Body */}
-          <tbody className={`divide-y-[0.5px] divide-slate-200/80 text-sm transition-all duration-300 ${isLoading && data.length === 0 ? "opacity-30" : ""}`}>
-
-            {/* Empty State */}
-            {!isLoading && data.length === 0 && (
+        <div className="min-h-full">
+          <table className="w-full text-left border-collapse min-w-max">
+            <thead className="sticky top-0 z-10 bg-teal-700 text-white text-[12px] font-medium">
               <tr>
-                <td colSpan={columns.length} className="py-16 px-5 text-center">
-                  <div className="flex flex-col items-center justify-center gap-3 max-w-sm mx-auto">
-                    <div className="p-4 bg-slate-50 border-[0.5px] border-slate-200/80 rounded-full text-slate-400 animate-bounce [animation-duration:3s]">
-                      <Inbox size={32} className="stroke-[1.5]" />
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-base font-bold text-slate-800">{emptyMessage}</p>
-                      {emptySubMessage && (
-                        <p className="text-xs text-slate-400 font-medium leading-relaxed">
-                          {emptySubMessage}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </td>
+                {columns.map((col, idx) => (
+                  <th key={col.key || idx} className={`px-4 py-3.5 whitespace-nowrap ${col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : ''}`}>
+                    {col.header}
+                  </th>
+                ))}
               </tr>
-            )}
-
-            {/* Loading Initial State */}
-            {isLoading && data.length === 0 && (
-              <tr>
-                <td colSpan={columns.length} className="py-2">
-                  <TableLoader text="Loading ledger registers..." subText="Reading details from ledger vault" />
-                </td>
-              </tr>
-            )}
-
-            {/* Standard Rows */}
-            {!isLoading && data.map((row, rowIndex) => (
-              <tr
-                key={row._id || row.id || rowIndex}
-                onClick={() => onRowClick && onRowClick(row)}
-                className={`transition-colors duration-150 ${hoverable ? "hover:bg-slate-50/60" : ""
-                  } ${striped && rowIndex % 2 !== 0 ? "bg-slate-50/20" : ""
-                  } ${onRowClick ? "cursor-pointer" : ""
-                  }`}
-              >
-                {columns.map((col) => {
-                  const cellValue = row[col.key];
-                  return (
-                    <td
-                      key={col.key}
-                      className={`py-4 px-5 align-middle text-slate-600 font-medium ${getAlignClass(col.align)} ${col.className || ""
-                        }`}
-                    >
-                      {col.render ? col.render(cellValue, row, rowIndex) : cellValue !== undefined ? String(cellValue) : "-"}
-                    </td>
-                  );
-                })}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className={`bg-white transition-opacity duration-200 ${isLoading && !hasData ? 'opacity-50' : ''}`}>
+              {isLoading && !hasData ? (
+                 <tr>
+                   <td colSpan={columns.length} className="py-20 text-center text-gray-500">
+                     Loading records...
+                   </td>
+                 </tr>
+              ) : (
+                data.map((row, rowIndex) => (
+                  <tr
+                    key={row._id || row.id || rowIndex}
+                    onClick={() => onRowClick && onRowClick(row)}
+                    className={`border-b border-gray-100 transition-colors ${onRowClick ? 'hover:bg-gray-50/80 cursor-pointer' : 'hover:bg-gray-50/40'}`}
+                  >
+                    {columns.map((col, colIndex) => {
+                      const cellValue = row[col.key || col.accessor];
+                      return (
+                        <td key={col.key || colIndex} className={`px-4 py-3 text-sm text-gray-600 ${col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : ''} ${col.className || ''}`}>
+                          {col.render ? col.render(cellValue, row, rowIndex) : cellValue !== undefined ? String(cellValue) : "-"}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
-
+      
       {/* Pagination Footer */}
-      {pagination && data.length > 0 && (
-        <div className="flex flex-col sm:flex-row items-center justify-between border-t-[0.5px] border-slate-200/80 px-6 py-4 gap-4 bg-slate-50/50 select-none">
-
-          {/* Pagination Meta Text */}
-          <div className="text-xs font-semibold text-slate-500">
+      {pagination && hasData && (
+        <div className="flex flex-col sm:flex-row items-center justify-between border-t border-gray-200 px-4 py-3 gap-4 bg-gray-50/50 select-none">
+          <div className="text-xs font-medium text-gray-500">
             Showing{" "}
-            <span className="text-slate-800">
+            <span className="text-gray-800 font-semibold">
               {Math.min((pagination.currentPage - 1) * pagination.itemsPerPage + 1, pagination.totalItems)}
             </span>{" "}
             to{" "}
-            <span className="text-slate-800">
+            <span className="text-gray-800 font-semibold">
               {Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)}
             </span>{" "}
-            of <span className="text-slate-800">{pagination.totalItems}</span> records
+            of <span className="text-gray-800 font-semibold">{pagination.totalItems}</span>
           </div>
 
-          {/* Pagination Controls */}
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1">
             <button
               onClick={() => pagination.onPageChange(Math.max(pagination.currentPage - 1, 1))}
               disabled={pagination.currentPage === 1}
-              className="p-2 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-100 hover:text-slate-700 disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-500 transition-all duration-200 cursor-pointer active:scale-95 disabled:active:scale-100"
+              className="p-1.5 rounded-sm border border-gray-200 text-gray-500 hover:bg-gray-100 disabled:opacity-40 disabled:hover:bg-transparent"
             >
-              <ChevronLeft size={16} className="stroke-[2.5]" />
+              <ChevronLeft size={16} />
             </button>
 
-            {/* Smart page numbering */}
             {Array.from({ length: pagination.totalPages }).map((_, idx) => {
               const pageNum = idx + 1;
               const isCurrent = pageNum === pagination.currentPage;
 
-              // Only render standard page count if <= 5 or within window around current page
               if (
                 pagination.totalPages <= 5 ||
                 pageNum === 1 ||
@@ -197,39 +124,30 @@ const Table = ({
                   <button
                     key={pageNum}
                     onClick={() => pagination.onPageChange(pageNum)}
-                    className={`min-w-8 h-8 flex items-center justify-center text-xs font-bold rounded-lg border transition-all duration-200 cursor-pointer active:scale-95 ${isCurrent
-                      ? "bg-primary text-white border-primary shadow-sm"
-                      : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
-                      }`}
+                    className={`min-w-[28px] h-7 flex items-center justify-center text-xs font-medium rounded-sm border transition-colors ${
+                      isCurrent
+                        ? "bg-teal-700 text-white border-teal-700"
+                        : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50"
+                    }`}
                   >
                     {pageNum}
                   </button>
                 );
               }
 
-              // Add ellipses
-              if (
-                pageNum === 2 ||
-                pageNum === pagination.totalPages - 1
-              ) {
-                return (
-                  <span key={pageNum} className="px-1 text-slate-400 text-xs font-bold">
-                    ...
-                  </span>
-                );
+              if (pageNum === 2 || pageNum === pagination.totalPages - 1) {
+                return <span key={pageNum} className="px-1 text-gray-400 text-xs">...</span>;
               }
 
               return null;
             })}
 
             <button
-              onClick={() =>
-                pagination.onPageChange(Math.min(pagination.currentPage + 1, pagination.totalPages))
-              }
+              onClick={() => pagination.onPageChange(Math.min(pagination.currentPage + 1, pagination.totalPages))}
               disabled={pagination.currentPage === pagination.totalPages}
-              className="p-2 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-100 hover:text-slate-700 disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-500 transition-all duration-200 cursor-pointer active:scale-95 disabled:active:scale-100"
+              className="p-1.5 rounded-sm border border-gray-200 text-gray-500 hover:bg-gray-100 disabled:opacity-40 disabled:hover:bg-transparent"
             >
-              <ChevronRight size={16} className="stroke-[2.5]" />
+              <ChevronRight size={16} />
             </button>
           </div>
         </div>

@@ -39,6 +39,9 @@ import {
 
 import { useSidebarColor } from "../../../../hooks/useSidebarColor";
 import PasswordCell from "../../../../components/common/PasswordCell";
+import Table from "../../../../components/common/Table";
+import FilterBar from "../../../../components/common/FilterBar";
+import Button from "../../../../components/common/Button";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -1107,212 +1110,124 @@ const UsersList = () => {
     );
   }
 
-  return (
-    <div className="p-1 sm:p-6">
-      {/* ================= HEADER ================= */}
-      <div className="flex flex-col items-center text-center sm:flex-row gap-4 sm:items-center sm:justify-between mb-6">
-        <h2 className="flex flex-col sm:flex-row items-center gap-2 text-xl sm:text-2xl font-semibold text-slate-800">
-          <Users size={24} className="text-cyan-600" />
-          User Management
-        </h2>
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    if (name === "search") setSearch(value);
+    if (name === "roleFilter") setRoleFilter(value);
+    setPage(1);
+  };
 
-        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-          {/* SEARCH */}
-          <div className="relative w-full sm:w-64">
-            <Search
-              size={16}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-            />
-            <input
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setPage(1);
-              }}
-              placeholder="Search user..."
-              className="w-full pl-9 pr-4 py-2 rounded-xl bg-white text-slate-800
-              border border-gray-300 focus:ring-2 focus:ring-cyan-500 outline-none shadow-sm transition"
-            />
+  const filterConfig = [
+    { type: "search", name: "search", placeholder: "Search user..." },
+    { type: "select", name: "roleFilter", options: [
+      { label: "All Roles", value: "ALL" },
+      { label: "User", value: "USER" },
+      { label: "Admin", value: "ADMIN" },
+      { label: "Super Admin", value: "SUPER_ADMIN" }
+    ]}
+  ];
+
+  const columns = [
+    {
+      key: "user",
+      header: "User Info",
+      render: (_, u) => (
+        <div className="flex items-center gap-4">
+          <img src={getAvatarUrl(u)} className="w-10 h-10 rounded-full border border-gray-200 object-cover" />
+          <div>
+            <p className="font-semibold text-slate-800 flex items-center gap-1">
+              {u.name}
+              <svg className="w-3.5 h-3.5 text-blue-500 fill-current flex-shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.71-3.99-3.818-3.99-.48 0-.94.1-1.348.275C14.775 2.5 13.51 1.5 12 1.5c-1.51 0-2.775 1-3.422 2.285-.407-.175-.867-.275-1.348-.275-2.11 0-3.818 1.78-3.818 3.99 0 .495.084.965.238 1.4-1.273.65-2.148 2.02-2.148 3.6 0 1.58.875 2.95 2.148 3.6-.154.435-.238.905-.238 1.4 0 2.21 1.71 3.99 3.818 3.99.48 0 .94-.1 1.348-.275.647 1.285 1.912 2.285 3.422 2.285 1.51 0 2.775-1 3.422-2.285.407.175.867.275 1.348.275 2.11 0 3.818-1.78 3.818-3.99 0-.495-.084-.965-.238-1.4 1.273-.65 2.148-2.02 2.148-3.6zm-12.72 3.73-3.79-3.79 1.42-1.42 2.37 2.37 5.67-5.67 1.42 1.42-7.09 7.09z"/>
+              </svg>
+            </p>
+            <p className="text-xs text-slate-500">{u.mobile}</p>
           </div>
-
-          {/* FILTER */}
-          <select
-            value={roleFilter}
-            onChange={(e) => {
-              setRoleFilter(e.target.value);
-              setPage(1);
-            }}
-            className="w-full sm:w-44 px-4 py-2 rounded-xl bg-white text-slate-800
-            border border-gray-300 focus:ring-2 focus:ring-cyan-500 outline-none shadow-sm transition"
-          >
-            <option value="ALL">All Roles</option>
-            <option value="USER">User</option>
-            <option value="ADMIN">Admin</option>
-            <option value="SUPER_ADMIN">Super Admin</option>
-          </select>
-
-          {/* CREATE USER BUTTON */}
-          <button
-            onClick={() => setIsCreateOpen(true)}
-            className="flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white font-medium shadow-sm transition-all duration-150 active:scale-95 whitespace-nowrap"
-          >
-            <UserPlus size={18} />
-            Create User
-          </button>
         </div>
-      </div>
-
-      {/* ================= DESKTOP TABLE ================= */}
-      <div className="hidden md:block overflow-x-auto rounded-2xl border border-gray-200 bg-white shadow-sm">
-        <table className="w-full text-sm text-slate-800">
-          <thead className="bg-gradient-to-r from-[var(--sidebar-from)] via-[var(--sidebar-via)] to-[var(--sidebar-to)] text-white border-b border-teal-950/20">
-            <tr>
-              <th className="p-4 text-left font-semibold">User Info</th>
-              <th className="p-4 text-center font-semibold">Password</th>
-              <th className="p-4 text-center font-semibold">Role</th>
-              <th className="p-4 text-center font-semibold">Status</th>
-              <th className="p-4 text-center font-semibold">View</th>
-            </tr>
-          </thead>
-          <tbody>
-            {paginatedUsers.map((u) => (
-              <tr key={u._id} className="border-b border-gray-100 hover:bg-slate-50 transition">
-                <td className="p-4">
-                  <div className="flex items-center gap-4">
-                    <img
-                      src={getAvatarUrl(u)}
-                      className="w-10 h-10 rounded-full border border-gray-200 object-cover"
-                    />
-                    <div>
-                      <p className="font-semibold text-slate-800 flex items-center gap-1">
-                        {u.name}
-                        <svg className="w-3.5 h-3.5 text-blue-500 fill-current flex-shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.71-3.99-3.818-3.99-.48 0-.94.1-1.348.275C14.775 2.5 13.51 1.5 12 1.5c-1.51 0-2.775 1-3.422 2.285-.407-.175-.867-.275-1.348-.275-2.11 0-3.818 1.78-3.818 3.99 0 .495.084.965.238 1.4-1.273.65-2.148 2.02-2.148 3.6 0 1.58.875 2.95 2.148 3.6-.154.435-.238.905-.238 1.4 0 2.21 1.71 3.99 3.818 3.99.48 0 .94-.1 1.348-.275.647 1.285 1.912 2.285 3.422 2.285 1.51 0 2.775-1 3.422-2.285.407.175.867.275 1.348.275 2.11 0 3.818-1.78 3.818-3.99 0-.495-.084-.965-.238-1.4 1.273-.65 2.148-2.02 2.148-3.6zm-12.72 3.73-3.79-3.79 1.42-1.42 2.37 2.37 5.67-5.67 1.42 1.42-7.09 7.09z"/>
-                        </svg>
-                      </p>
-                      <p className="text-xs text-slate-500">{u.mobile}</p>
-                    </div>
-                  </div>
-                </td>
-
-                <td className="p-4 text-center">
-                  <PasswordCell password={u.password} />
-                </td>
-
-                <td className="p-4 text-center">
-                  <span className={`px-3 py-1 rounded-full text-xs ${roleStyles[u.role]}`}>
-                    {u.role.replace("_", " ")}
-                  </span>
-                </td>
-
-                <td className="p-4 text-center">
-                  {u.role !== "SUPER_ADMIN" && (
-                    <button
-                      onClick={() => toggleStatus(u)}
-                      className={`w-11 h-6 rounded-full p-1 flex items-center shadow-inner transition-colors duration-300 ${
-                        u.isActive ? "bg-green-500" : "bg-gray-300"
-                      }`}
-                    >
-                      <span
-                        className={`bg-white w-4 h-4 rounded-full shadow transition-transform duration-300 ${
-                          u.isActive ? "translate-x-5" : ""
-                        }`}
-                      />
-                    </button>
-                  )}
-                </td>
-
-                <td className="p-4 text-center">
-                  <button
-                    onClick={() => openUserModal(u._id)}
-                    className="text-cyan-600 hover:text-cyan-800 hover:scale-110 transition"
-                  >
-                    <Eye size={18} />
-                  </button>
-                </td>
-              </tr>
-            ))}
-            {paginatedUsers.length === 0 && (
-              <tr>
-                <td colSpan="5" className="p-8 text-center text-slate-500">
-                  No users found.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      {/* ================= MOBILE CARDS ================= */}
-      <div className="md:hidden space-y-4">
-        {paginatedUsers.map((u) => (
-          <div key={u._id} className="rounded-2xl bg-white border border-gray-200 p-4 shadow-sm">
-            <div className="flex items-center gap-3">
-              <img
-                src={getAvatarUrl(u)}
-                className="w-12 h-12 rounded-full border border-gray-200 object-cover"
-              />
-              <div className="flex-1">
-                <p className="font-semibold text-slate-800 flex items-center gap-1">
-                  {u.name}
-                  <svg className="w-3.5 h-3.5 text-blue-500 fill-current flex-shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.71-3.99-3.818-3.99-.48 0-.94.1-1.348.275C14.775 2.5 13.51 1.5 12 1.5c-1.51 0-2.775 1-3.422 2.285-.407-.175-.867-.275-1.348-.275-2.11 0-3.818 1.78-3.818 3.99 0 .495.084.965.238 1.4-1.273.65-2.148 2.02-2.148 3.6 0 1.58.875 2.95 2.148 3.6-.154.435-.238.905-.238 1.4 0 2.21 1.71 3.99 3.818 3.99.48 0 .94-.1 1.348-.275.647 1.285 1.912 2.285 3.422 2.285 1.51 0 2.775-1 3.422-2.285.407.175.867.275 1.348.275 2.11 0 3.818-1.78 3.818-3.99 0-.495-.084-.965-.238-1.4 1.273-.65 2.148-2.02 2.148-3.6zm-12.72 3.73-3.79-3.79 1.42-1.42 2.37 2.37 5.67-5.67 1.42 1.42-7.09 7.09z"/>
-                  </svg>
-                </p>
-                <p className="text-xs text-slate-500">{u.mobile}</p>
-              </div>
-              <button onClick={() => openUserModal(u._id)} className="text-cyan-600 p-2 bg-cyan-50 rounded-lg">
-                <Eye size={18} />
-              </button>
-            </div>
-
-            <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
-              <span className={`px-3 py-1 rounded-full text-xs ${roleStyles[u.role]}`}>
-                {u.role.replace("_", " ")}
-              </span>
-
-              {u.role !== "SUPER_ADMIN" && (
-                <button
-                  onClick={() => toggleStatus(u)}
-                  className={`w-11 h-6 rounded-full p-1 flex items-center shadow-inner transition-colors duration-300 ${
-                    u.isActive ? "bg-green-500" : "bg-gray-300"
-                  }`}
-                >
-                  <span
-                    className={`bg-white w-4 h-4 rounded-full shadow transition-transform duration-300 ${
-                      u.isActive ? "translate-x-5" : ""
-                    }`}
-                  />
-                </button>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* ================= PAGINATION ================= */}
-      <div className="flex justify-center sm:justify-end items-center gap-3 mt-6">
-        <button
-          disabled={page === 1}
-          onClick={() => setPage(page - 1)}
-          className="p-2 rounded-xl bg-white border border-gray-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:hover:bg-white disabled:cursor-not-allowed transition shadow-sm"
-        >
-          <ChevronLeft size={18} />
-        </button>
-
-        <span className="text-slate-500 text-xs font-semibold uppercase tracking-wider bg-slate-50 border border-slate-100 px-3 py-1.5 rounded-xl">
-          Page {page} of {totalPages || 1}
+      )
+    },
+    {
+      key: "password",
+      header: "Password",
+      align: "center",
+      render: (_, u) => <PasswordCell password={u.password} />
+    },
+    {
+      key: "role",
+      header: "Role",
+      align: "center",
+      render: (_, u) => (
+        <span className={`px-3 py-1 rounded-full text-xs ${roleStyles[u.role]}`}>
+          {u.role.replace("_", " ")}
         </span>
-
+      )
+    },
+    {
+      key: "status",
+      header: "Status",
+      align: "center",
+      render: (_, u) => (
+        u.role !== "SUPER_ADMIN" ? (
+          <button
+            onClick={() => toggleStatus(u)}
+            className={`w-11 h-6 rounded-full p-1 flex items-center shadow-inner transition-colors duration-300 ${
+              u.isActive ? "bg-green-500" : "bg-gray-300"
+            }`}
+          >
+            <span
+              className={`bg-white w-4 h-4 rounded-full shadow transition-transform duration-300 ${
+                u.isActive ? "translate-x-5" : ""
+              }`}
+            />
+          </button>
+        ) : null
+      )
+    },
+    {
+      key: "view",
+      header: "View",
+      align: "center",
+      render: (_, u) => (
         <button
-          disabled={page === totalPages || totalPages === 0}
-          onClick={() => setPage(page + 1)}
-          className="p-2 rounded-xl bg-white border border-gray-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:hover:bg-white disabled:cursor-not-allowed transition shadow-sm"
+          onClick={() => openUserModal(u._id)}
+          className="text-cyan-600 hover:text-cyan-800 hover:scale-110 transition"
         >
-          <ChevronRight size={18} />
+          <Eye size={18} />
         </button>
+      )
+    }
+  ];
+
+  return (
+    <div className="p-4 md:p-6 space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="flex items-center gap-3">
+          <Users className="text-teal-700" size={24} />
+          <div>
+            <h2 className="text-2xl font-bold text-gray-800 tracking-tight">
+              User Management
+            </h2>
+          </div>
+        </div>
+        <Button onClick={() => setIsCreateOpen(true)} iconLeft={UserPlus} variant="solid">
+          Create User
+        </Button>
       </div>
 
+      <FilterBar filters={filterConfig} params={{ search, roleFilter }} onChange={handleFilterChange} />
+
+      <Table 
+        columns={columns}
+        data={paginatedUsers}
+        pagination={{
+          currentPage: page,
+          totalPages: totalPages,
+          totalItems: filteredUsers.length,
+          itemsPerPage: ITEMS_PER_PAGE,
+          onPageChange: setPage
+        }}
+        emptyStateProps={{ entityName: "Users", entityIcon: "Users" }}
+      />
 
 
       {/* ================= CREATE USER MODAL ================= */}
