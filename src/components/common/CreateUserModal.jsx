@@ -81,6 +81,19 @@ const CreateUserModal = ({ isOpen, onClose, onSuccess, initialData }) => {
         toast.success("User created successfully", { id: toastId });
       }
 
+      // Remove from Leads list if present
+      try {
+        const savedLeads = JSON.parse(localStorage.getItem("chhapi_leads") || "[]");
+        const updatedLeads = savedLeads.filter(l => 
+          l.mobile !== form.mobile && 
+          l.name.toLowerCase().trim() !== form.name.toLowerCase().trim()
+        );
+        localStorage.setItem("chhapi_leads", JSON.stringify(updatedLeads));
+        window.dispatchEvent(new Event("chhapi_leads_updated"));
+      } catch (e) {
+        console.error("Error updating leads after user creation:", e);
+      }
+
       setForm({ name: "", mobile: "", password: "", role: "USER" });
       fireConfetti();
       onSuccess?.();

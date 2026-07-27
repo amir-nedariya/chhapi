@@ -1,6 +1,6 @@
 // Mock User API
 
-export const dummyUsers = [
+const initialUsers = [
   {
     _id: "user123",
     name: "Demo Admin",
@@ -269,12 +269,43 @@ export const dummyUsers = [
     isActive: false, paymentStatus: ['REGULAR', 'PARTIAL', 'NONE'][Math.floor(Math.random() * 3)],
     createdAt: "2025-05-20T11:30:00.000Z",
     createdByName: "Demo Admin",
+    createdByRole: "ADMIN"
   }
 ];
+
+const getStoredUsers = () => {
+  if (typeof window !== "undefined") {
+    const stored = localStorage.getItem("chhapi_users");
+    if (stored) {
+      try {
+        return JSON.parse(stored);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }
+  return null;
+};
+
+const storedUsers = getStoredUsers();
+
+export const dummyUsers = [];
+
+if (storedUsers) {
+  dummyUsers.push(...storedUsers);
+} else {
+  dummyUsers.push(...initialUsers);
+}
 
 dummyUsers.forEach(u => {
   if (!u.password) u.password = "password123";
 });
+
+export const saveUsersToStorage = () => {
+  if (typeof window !== "undefined") {
+    localStorage.setItem("chhapi_users", JSON.stringify(dummyUsers));
+  }
+};
 
 
 export const getAllUsersAPI = async () => {
@@ -283,13 +314,19 @@ export const getAllUsersAPI = async () => {
 
 export const activateUserAPI = async (id) => {
   const user = dummyUsers.find(u => u._id === id);
-  if (user) user.isActive = true;
+  if (user) {
+    user.isActive = true;
+    saveUsersToStorage();
+  }
   return { data: { message: "User activated" } };
 };
 
 export const deactivateUserAPI = async (id) => {
   const user = dummyUsers.find(u => u._id === id);
-  if (user) user.isActive = false;
+  if (user) {
+    user.isActive = false;
+    saveUsersToStorage();
+  }
   return { data: { message: "User deactivated" } };
 };
 
@@ -326,6 +363,7 @@ export const createAdminAPI = async (data) => {
     monthlyStats: { Jan: 0, Feb: 0, Mar: 0, Apr: 0, May: 0, Jun: 0, Jul: 0, Aug: 0, Sep: 0, Oct: 0, Nov: 0, Dec: 0 }
   };
   dummyUsers.push(newAdmin);
+  saveUsersToStorage();
   return { data: { message: "Admin created successfully", data: newAdmin } };
 };
 
@@ -346,12 +384,16 @@ export const createUserAPI = async (data) => {
     monthlyStats: { Jan: 0, Feb: 0, Mar: 0, Apr: 0, May: 0, Jun: 0, Jul: 0, Aug: 0, Sep: 0, Oct: 0, Nov: 0, Dec: 0 }
   };
   dummyUsers.push(newUser);
+  saveUsersToStorage();
   return { data: { message: "User created successfully", data: newUser } };
 };
 
 export const changeUserRoleAPI = async (userId, data) => {
   const user = dummyUsers.find(u => u._id === userId);
-  if (user) user.role = data.role;
+  if (user) {
+    user.role = data.role;
+    saveUsersToStorage();
+  }
   return { data: { message: "Role changed successfully" } };
 };
 
@@ -359,6 +401,7 @@ export const uploadUserPhotoAPI = async (id, file) => {
   const user = dummyUsers.find(u => u._id === id);
   if (user) {
     user.profilePhoto = { url: URL.createObjectURL(file) };
+    saveUsersToStorage();
   }
   return { data: { message: "Photo uploaded" } };
 };
@@ -367,6 +410,7 @@ export const deleteUserPhotoAPI = async (id) => {
   const user = dummyUsers.find(u => u._id === id);
   if (user) {
     user.profilePhoto = null;
+    saveUsersToStorage();
   }
   return { data: { message: "Photo deleted" } };
 };
@@ -375,6 +419,7 @@ export const softDeleteUserAPI = async (id) => {
   const user = dummyUsers.find(u => u._id === id);
   if (user) {
     user.isDeleted = true;
+    saveUsersToStorage();
   }
   return { data: { message: "User soft deleted successfully" } };
 };
@@ -383,6 +428,7 @@ export const hardDeleteUserAPI = async (id) => {
   const index = dummyUsers.findIndex(u => u._id === id);
   if (index !== -1) {
     dummyUsers.splice(index, 1);
+    saveUsersToStorage();
   }
   return { data: { message: "User permanently deleted" } };
 };
@@ -406,6 +452,7 @@ export const updateUserStatsAPI = async (id, data) => {
     const currentYear = new Date().getFullYear();
     if (!user.yearlyStats) user.yearlyStats = {};
     user.yearlyStats[String(currentYear)] = user.totalDonations;
+    saveUsersToStorage();
   }
   return { data: { message: "Stats updated successfully" } };
 };

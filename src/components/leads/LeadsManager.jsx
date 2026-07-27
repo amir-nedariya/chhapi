@@ -17,8 +17,15 @@ const LeadsManager = ({ role }) => {
 
   // Load from local storage for now
   useEffect(() => {
-    const savedLeads = JSON.parse(localStorage.getItem("chhapi_leads") || "[]");
-    setLeads(savedLeads);
+    const loadLeads = () => {
+      const savedLeads = JSON.parse(localStorage.getItem("chhapi_leads") || "[]");
+      setLeads(savedLeads);
+    };
+    loadLeads();
+    window.addEventListener("chhapi_leads_updated", loadLeads);
+    return () => {
+      window.removeEventListener("chhapi_leads_updated", loadLeads);
+    };
   }, []);
 
   const saveLeads = (updatedLeads) => {
@@ -56,9 +63,7 @@ const LeadsManager = ({ role }) => {
 
   const handleConversionSuccess = () => {
     if (!selectedLead) return;
-    const updatedLeads = leads.map(l => 
-      l.id === selectedLead.id ? { ...l, status: "CONVERTED" } : l
-    );
+    const updatedLeads = leads.filter(l => l.id !== selectedLead.id);
     saveLeads(updatedLeads);
     setSelectedLead(null);
   };
