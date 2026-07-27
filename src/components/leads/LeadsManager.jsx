@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { UserPlus, Target, Plus, Search, CheckCircle, Clock } from "lucide-react";
 import toast from "react-hot-toast";
 import CreateUserModal from "../common/CreateUserModal";
+import Button from "../common/Button";
 
 const LeadsManager = ({ role }) => {
   const canConvert = role === "ADMIN" || role === "SUPER_ADMIN";
@@ -86,13 +87,13 @@ const LeadsManager = ({ role }) => {
             Manage potential donors before they become official users.
           </p>
         </div>
-        <button
+        <Button 
+          variant="gradient" 
           onClick={() => setIsAddModalOpen(true)}
-          className="flex items-center justify-center gap-2 px-6 py-2.5 bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+          iconLeft={Plus}
         >
-          <Plus size={18} />
-          <span>Add New Lead</span>
-        </button>
+          Add New Lead
+        </Button>
       </div>
 
       {/* SEARCH BAR */}
@@ -160,13 +161,13 @@ const LeadsManager = ({ role }) => {
                     </td>
                     <td className="p-4 text-right">
                       {canConvert && lead.status === "PENDING" && (
-                        <button
+                        <Button
+                          size="sm"
                           onClick={() => handleConvertLeadClick(lead)}
-                          className="inline-flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-lg transition-colors"
+                          iconLeft={UserPlus}
                         >
-                          <UserPlus size={14} />
                           Convert to User
-                        </button>
+                        </Button>
                       )}
                       {(!canConvert || lead.status === "CONVERTED") && (
                         <span className="text-xs text-slate-400 font-medium">
@@ -214,12 +215,12 @@ const LeadsManager = ({ role }) => {
                 />
               </div>
               <div className="flex items-center justify-end gap-3 mt-6">
-                <button type="button" onClick={() => setIsAddModalOpen(false)} className="px-5 py-2 text-sm font-semibold text-slate-500 hover:bg-slate-100 rounded-xl transition-colors">
+                <Button type="button" variant="secondary" onClick={() => setIsAddModalOpen(false)}>
                   Cancel
-                </button>
-                <button type="submit" className="px-6 py-2 text-sm font-bold text-white bg-teal-500 hover:bg-teal-600 rounded-xl transition-colors shadow-md hover:shadow-lg">
+                </Button>
+                <Button type="submit" variant="solid">
                   Save Lead
-                </button>
+                </Button>
               </div>
             </form>
           </div>

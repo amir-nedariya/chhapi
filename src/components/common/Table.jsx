@@ -1,6 +1,7 @@
 import React from 'react';
 import EmptyState from './EmptyState';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useSidebarColor } from '../../hooks/useSidebarColor';
 
 const Table = ({ 
   columns = [], 
@@ -12,6 +13,7 @@ const Table = ({
   emptyMessage,
   emptySubMessage
 }) => {
+  const sidebarColor = useSidebarColor();
 
   const hasData = data && data.length > 0;
 
@@ -35,7 +37,7 @@ const Table = ({
         {/* Loading Overlay */}
         {isLoading && hasData && (
           <div className="absolute inset-0 bg-white/60 backdrop-blur-sm z-10 flex items-center justify-center">
-             <div className="text-teal-700 font-medium flex items-center gap-2">
+             <div className="font-medium flex items-center gap-2" style={{ color: `#${sidebarColor}` }}>
                 <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -47,7 +49,7 @@ const Table = ({
 
         <div className="min-h-full">
           <table className="w-full text-left border-collapse min-w-max">
-            <thead className="sticky top-0 z-10 bg-teal-700 text-white text-[12px] font-medium">
+            <thead className="sticky top-0 z-10 text-white text-[12px] font-medium" style={{ backgroundColor: `#${sidebarColor}` }}>
               <tr>
                 {columns.map((col, idx) => (
                   <th key={col.key || idx} className={`px-4 py-3.5 whitespace-nowrap ${col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : ''}`}>
@@ -124,9 +126,10 @@ const Table = ({
                   <button
                     key={pageNum}
                     onClick={() => pagination.onPageChange(pageNum)}
+                    style={isCurrent ? { backgroundColor: `#${sidebarColor}`, borderColor: `#${sidebarColor}` } : {}}
                     className={`min-w-[28px] h-7 flex items-center justify-center text-xs font-medium rounded-sm border transition-colors ${
                       isCurrent
-                        ? "bg-teal-700 text-white border-teal-700"
+                        ? "text-white"
                         : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50"
                     }`}
                   >
