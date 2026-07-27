@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import clsx from "clsx";
+import { useSidebarColor } from "../../hooks/useSidebarColor";
 
 const Button = ({
   children,
@@ -19,11 +20,42 @@ const Button = ({
   loading = false, // chhapi specific
   fullWidth = false, // chhapi specific
   pulse = false, // chhapi specific
+  style = {},
   ...props
 }) => {
   // Determine which icons to use (support both chhapi and Zentro ERP prop names)
   const LIcon = LeftIcon || ZentroLeftIcon || (iconPosition === "left" ? Icon : null);
   const RIcon = RightIcon || ZentroRightIcon || (iconPosition === "right" ? Icon : null);
+
+  const sidebarColor = useSidebarColor();
+  const [isHovered, setIsHovered] = useState(false);
+
+  const dynamicStyle = { ...style };
+  
+  if (variant === "primary" || variant === "solid") {
+    dynamicStyle.backgroundColor = `#${sidebarColor}`;
+    dynamicStyle.borderColor = `#${sidebarColor}`;
+    if (isHovered && !disabled && !loading) {
+      dynamicStyle.filter = "brightness(90%)";
+    }
+  } else if (variant === "third") {
+    dynamicStyle.color = `#${sidebarColor}`;
+    dynamicStyle.borderColor = `#${sidebarColor}20`;
+    dynamicStyle.backgroundColor = `#${sidebarColor}08`;
+    if (isHovered && !disabled && !loading) {
+      dynamicStyle.backgroundColor = `#${sidebarColor}15`;
+    }
+  } else if (variant === "ghost") {
+    if (isHovered && !disabled && !loading) {
+      dynamicStyle.color = `#${sidebarColor}`;
+      dynamicStyle.backgroundColor = `#${sidebarColor}08`;
+    }
+  } else if (variant === "gradient") {
+    dynamicStyle.background = `linear-gradient(135deg, #${sidebarColor}, #${sidebarColor}dd)`;
+    if (isHovered && !disabled && !loading) {
+      dynamicStyle.filter = "brightness(90%)";
+    }
+  }
 
   const baseStyle =
     "flex items-center justify-center gap-2 cursor-pointer transition-all duration-300 outline-none rounded-sm font-medium";
@@ -70,6 +102,9 @@ const Button = ({
       type={type}
       onClick={onClick}
       disabled={disabled || loading}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      style={dynamicStyle}
       className={clsx(
         baseStyle,
         variants[variant] || variants.primary,
