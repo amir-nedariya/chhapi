@@ -1,6 +1,7 @@
 import React from 'react';
 import EmptyState from './EmptyState';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useSidebarColor } from '../../hooks/useSidebarColor';
 
 const Table = ({ 
   columns = [], 
@@ -12,6 +13,7 @@ const Table = ({
   emptyMessage,
   emptySubMessage
 }) => {
+  const sidebarColor = useSidebarColor();
 
   const hasData = data && data.length > 0;
 
@@ -47,7 +49,7 @@ const Table = ({
 
         <div className="min-h-full">
           <table className="w-full text-left border-collapse min-w-max">
-            <thead className="sticky top-0 z-10 bg-teal-700 text-white text-[12px] font-medium">
+            <thead className="sticky top-0 z-10 text-white text-[12px] font-medium" style={{ backgroundColor: `#${sidebarColor}` }}>
               <tr>
                 {columns.map((col, idx) => (
                   <th key={col.key || idx} className={`px-4 py-3.5 whitespace-nowrap ${col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : ''}`}>
