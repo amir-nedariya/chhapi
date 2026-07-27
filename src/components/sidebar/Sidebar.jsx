@@ -194,10 +194,15 @@ const Sidebar = ({ collapsed, setCollapsed, mobile, sidebarOpen, setSidebarOpen 
   }
 
   menuItems.push(
-    { name: "Leads", path: `${pathPrefix}/leads`, icon: Target },
-    { name: "Appearance", path: `${pathPrefix}/appearance`, icon: Sun },
-    { name: "Settings", path: `${pathPrefix}/settings`, icon: Settings }
+    { name: "Leads", path: `${pathPrefix}/leads`, icon: Target }
   );
+
+  if (role !== "SUPER_ADMIN") {
+    menuItems.push(
+      { name: "Appearance", path: `${pathPrefix}/appearance`, icon: Sun },
+      { name: "Settings", path: `${pathPrefix}/settings`, icon: Settings }
+    );
+  }
 
   const isChildActive = (children) => {
     return children.some((child) => location.pathname === child.path);

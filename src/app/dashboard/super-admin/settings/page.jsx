@@ -6,6 +6,7 @@ import { useState } from "react";
 import { changePasswordAPI } from "../../../../api/auth.api";
 import toast from "react-hot-toast";
 import { useSidebarColor } from "../../../../hooks/useSidebarColor";
+import ThemeSettings from "../../../../components/theme/ThemeSettings";
 
 // Force rebuild to clear hosting cache for case-sensitive route rename
 const SuperAdminSettings = () => {
@@ -21,6 +22,7 @@ const SuperAdminSettings = () => {
     confirmPassword: "",
   });
   const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState("profile");
 
   const handleChange = (e) => {
     setPasswordData({ ...passwordData, [e.target.name]: e.target.value });
@@ -52,81 +54,112 @@ const SuperAdminSettings = () => {
 
   return (
     <div className="min-h-screen bg-slate-50/30 p-4 sm:p-8 flex justify-center items-start font-sans text-slate-800">
-      <div className="w-full max-w-xl space-y-8 mt-4">
+      <div className={`w-full ${activeTab === 'appearance' ? 'max-w-5xl' : 'max-w-xl'} space-y-8 mt-4 transition-all duration-500`}>
         
         {/* HEADER */}
         <div className="px-2 text-center md:text-left">
           <h2 className="text-2xl font-black text-slate-900 tracking-tight">Account Settings</h2>
-          <p className="text-slate-500 text-xs mt-1 font-semibold">Manage your profile details and security settings</p>
+          <p className="text-slate-500 text-xs mt-1 font-semibold">Manage your profile details, security settings and appearance</p>
         </div>
 
-        {/* Profile Details Card */}
-        <div className="w-full bg-white border border-slate-100 rounded-[2rem] p-8 flex flex-col items-center gap-6 shadow-xs hover:shadow-sm transition-all duration-300">
-          <div className="relative group">
-            <div 
-              className="absolute inset-0 rounded-full bg-gradient-to-r from-[var(--sidebar-from)] to-[var(--sidebar-via)] opacity-20 blur-md group-hover:opacity-40 transition-opacity"
-            />
-            <img
-              src={user?.profilePhoto?.url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || "User")}&background=${sidebarColor}&color=fff`}
-              alt={user?.name || "User"}
-              style={{ borderColor: `#${sidebarColor}` }}
-              className="relative w-32 h-32 rounded-full object-cover border-4 shadow-md transition-transform transform group-hover:scale-105"
-            />
-            <span
-              className={`absolute bottom-2 right-2 w-5 h-5 rounded-full border-2 border-white ${
-                user?.isActive ? "bg-emerald-500 animate-pulse" : "bg-slate-300"
-              }`}
-              title={user?.isActive ? "Active" : "Inactive"}
-            />
-          </div>
-          
-          <div className="text-center space-y-3 w-full">
-            <p className="text-2xl font-extrabold text-slate-800 tracking-tight">{user?.name}</p>
-            <div className="flex flex-col items-center gap-2">
-              <p className="text-sm text-slate-400 font-bold tracking-wide uppercase">Mobile: {user?.mobile}</p>
-              <div className="flex justify-center gap-2 mt-1">
-                <span 
-                  style={{
-                    color: `#${sidebarColor}`,
-                    borderColor: `#${sidebarColor}30`,
-                    backgroundColor: `#${sidebarColor}10`
-                  }}
-                  className="text-xs font-bold border px-3.5 py-1 rounded-full uppercase tracking-wider"
-                >
-                  Role: {user?.role}
-                </span>
-                <span className={`text-xs font-bold px-3.5 py-1 rounded-full border uppercase tracking-wider ${
-                  user?.isActive ? "bg-emerald-50 text-emerald-700 border-emerald-100" : "bg-slate-100 text-slate-500 border-slate-200"
-                }`}>
-                  {user?.isActive ? "Active" : "Inactive"}
-                </span>
+        {/* TABS */}
+        <div className="flex gap-6 border-b border-slate-200 pb-px mb-6 px-2">
+          <button
+            onClick={() => setActiveTab("profile")}
+            className={`pb-3 text-sm font-bold transition-all relative cursor-pointer outline-none ${
+              activeTab === "profile"
+                ? "text-cyan-600 font-extrabold border-b-2 border-cyan-600"
+                : "text-slate-500 hover:text-slate-800"
+            }`}
+          >
+            Profile & Security
+          </button>
+          <button
+            onClick={() => setActiveTab("appearance")}
+            className={`pb-3 text-sm font-bold transition-all relative cursor-pointer outline-none ${
+              activeTab === "appearance"
+                ? "text-cyan-600 font-extrabold border-b-2 border-cyan-600"
+                : "text-slate-500 hover:text-slate-800"
+            }`}
+          >
+            Appearance (Theme)
+          </button>
+        </div>
+
+        {activeTab === "profile" ? (
+          /* Profile Details Card */
+          <div className="w-full bg-white border border-slate-100 rounded-[2rem] p-8 flex flex-col items-center gap-6 shadow-xs hover:shadow-sm transition-all duration-300 animate-in fade-in duration-200">
+            <div className="relative group">
+              <div 
+                className="absolute inset-0 rounded-full bg-gradient-to-r from-[var(--sidebar-from)] to-[var(--sidebar-via)] opacity-20 blur-md group-hover:opacity-40 transition-opacity"
+              />
+              <img
+                src={user?.profilePhoto?.url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || "User")}&background=${sidebarColor}&color=fff`}
+                alt={user?.name || "User"}
+                style={{ borderColor: `#${sidebarColor}` }}
+                className="relative w-32 h-32 rounded-full object-cover border-4 shadow-md transition-transform transform group-hover:scale-105"
+              />
+              <span
+                className={`absolute bottom-2 right-2 w-5 h-5 rounded-full border-2 border-white ${
+                  user?.isActive ? "bg-emerald-500 animate-pulse" : "bg-slate-300"
+                }`}
+                title={user?.isActive ? "Active" : "Inactive"}
+              />
+            </div>
+            
+            <div className="text-center space-y-3 w-full">
+              <p className="text-2xl font-extrabold text-slate-800 tracking-tight">{user?.name}</p>
+              <div className="flex flex-col items-center gap-2">
+                <p className="text-sm text-slate-400 font-bold tracking-wide uppercase">Mobile: {user?.mobile}</p>
+                <div className="flex justify-center gap-2 mt-1">
+                  <span 
+                    style={{
+                      color: `#${sidebarColor}`,
+                      borderColor: `#${sidebarColor}30`,
+                      backgroundColor: `#${sidebarColor}10`
+                    }}
+                    className="text-xs font-bold border px-3.5 py-1 rounded-full uppercase tracking-wider"
+                  >
+                    Role: {user?.role}
+                  </span>
+                  <span className={`text-xs font-bold px-3.5 py-1 rounded-full border uppercase tracking-wider ${
+                    user?.isActive ? "bg-emerald-50 text-emerald-700 border-emerald-100" : "bg-slate-100 text-slate-500 border-slate-200"
+                  }`}>
+                    {user?.isActive ? "Active" : "Inactive"}
+                  </span>
+                </div>
               </div>
             </div>
+            
+            {/* Action Buttons */}
+            <div className="w-full flex flex-col gap-3 mt-4">
+              <button
+                onClick={() => setShowChangePasswordModal(true)}
+                style={{
+                  color: `#${sidebarColor}`,
+                  borderColor: `#${sidebarColor}30`,
+                  backgroundColor: `#${sidebarColor}10`
+                }}
+                className="flex items-center justify-center gap-2 w-full py-4 border hover:brightness-95 active:scale-[0.98] font-bold rounded-2xl transition duration-200 shadow-xs cursor-pointer"
+              >
+                <Key size={18} />
+                Update Password
+              </button>
+              <button
+                onClick={() => setShowLogoutConfirm(true)}
+                className="flex items-center justify-center gap-2 w-full py-4 bg-rose-50 hover:bg-rose-100/80 active:scale-[0.98] text-rose-600 border border-rose-100/60 font-bold rounded-2xl transition duration-200 shadow-xs cursor-pointer"
+              >
+                <LogOut size={18} />
+                Logout
+              </button>
+            </div>
           </div>
-          
-          {/* Action Buttons */}
-          <div className="w-full flex flex-col gap-3 mt-4">
-            <button
-              onClick={() => setShowChangePasswordModal(true)}
-              style={{
-                color: `#${sidebarColor}`,
-                borderColor: `#${sidebarColor}30`,
-                backgroundColor: `#${sidebarColor}10`
-              }}
-              className="flex items-center justify-center gap-2 w-full py-4 border hover:brightness-95 active:scale-[0.98] font-bold rounded-2xl transition duration-200 shadow-xs cursor-pointer"
-            >
-              <Key size={18} />
-              Update Password
-            </button>
-            <button
-              onClick={() => setShowLogoutConfirm(true)}
-              className="flex items-center justify-center gap-2 w-full py-4 bg-rose-50 hover:bg-rose-100/80 active:scale-[0.98] text-rose-600 border border-rose-100/60 font-bold rounded-2xl transition duration-200 shadow-xs cursor-pointer"
-            >
-              <LogOut size={18} />
-              Logout
-            </button>
+        ) : (
+          /* Theme Settings Card */
+          <div className="w-full bg-white border border-slate-100 rounded-[2rem] p-8 shadow-xs hover:shadow-sm transition-all duration-300 animate-in fade-in duration-200">
+            <ThemeSettings />
           </div>
-        </div>
+        )}
 
         {/* Change Password Modal */}
         {showChangePasswordModal && (
