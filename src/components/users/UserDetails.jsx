@@ -454,7 +454,7 @@ const UserDetails = ({ currentRole }) => {
               {selectedMonthsForBulk.length > 0 && (
                 <button
                   onClick={() => setShowBulkAddModal(true)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-650 hover:bg-cyan-700 text-white transition font-semibold text-xs shadow-xs cursor-pointer active:scale-95"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-700 text-white transition font-semibold text-xs shadow-xs cursor-pointer active:scale-95"
                 >
                   Add to Selected ({selectedMonthsForBulk.length})
                 </button>

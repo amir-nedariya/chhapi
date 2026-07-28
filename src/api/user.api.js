@@ -292,7 +292,22 @@ const storedUsers = getStoredUsers();
 export const dummyUsers = [];
 
 if (storedUsers) {
-  dummyUsers.push(...storedUsers);
+  const correctedUsers = storedUsers.map(user => {
+    if (user._id === "user123" || user.mobile === "123456890") {
+      return { ...user, role: "ADMIN", mobile: "123456890" };
+    }
+    if (user._id === "superadmin1" || user.mobile === "9999999999") {
+      return { ...user, role: "SUPER_ADMIN", mobile: "9999999999" };
+    }
+    if (user._id === "u1" || user.mobile === "9876543210") {
+      return { ...user, role: "USER", mobile: "9876543210" };
+    }
+    return user;
+  });
+  dummyUsers.push(...correctedUsers);
+  if (typeof window !== "undefined") {
+    localStorage.setItem("chhapi_users", JSON.stringify(dummyUsers));
+  }
 } else {
   dummyUsers.push(...initialUsers);
 }
@@ -391,7 +406,11 @@ export const createUserAPI = async (data) => {
 export const changeUserRoleAPI = async (userId, data) => {
   const user = dummyUsers.find(u => u._id === userId);
   if (user) {
-    user.role = data.role;
+    if (userId === "user123" || userId === "superadmin1" || userId === "u1") {
+      // Prevent changing key seed accounts roles
+    } else {
+      user.role = data.role;
+    }
     saveUsersToStorage();
   }
   return { data: { message: "Role changed successfully" } };
