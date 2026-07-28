@@ -35,6 +35,7 @@ import {
   BarChart3,
   PlusCircle,
   Edit,
+  Check,
 } from "lucide-react";
 
 import { useSidebarColor } from "../../../../hooks/useSidebarColor";
@@ -621,39 +622,60 @@ const UsersList = () => {
                     const monthIndex = monthNames.indexOf(month);
                     const isFuture = monthIndex > currentMonthIndex;
 
-                    // Styles
+                    const isSelected = selectedMonthsForBulk.includes(month);
+
                     let cardBg = "";
                     let monthColor = "";
                     let amountColor = "";
-                    let borderStyle = "";
 
                     if (isPaid) {
                       cardBg = "bg-emerald-50/40 hover:bg-emerald-50/70 text-emerald-800";
                       monthColor = "text-emerald-500 font-semibold";
                       amountColor = "text-emerald-700 font-semibold";
-                      borderStyle = isCurrent 
-                        ? "border-2 border-cyan-500 shadow-sm relative scale-[1.02] z-10" 
-                        : "border border-emerald-100/70";
                     } else if (isFuture) {
                       cardBg = "bg-slate-50/40 hover:bg-slate-50/70 text-slate-600";
                       monthColor = "text-slate-400 font-semibold";
                       amountColor = "text-slate-500 font-semibold";
-                      borderStyle = "border border-slate-200/60";
                     } else {
                       cardBg = "bg-rose-50/40 hover:bg-rose-50/70 text-rose-800";
                       monthColor = "text-rose-400 font-semibold";
                       amountColor = "text-rose-600 font-semibold";
-                      borderStyle = isCurrent 
-                        ? "border-2 border-cyan-500 shadow-sm relative scale-[1.02] z-10" 
-                        : "border border-rose-100/70";
                     }
+
+                    const borderStyle = isSelected 
+                      ? "border-2 border-cyan-500 shadow-md scale-[1.02] z-10 relative" 
+                      : isCurrent 
+                        ? "border-2 border-cyan-200 shadow-xs relative" 
+                        : isPaid 
+                          ? "border border-emerald-100/70" 
+                          : isFuture 
+                            ? "border border-slate-200/60" 
+                            : "border border-rose-100/70";
 
                     return (
                       <div 
                         key={month} 
-                        className={`p-4 rounded-xl flex items-center justify-between transition duration-200 ${cardBg} ${borderStyle}`}
+                        onClick={() => {
+                          if (selectedMonthsForBulk.includes(month)) {
+                            setSelectedMonthsForBulk(prev => prev.filter(m => m !== month));
+                          } else {
+                            setSelectedMonthsForBulk(prev => [...prev, month]);
+                          }
+                        }}
+                        className={`p-4 rounded-xl flex items-center justify-between transition duration-200 cursor-pointer select-none ${cardBg} ${borderStyle}`}
                       >
                         <div className="flex items-center min-w-0 flex-1">
+                          {/* Circular Checkbox */}
+                          <div 
+                            className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all duration-200 mr-3 ${
+                              isSelected 
+                                ? "bg-cyan-600 border-cyan-600 text-white shadow-xs scale-110" 
+                                : "bg-white border-slate-300 hover:border-slate-400"
+                            }`}
+                          >
+                            {isSelected && <Check size={11} className="stroke-[3.5]" />}
+                          </div>
+
                           <div className="flex flex-col gap-0.5 min-w-0">
                             <span className={`text-[11px] uppercase tracking-wider ${monthColor} flex items-center gap-1.5`}>
                               {month}
@@ -670,7 +692,7 @@ const UsersList = () => {
                         </div>
                         
                         {/* Right side badge indicating status & Edit Button */}
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                           <button
                             onClick={() => {
                               setEditMonthlyMonth(month);
