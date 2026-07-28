@@ -94,13 +94,13 @@ const SuperAdminDashboard = () => {
   const statsCardsData = [
     {
       title: "Total Users",
-      value: dashboardData.totalUsers.toLocaleString(),
+      value: dashboardData.totalUsers.toLocaleString("en-IN"),
       icon: <div className="p-2.5 rounded-sm bg-cyan-50 text-cyan-600 border border-cyan-100"><User size={20} /></div>,
       valueColor: "text-slate-800"
     },
     {
       title: "Total Donations",
-      value: `₹${dashboardData.totalDonations.toLocaleString()}`,
+      value: `₹${dashboardData.totalDonations.toLocaleString("en-IN")}`,
       icon: <div className="p-2.5 rounded-sm bg-green-50 text-green-600 border border-green-100"><CreditCard size={20} /></div>,
       valueColor: "text-slate-800"
     },
@@ -133,7 +133,7 @@ const SuperAdminDashboard = () => {
     { 
       key: "amount", 
       header: "Amount",
-      render: (val) => <span className="font-semibold text-gray-800">₹{val.toLocaleString()}</span>
+      render: (val) => <span className="font-semibold text-gray-800">₹{val.toLocaleString("en-IN")}</span>
     },
     { key: "date", header: "Date" },
     {
@@ -178,7 +178,7 @@ const SuperAdminDashboard = () => {
         <h3 className="text-gray-800 font-semibold mb-4 text-base">Monthly Donations Overview</h3>
         <div className="h-64 w-full">
           {isMounted ? (
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
               <AreaChart data={dashboardData.monthlyTrends} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                 <XAxis dataKey="month" stroke="#94a3b8" fontSize={11} tickLine={false} axisLine={false} />

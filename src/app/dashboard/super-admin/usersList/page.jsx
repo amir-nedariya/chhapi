@@ -626,7 +626,6 @@ const UsersList = () => {
                     let monthColor = "";
                     let amountColor = "";
                     let borderStyle = "";
-                    let badge = null;
 
                     if (isPaid) {
                       cardBg = "bg-emerald-50/40 hover:bg-emerald-50/70 text-emerald-800";
@@ -635,21 +634,11 @@ const UsersList = () => {
                       borderStyle = isCurrent 
                         ? "border-2 border-cyan-500 shadow-sm relative scale-[1.02] z-10" 
                         : "border border-emerald-100/70";
-                      badge = (
-                        <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 text-sm font-bold animate-in zoom-in duration-150">
-                          ✓
-                        </span>
-                      );
                     } else if (isFuture) {
                       cardBg = "bg-slate-50/40 hover:bg-slate-50/70 text-slate-600";
                       monthColor = "text-slate-400 font-semibold";
                       amountColor = "text-slate-500 font-semibold";
                       borderStyle = "border border-slate-200/60";
-                      badge = (
-                        <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-slate-100 text-slate-400 text-xs font-bold">
-                          —
-                        </span>
-                      );
                     } else {
                       cardBg = "bg-rose-50/40 hover:bg-rose-50/70 text-rose-800";
                       monthColor = "text-rose-400 font-semibold";
@@ -657,11 +646,6 @@ const UsersList = () => {
                       borderStyle = isCurrent 
                         ? "border-2 border-cyan-500 shadow-sm relative scale-[1.02] z-10" 
                         : "border border-rose-100/70";
-                      badge = (
-                        <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-rose-100 text-rose-500 text-xs font-bold animate-in zoom-in duration-150">
-                          ✕
-                        </span>
-                      );
                     }
 
                     return (
@@ -669,20 +653,7 @@ const UsersList = () => {
                         key={month} 
                         className={`p-4 rounded-xl flex items-center justify-between transition duration-200 ${cardBg} ${borderStyle}`}
                       >
-                        <div className="flex items-center gap-3 min-w-0 flex-1">
-                          <input
-                            type="checkbox"
-                            checked={selectedMonthsForBulk.includes(month)}
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                setSelectedMonthsForBulk(prev => [...prev, month]);
-                              } else {
-                                setSelectedMonthsForBulk(prev => prev.filter(m => m !== month));
-                              }
-                            }}
-                            className="w-4 h-4 rounded border-slate-300 text-cyan-600 focus:ring-cyan-500 cursor-pointer accent-cyan-600 shrink-0"
-                            title="Select month"
-                          />
+                        <div className="flex items-center min-w-0 flex-1">
                           <div className="flex flex-col gap-0.5 min-w-0">
                             <span className={`text-[11px] uppercase tracking-wider ${monthColor} flex items-center gap-1.5`}>
                               {month}
@@ -711,7 +682,6 @@ const UsersList = () => {
                           >
                             <Edit size={14} />
                           </button>
-                          {badge}
                         </div>
                       </div>
                     );
