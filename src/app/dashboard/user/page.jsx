@@ -18,6 +18,8 @@ import {
   Tooltip,
   ResponsiveContainer
 } from "recharts";
+import StatsCards from "../../../components/common/StatsCards";
+import Table from "../../../components/common/Table";
 
 const UserDashboard = () => {
   const navigate = useNavigate();
@@ -91,6 +93,52 @@ const UserDashboard = () => {
     { name: "Jun", amount: dashboardData.monthlySummary.jun || 0 },
   ];
 
+  const statsCardsData = [
+    {
+      title: "Total Contributed",
+      value: `₹${dashboardData.totalAmount.toLocaleString("en-IN")}`,
+      icon: <div className="p-2.5 rounded-sm bg-emerald-50 text-emerald-600 border border-emerald-100"><Wallet size={20} /></div>,
+      valueColor: "text-slate-800"
+    },
+    {
+      title: "Donations Made",
+      value: dashboardData.totalDonations,
+      icon: <div className="p-2.5 rounded-sm bg-cyan-50 text-cyan-600 border border-cyan-100"><HandCoins size={20} /></div>,
+      valueColor: "text-slate-800"
+    },
+    {
+      title: "Causes Supported",
+      value: dashboardData.activeCampaigns,
+      icon: <div className="p-2.5 rounded-sm bg-purple-50 text-purple-600 border border-purple-100"><Heart size={20} /></div>,
+      valueColor: "text-slate-800"
+    }
+  ];
+
+  const transactionColumns = [
+    { key: "id", header: "Transaction ID" },
+    { key: "fund", header: "Campaign Fund" },
+    { 
+      key: "amount", 
+      header: "Amount",
+      render: (val) => <span className="font-bold text-slate-800">₹{val.toLocaleString("en-IN")}</span>
+    },
+    { key: "date", header: "Date" },
+    {
+      key: "status",
+      header: "Status",
+      align: "center",
+      render: (val) => (
+        <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+          val === "Success" ? "bg-emerald-50 text-emerald-700" :
+          val === "Pending" ? "bg-amber-50 text-amber-700" :
+          "bg-rose-50 text-rose-700"
+        }`}>
+          {val}
+        </span>
+      )
+    }
+  ];
+
   return (
     <div className="p-6 space-y-6 max-w-7xl mx-auto">
       
@@ -112,48 +160,14 @@ const UserDashboard = () => {
       </div>
 
       {/* Metrics Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-        
-        {/* Metric 1 */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 flex items-center gap-4 shadow-xs">
-          <div className="p-3.5 rounded-xl bg-slate-100 text-emerald-600">
-            <Wallet size={22} />
-          </div>
-          <div>
-            <p className="text-xs text-slate-500 font-medium">Total Contributed</p>
-            <p className="text-xl font-bold text-slate-855 mt-0.5">₹{dashboardData.totalAmount.toLocaleString()}</p>
-          </div>
-        </div>
-
-        {/* Metric 2 */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 flex items-center gap-4 shadow-xs">
-          <div className="p-3.5 rounded-xl bg-slate-100 text-cyan-600">
-            <HandCoins size={22} />
-          </div>
-          <div>
-            <p className="text-xs text-slate-500 font-medium">Donations Made</p>
-            <p className="text-xl font-bold text-slate-855 mt-0.5">{dashboardData.totalDonations}</p>
-          </div>
-        </div>
-
-        {/* Metric 3 */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 flex items-center gap-4 shadow-xs">
-          <div className="p-3.5 rounded-xl bg-slate-100 text-purple-600">
-            <Heart size={22} />
-          </div>
-          <div>
-            <p className="text-xs text-slate-500 font-medium">Causes Supported</p>
-            <p className="text-xl font-bold text-slate-855 mt-0.5">{dashboardData.activeCampaigns}</p>
-          </div>
-        </div>
-      </div>
+      <StatsCards cards={statsCardsData} />
 
       {/* Chart Section */}
       <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs">
         <h3 className="text-slate-800 font-semibold mb-4 text-base">Your Giving Trend</h3>
         <div className="h-64 w-full">
           {isMounted ? (
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
               <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                 <XAxis dataKey="name" stroke="#94a3b8" fontSize={11} tickLine={false} axisLine={false} />
@@ -169,39 +183,12 @@ const UserDashboard = () => {
       </div>
 
       {/* Transactions Section */}
-      <div className="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left text-slate-700">
-            <thead className="bg-gradient-to-r from-[var(--sidebar-from)] via-[var(--sidebar-via)] to-[var(--sidebar-to)] text-white font-semibold text-xs border-b border-white/10">
-              <tr>
-                <th className="py-3 px-4">Transaction ID</th>
-                <th className="py-3 px-4">Campaign Fund</th>
-                <th className="py-3 px-4">Amount</th>
-                <th className="py-3 px-4">Date</th>
-                <th className="py-3 px-4 text-center">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {dashboardData.recentContributions.map((tx) => (
-                <tr key={tx.id} className="hover:bg-slate-50/50 transition">
-                  <td className="py-3 px-4 text-slate-500 font-medium">{tx.id}</td>
-                  <td className="py-3 px-4 text-slate-600 font-semibold">{tx.fund}</td>
-                  <td className="py-3 px-4 font-bold text-slate-800">₹{tx.amount.toLocaleString()}</td>
-                  <td className="py-3 px-4 text-slate-400">{tx.date}</td>
-                  <td className="py-3 px-4 text-center">
-                    <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-                      tx.status === "Success" ? "bg-emerald-50 text-emerald-700" :
-                      tx.status === "Pending" ? "bg-amber-50 text-amber-700" :
-                      "bg-rose-50 text-rose-700"
-                    }`}>
-                      {tx.status}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      <div className="mt-4">
+        <h3 className="text-slate-800 font-semibold mb-3 text-base">Recent Transactions</h3>
+        <Table 
+          columns={transactionColumns} 
+          data={dashboardData.recentContributions} 
+        />
       </div>
 
     </div>

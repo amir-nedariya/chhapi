@@ -500,22 +500,7 @@ const UserDetails = ({ currentRole }) => {
                     key={monthIndex} 
                     className={`p-4 rounded-xl border flex items-center justify-between transition duration-200 ${cardBg}`}
                   >
-                    <div className="flex items-center gap-3 min-w-0 flex-1">
-                      {currentRole !== "USER" && (
-                        <input
-                          type="checkbox"
-                          checked={selectedMonthsForBulk.includes(monthIndex + 1)}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setSelectedMonthsForBulk(prev => [...prev, monthIndex + 1]);
-                            } else {
-                              setSelectedMonthsForBulk(prev => prev.filter(m => m !== monthIndex + 1));
-                            }
-                          }}
-                          className="w-4 h-4 rounded border-slate-300 text-cyan-600 focus:ring-cyan-500 cursor-pointer accent-cyan-600 shrink-0"
-                          title="Select month"
-                        />
-                      )}
+                    <div className="flex items-center min-w-0 flex-1">
                       <div className="flex flex-col gap-0.5 min-w-0">
                         <span className={`text-[10px] uppercase tracking-wider ${monthColor}`}>
                           {monthName.toUpperCase()}
