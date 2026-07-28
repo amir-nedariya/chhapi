@@ -14,6 +14,7 @@ import {
   CheckCircle,
   Send,
   Trash2,
+  Check,
 } from "lucide-react";
 
 import { 
@@ -495,12 +496,39 @@ const UserDetails = ({ currentRole }) => {
                 const monthColor = isPaid ? "text-emerald-500 font-bold" : "text-rose-400 font-bold";
                 const amountColor = isPaid ? "text-emerald-700 font-bold" : "text-rose-600 font-bold";
 
+                const isSelected = selectedMonthsForBulk.includes(monthIndex + 1);
+                const borderStyle = isSelected 
+                  ? "border-2 border-cyan-500 shadow-md scale-[1.02] z-10 relative" 
+                  : isPaid 
+                    ? "border border-emerald-100/70" 
+                    : "border border-rose-100/70";
+
                 return (
                   <div 
                     key={monthIndex} 
-                    className={`p-4 rounded-xl border flex items-center justify-between transition duration-200 ${cardBg}`}
+                    onClick={() => {
+                      if (currentRole === "USER") return;
+                      if (selectedMonthsForBulk.includes(monthIndex + 1)) {
+                        setSelectedMonthsForBulk(prev => prev.filter(m => m !== monthIndex + 1));
+                      } else {
+                        setSelectedMonthsForBulk(prev => [...prev, monthIndex + 1]);
+                      }
+                    }}
+                    className={`p-4 rounded-xl flex items-center justify-between transition duration-200 ${currentRole !== "USER" ? "cursor-pointer select-none" : ""} ${cardBg} ${borderStyle}`}
                   >
                     <div className="flex items-center min-w-0 flex-1">
+                      {currentRole !== "USER" && (
+                        <div 
+                          className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all duration-200 mr-3 ${
+                            isSelected 
+                              ? "bg-cyan-600 border-cyan-600 text-white shadow-xs scale-110" 
+                              : "bg-white border-slate-300 hover:border-slate-400"
+                          }`}
+                        >
+                          {isSelected && <Check size={11} className="stroke-[3.5]" />}
+                        </div>
+                      )}
+                      
                       <div className="flex flex-col gap-0.5 min-w-0">
                         <span className={`text-[10px] uppercase tracking-wider ${monthColor}`}>
                           {monthName.toUpperCase()}
@@ -516,13 +544,15 @@ const UserDetails = ({ currentRole }) => {
                       </div>
                     </div>
                     {currentRole !== "USER" && (
-                      <button
-                        onClick={() => handleCardAction(monthIndex + 1)}
-                        className="p-1.5 rounded-lg text-slate-400 hover:text-cyan-600 hover:bg-cyan-50 transition cursor-pointer flex-shrink-0"
-                        title={donationForMonth ? "Edit Donation" : "Record Donation"}
-                      >
-                        <Edit size={14} />
-                      </button>
+                      <div onClick={(e) => e.stopPropagation()}>
+                        <button
+                          onClick={() => handleCardAction(monthIndex + 1)}
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-cyan-600 hover:bg-cyan-50 transition cursor-pointer flex-shrink-0"
+                          title={donationForMonth ? "Edit Donation" : "Record Donation"}
+                        >
+                          <Edit size={14} />
+                        </button>
+                      </div>
                     )}
                   </div>
                 );
