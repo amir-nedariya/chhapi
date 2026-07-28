@@ -139,7 +139,7 @@ const ViewUser = () => {
 
         <button
           onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 px-5 py-3 rounded-xl bg-cyan-55/70 hover:bg-cyan-100 text-cyan-700 border border-cyan-100 transition font-bold shadow-xs cursor-pointer"
+          className="flex items-center gap-2 px-5 py-3 rounded-xl bg-cyan-50/70 hover:bg-cyan-100 text-cyan-700 border border-cyan-100 transition font-bold shadow-xs cursor-pointer"
         >
           <PlusCircle size={18} />
           Add Donation
