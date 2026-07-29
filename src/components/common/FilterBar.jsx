@@ -34,6 +34,7 @@ const FilterBar = ({ filters, params = {}, onChange }) => {
                   options={filter.options}
                   value={params[filter.name] || ""}
                   onChange={onChange}
+                  hideDefaultOption={true}
                 />
               </div>
             );

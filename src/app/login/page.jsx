@@ -11,25 +11,13 @@ const Login = () => {
   const navigate = useNavigate();
   const { setUser } = useAuth();
 
-  const [selectedRole, setSelectedRole] = useState("ADMIN");
   const [form, setForm] = useState({
-    mobile: "123456890",
-    password: "password123",
+    mobile: "",
+    password: "",
   });
 
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  const handleRoleChange = (role) => {
-    setSelectedRole(role);
-    if (role === "ADMIN") {
-      setForm({ mobile: "123456890", password: "password123" });
-    } else if (role === "SUPER_ADMIN") {
-      setForm({ mobile: "9999999999", password: "password123" });
-    } else {
-      setForm({ mobile: "9876543210", password: "password123" });
-    }
-  };
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -72,85 +60,64 @@ const Login = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#020617] via-[#0f172a] to-[#020617] px-4">
+    <div className="min-h-screen flex items-center justify-center bg-[#0a0e17] px-4">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-md bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl shadow-2xl p-8 space-y-6"
+        className="w-full max-w-[440px] bg-[#1e2330] border border-[#2a3143] rounded-[24px] shadow-2xl p-10 space-y-7"
       >
         {/* HEADER */}
-        <div className="text-center space-y-1">
-          <h2 className="text-3xl font-bold text-white">Welcome Back</h2>
-          <p className="text-sm text-gray-400">
+        <div className="text-center space-y-2 mb-4">
+          <h2 className="text-[32px] font-bold text-white tracking-wide">Welcome Back</h2>
+          <p className="text-[15px] text-gray-400 font-medium">
             Login to access your dashboard
           </p>
-        </div>
-
-        {/* ROLE SELECTOR FOR TESTING */}
-        <div className="space-y-2">
-          <label className="text-xs font-bold text-gray-405 uppercase tracking-wider block text-center">Login Role (For Testing)</label>
-          <div className="grid grid-cols-3 gap-2 bg-white/5 p-1 rounded-xl border border-white/10">
-            {["ADMIN", "SUPER_ADMIN", "USER"].map((role) => (
-              <button
-                key={role}
-                type="button"
-                onClick={() => handleRoleChange(role)}
-                className={`py-2 rounded-lg text-xs font-bold transition cursor-pointer uppercase ${
-                  selectedRole === role
-                    ? "bg-cyan-500 text-black shadow-md"
-                    : "text-gray-400 hover:text-white hover:bg-white/5"
-                }`}
-              >
-                {role.replace("_", " ")}
-              </button>
-            ))}
-          </div>
         </div>
 
         {/* MOBILE */}
         <div className="relative">
           <Phone
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
-            size={18}
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"
+            size={20}
           />
           <input
             type="text"
             name="mobile"
-            placeholder="Mobile Number"
+            placeholder="123456890"
             value={form.mobile}
             onChange={handleChange}
             required
-            className="w-full bg-white/5 text-white border border-white/20 rounded-xl pl-11 pr-4 py-3 focus:ring-2 focus:ring-cyan-400 outline-none"
+            className="w-full bg-[#242a38] text-white border border-[#333a4d] rounded-[14px] pl-12 pr-4 py-4 focus:border-[#00c6d9] focus:ring-1 focus:ring-[#00c6d9] outline-none transition text-[15px] font-medium placeholder-white"
           />
         </div>
 
         {/* PASSWORD */}
         <div className="relative">
           <Lock
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
-            size={18}
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"
+            size={20}
           />
           <input
             type={showPassword ? "text" : "password"}
             name="password"
-            placeholder="Password"
+            placeholder="•••••••••••"
             value={form.password}
             onChange={handleChange}
             required
-            className="w-full bg-white/5 text-white border border-white/20 rounded-xl pl-11 pr-12 py-3 focus:ring-2 focus:ring-cyan-400 outline-none"
+            className="w-full bg-[#242a38] text-white border border-[#333a4d] rounded-[14px] pl-12 pr-12 py-4 focus:border-[#00c6d9] focus:ring-1 focus:ring-[#00c6d9] outline-none transition text-[15px] font-medium placeholder-white tracking-widest"
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition"
           >
-            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
           </button>
         </div>
 
         {/* LOGIN BUTTON */}
         <button
           type="submit"
-          className="w-full bg-cyan-500 hover:bg-cyan-600 text-black font-semibold py-3 rounded-xl transition"
+          className="w-full bg-[#00c6d9] hover:bg-[#00b0c2] text-black font-bold text-[16px] py-4 rounded-[14px] transition mt-4"
         >
           Login
         </button>

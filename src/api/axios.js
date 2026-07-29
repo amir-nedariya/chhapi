@@ -1,8 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  // baseURL: "http://localhost:5000/api",
-  baseURL: "https://chhapi-donation-backend-wplv.onrender.com/api",
+  baseURL: "/api",
 });
 
 // Token auto attach

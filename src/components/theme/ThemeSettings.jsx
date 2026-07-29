@@ -129,7 +129,7 @@ const ThemeSettings = () => {
   };
 
   return (
-    <div className="w-full bg-[#f8fafc] border border-slate-200/60 rounded-[2rem] p-8 space-y-8 shadow-xs">
+    <div className="w-full space-y-8">
       <div>
         <h2 className="text-2xl font-black text-slate-900 tracking-tight">Appearance</h2>
         <p className="text-sm text-slate-500 mt-1">

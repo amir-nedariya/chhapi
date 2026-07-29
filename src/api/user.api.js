@@ -1,3 +1,5 @@
+import api from "./axios";
+
 // Mock User API
 
 const initialUsers = [
@@ -323,26 +325,17 @@ export const saveUsersToStorage = () => {
 };
 
 
-export const getAllUsersAPI = async () => {
-  return { data: { data: dummyUsers.filter(u => !u.isDeleted) } };
+export const getAllUsersAPI = async (params = { page: 1, limit: 10, search: "", role: "ALL" }) => {
+  const query = new URLSearchParams(params).toString();
+  return await api.get(`/admin/users?${query}`);
 };
 
 export const activateUserAPI = async (id) => {
-  const user = dummyUsers.find(u => u._id === id);
-  if (user) {
-    user.isActive = true;
-    saveUsersToStorage();
-  }
-  return { data: { message: "User activated" } };
+  return await api.patch(`/admin/users/${id}/status`, { isActive: true });
 };
 
 export const deactivateUserAPI = async (id) => {
-  const user = dummyUsers.find(u => u._id === id);
-  if (user) {
-    user.isActive = false;
-    saveUsersToStorage();
-  }
-  return { data: { message: "User deactivated" } };
+  return await api.patch(`/admin/users/${id}/status`, { isActive: false });
 };
 
 export const getAllUsersOnlyAPI = async () => {
@@ -362,45 +355,11 @@ export const getAllSuperAdminsOnlyAPI = async () => {
 };
 
 export const createAdminAPI = async (data) => {
-  const newAdmin = {
-    _id: "u" + (dummyUsers.length + 1),
-    name: data.name,
-    mobile: data.mobile,
-    role: "ADMIN",
-    password: data.password || "password123",
-    isActive: true, paymentStatus: ['REGULAR', 'PARTIAL', 'NONE'][Math.floor(Math.random() * 3)],
-    createdAt: new Date().toISOString(),
-    createdBy: "Demo Super Admin",
-    totalDonations: 0,
-    donationCount: 0,
-    avgDonation: 0,
-    yearlyStats: { "2025": 0, "2026": 0 },
-    monthlyStats: { Jan: 0, Feb: 0, Mar: 0, Apr: 0, May: 0, Jun: 0, Jul: 0, Aug: 0, Sep: 0, Oct: 0, Nov: 0, Dec: 0 }
-  };
-  dummyUsers.push(newAdmin);
-  saveUsersToStorage();
-  return { data: { message: "Admin created successfully", data: newAdmin } };
+  return await api.post("/admin/users", { ...data, role: "ADMIN" });
 };
 
 export const createUserAPI = async (data) => {
-  const newUser = {
-    _id: "u" + (dummyUsers.length + 1),
-    name: data.name,
-    mobile: data.mobile,
-    role: data.role || "USER",
-    password: data.password || "password123",
-    isActive: true, paymentStatus: ['REGULAR', 'PARTIAL', 'NONE'][Math.floor(Math.random() * 3)],
-    createdAt: new Date().toISOString(),
-    createdBy: "Demo Super Admin",
-    totalDonations: 0,
-    donationCount: 0,
-    avgDonation: 0,
-    yearlyStats: { "2025": 0, "2026": 0 },
-    monthlyStats: { Jan: 0, Feb: 0, Mar: 0, Apr: 0, May: 0, Jun: 0, Jul: 0, Aug: 0, Sep: 0, Oct: 0, Nov: 0, Dec: 0 }
-  };
-  dummyUsers.push(newUser);
-  saveUsersToStorage();
-  return { data: { message: "User created successfully", data: newUser } };
+  return await api.post("/admin/users", { ...data, role: "USER" });
 };
 
 export const changeUserRoleAPI = async (userId, data) => {

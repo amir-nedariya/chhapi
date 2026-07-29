@@ -72,6 +72,7 @@ const UsersList = () => {
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("ALL");
   const [page, setPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
   const [viewUser, setViewUser] = useState(null);
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -159,8 +160,9 @@ const UsersList = () => {
   /* ================= FETCH USERS ================= */
   const fetchUsers = async () => {
     try {
-      const res = await getAllUsersAPI();
+      const res = await getAllUsersAPI({ page, limit: ITEMS_PER_PAGE, search, role: roleFilter });
       setUsers(res.data.data || []);
+      setTotalItems(res.data.total || 0);
     } catch {
       toast.error("Failed to load users");
     }
@@ -168,7 +170,7 @@ const UsersList = () => {
 
   useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [page, search, roleFilter]);
 
   /* ================= ACTIONS ================= */
   const toggleStatus = async (u) => {
@@ -337,21 +339,7 @@ const UsersList = () => {
   };
 
   /* ================= FILTER ================= */
-  const filteredUsers = useMemo(() => {
-    return users.filter((u) => {
-      const s =
-        u.name.toLowerCase().includes(search.toLowerCase()) ||
-        u.mobile.includes(search);
-      const r = roleFilter === "ALL" || u.role === roleFilter;
-      return s && r;
-    });
-  }, [users, search, roleFilter]);
-
-  const totalPages = Math.ceil(filteredUsers.length / ITEMS_PER_PAGE);
-  const paginatedUsers = filteredUsers.slice(
-    (page - 1) * ITEMS_PER_PAGE,
-    page * ITEMS_PER_PAGE
-  );
+  const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
 
   if (viewUser) {
     return (
@@ -1210,11 +1198,11 @@ const UsersList = () => {
 
       <Table 
         columns={columns}
-        data={paginatedUsers}
+        data={users}
         pagination={{
           currentPage: page,
           totalPages: totalPages,
-          totalItems: filteredUsers.length,
+          totalItems: totalItems,
           itemsPerPage: ITEMS_PER_PAGE,
           onPageChange: setPage
         }}
