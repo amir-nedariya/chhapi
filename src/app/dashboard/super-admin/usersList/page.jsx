@@ -73,6 +73,7 @@ const UsersList = () => {
   const [roleFilter, setRoleFilter] = useState("ALL");
   const [page, setPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
   const [viewUser, setViewUser] = useState(null);
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -160,11 +161,14 @@ const UsersList = () => {
   /* ================= FETCH USERS ================= */
   const fetchUsers = async () => {
     try {
+      setIsLoading(true);
       const res = await getAllUsersAPI({ page, limit: ITEMS_PER_PAGE, search, role: roleFilter });
       setUsers(res.data.data || []);
       setTotalItems(res.data.total || 0);
     } catch {
       toast.error("Failed to load users");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -382,11 +386,11 @@ const UsersList = () => {
               <h4 className="text-lg font-semibold text-slate-800 flex items-center gap-1.5 justify-center">
                 {viewUser.name}
                 <svg className="w-4.5 h-4.5 text-blue-500 fill-current flex-shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.71-3.99-3.818-3.99-.48 0-.94.1-1.348.275C14.775 2.5 13.51 1.5 12 1.5c-1.51 0-2.775 1-3.422 2.285-.407-.175-.867-.275-1.348-.275-2.11 0-3.818 1.78-3.818 3.99 0 .495.084.965.238 1.4-1.273.65-2.148 2.02-2.148 3.6 0 1.58.875 2.95 2.148 3.6-.154.435-.238.905-.238 1.4 0 2.21 1.71 3.99 3.818 3.99.48 0 .94-.1 1.348-.275.647 1.285 1.912 2.285 3.422 2.285 1.51 0 2.775-1 3.422-2.285.407 1.75.867.275 1.348.275 2.11 0 3.818-1.78 3.818-3.99 0-.495-.084-.965-.238-1.4 1.273-.65 2.148-2.02 2.148-3.6zm-12.72 3.73-3.79-3.79 1.42-1.42 2.37 2.37 5.67-5.67 1.42 1.42-7.09 7.09z"/>
+                  <path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.71-3.99-3.818-3.99-.48 0-.94.1-1.348.275C14.775 2.5 13.51 1.5 12 1.5c-1.51 0-2.775 1-3.422 2.285-.407-.175-.867-.275-1.348-.275-2.11 0-3.818 1.78-3.818 3.99 0 .495.084.965.238 1.4-1.273.65-2.148 2.02-2.148 3.6 0 1.58.875 2.95 2.148 3.6-.154.435-.238.905-.238 1.4 0 2.21 1.71 3.99 3.818 3.99.48 0 .94-.1 1.348-.275.647 1.285 1.912 2.285 3.422 2.285 1.51 0 2.775-1 3.422-2.285.407 1.75.867.275 1.348.275 2.11 0 3.818-1.78 3.818-3.99 0-.495-.084-.965-.238-1.4 1.273-.65 2.148-2.02 2.148-3.6zm-12.72 3.73-3.79-3.79 1.42-1.42 2.37 2.37 5.67-5.67 1.42 1.42-7.09 7.09z" />
                 </svg>
               </h4>
               <p className="text-sm text-slate-500 mb-3">{viewUser.mobile}</p>
-              
+
               <span className={`px-3 py-1 rounded-full text-xs font-medium ${roleStyles[viewUser.role]}`}>
                 {viewUser.role.replace("_", " ")}
               </span>
@@ -438,7 +442,7 @@ const UsersList = () => {
             {/* Account Metadata Details */}
             <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgba(0,0,0,0.015)] flex flex-col gap-4">
               <h5 className="font-semibold text-slate-400 text-xs tracking-wider uppercase">System Information</h5>
-              
+
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-indigo-50/50 text-indigo-500 rounded-xl">
                   <User size={16} />
@@ -458,10 +462,10 @@ const UsersList = () => {
                   <p className="text-sm font-medium text-slate-700">
                     {viewUser.createdAt
                       ? new Date(viewUser.createdAt).toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                        })
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })
                       : "N/A"}
                   </p>
                 </div>
@@ -473,9 +477,8 @@ const UsersList = () => {
                 </div>
                 <div>
                   <p className="text-xs text-slate-400">Status</p>
-                  <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium ${
-                    viewUser.isActive ? "bg-green-50 text-green-700" : "bg-slate-100 text-slate-600"
-                  }`}>
+                  <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium ${viewUser.isActive ? "bg-green-50 text-green-700" : "bg-slate-100 text-slate-600"
+                    }`}>
                     <span className={`w-1.5 h-1.5 rounded-full ${viewUser.isActive ? "bg-green-500" : "bg-slate-400"}`} />
                     {viewUser.isActive ? "Active" : "Inactive"}
                   </span>
@@ -549,7 +552,7 @@ const UsersList = () => {
                 <BarChart3 size={16} className="text-cyan-600" />
                 Yearly Distribution
               </h5>
-              
+
               <div className="space-y-4">
                 {Object.entries(viewUser.yearlyStats || { "2025": 0, "2026": 0 }).map(([year, amount]) => {
                   const maxYearly = Math.max(...Object.values(viewUser.yearlyStats || {}), 0);
@@ -630,19 +633,19 @@ const UsersList = () => {
                       amountColor = "text-rose-600 font-semibold";
                     }
 
-                    const borderStyle = isSelected 
-                      ? "border-2 border-cyan-500 shadow-md scale-[1.02] z-10 relative" 
-                      : isCurrent 
-                        ? "border-2 border-cyan-200 shadow-xs relative" 
-                        : isPaid 
-                          ? "border border-emerald-100/70" 
-                          : isFuture 
-                            ? "border border-slate-200/60" 
+                    const borderStyle = isSelected
+                      ? "border-2 border-cyan-500 shadow-md scale-[1.02] z-10 relative"
+                      : isCurrent
+                        ? "border-2 border-cyan-200 shadow-xs relative"
+                        : isPaid
+                          ? "border border-emerald-100/70"
+                          : isFuture
+                            ? "border border-slate-200/60"
                             : "border border-rose-100/70";
 
                     return (
-                      <div 
-                        key={month} 
+                      <div
+                        key={month}
                         onClick={() => {
                           if (selectedMonthsForBulk.includes(month)) {
                             setSelectedMonthsForBulk(prev => prev.filter(m => m !== month));
@@ -654,12 +657,11 @@ const UsersList = () => {
                       >
                         <div className="flex items-center min-w-0 flex-1">
                           {/* Circular Checkbox */}
-                          <div 
-                            className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all duration-200 mr-3 ${
-                              isSelected 
-                                ? "bg-cyan-600 border-cyan-600 text-white shadow-xs scale-110" 
-                                : "bg-white border-slate-300 hover:border-slate-400"
-                            }`}
+                          <div
+                            className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all duration-200 mr-3 ${isSelected
+                              ? "bg-cyan-600 border-cyan-600 text-white shadow-xs scale-110"
+                              : "bg-white border-slate-300 hover:border-slate-400"
+                              }`}
                           >
                             {isSelected && <Check size={11} className="stroke-[3.5]" />}
                           </div>
@@ -678,7 +680,7 @@ const UsersList = () => {
                             </span>
                           </div>
                         </div>
-                        
+
                         {/* Right side badge indicating status & Edit Button */}
                         <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                           <button
@@ -940,11 +942,10 @@ const UsersList = () => {
                   <button
                     onClick={handleConfirmDelete}
                     disabled={deleteType === "hard" && deleteConfirmInput !== "8120"}
-                    className={`font-medium px-5 py-2.5 rounded-xl shadow-md transition active:scale-95 text-sm flex items-center gap-2 text-white disabled:opacity-50 disabled:cursor-not-allowed ${
-                      deleteType === "hard"
-                        ? "bg-red-600 hover:bg-red-700"
-                        : "bg-amber-600 hover:bg-amber-700"
-                    }`}
+                    className={`font-medium px-5 py-2.5 rounded-xl shadow-md transition active:scale-95 text-sm flex items-center gap-2 text-white disabled:opacity-50 disabled:cursor-not-allowed ${deleteType === "hard"
+                      ? "bg-red-600 hover:bg-red-700"
+                      : "bg-amber-600 hover:bg-amber-700"
+                      }`}
                   >
                     {deleteType === "hard" ? "Confirm Permanent Delete" : "Deactivate & Hide"}
                   </button>
@@ -1099,12 +1100,14 @@ const UsersList = () => {
 
   const filterConfig = [
     { type: "search", name: "search", placeholder: "Search user..." },
-    { type: "select", name: "roleFilter", options: [
-      { label: "All Roles", value: "ALL" },
-      { label: "User", value: "USER" },
-      { label: "Admin", value: "ADMIN" },
-      { label: "Super Admin", value: "SUPER_ADMIN" }
-    ]}
+    {
+      type: "select", name: "roleFilter", options: [
+        { label: "All Roles", value: "ALL" },
+        { label: "User", value: "USER" },
+        { label: "Admin", value: "ADMIN" },
+        { label: "Super Admin", value: "SUPER_ADMIN" }
+      ]
+    }
   ];
 
   const columns = [
@@ -1118,7 +1121,7 @@ const UsersList = () => {
             <p className="font-semibold text-slate-800 flex items-center gap-1">
               {u.name}
               <svg className="w-3.5 h-3.5 text-blue-500 fill-current flex-shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.71-3.99-3.818-3.99-.48 0-.94.1-1.348.275C14.775 2.5 13.51 1.5 12 1.5c-1.51 0-2.775 1-3.422 2.285-.407-.175-.867-.275-1.348-.275-2.11 0-3.818 1.78-3.818 3.99 0 .495.084.965.238 1.4-1.273.65-2.148 2.02-2.148 3.6 0 1.58.875 2.95 2.148 3.6-.154.435-.238.905-.238 1.4 0 2.21 1.71 3.99 3.818 3.99.48 0 .94-.1 1.348-.275.647 1.285 1.912 2.285 3.422 2.285 1.51 0 2.775-1 3.422-2.285.407.175.867.275 1.348.275 2.11 0 3.818-1.78 3.818-3.99 0-.495-.084-.965-.238-1.4 1.273-.65 2.148-2.02 2.148-3.6zm-12.72 3.73-3.79-3.79 1.42-1.42 2.37 2.37 5.67-5.67 1.42 1.42-7.09 7.09z"/>
+                <path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.71-3.99-3.818-3.99-.48 0-.94.1-1.348.275C14.775 2.5 13.51 1.5 12 1.5c-1.51 0-2.775 1-3.422 2.285-.407-.175-.867-.275-1.348-.275-2.11 0-3.818 1.78-3.818 3.99 0 .495.084.965.238 1.4-1.273.65-2.148 2.02-2.148 3.6 0 1.58.875 2.95 2.148 3.6-.154.435-.238.905-.238 1.4 0 2.21 1.71 3.99 3.818 3.99.48 0 .94-.1 1.348-.275.647 1.285 1.912 2.285 3.422 2.285 1.51 0 2.775-1 3.422-2.285.407.175.867.275 1.348.275 2.11 0 3.818-1.78 3.818-3.99 0-.495-.084-.965-.238-1.4 1.273-.65 2.148-2.02 2.148-3.6zm-12.72 3.73-3.79-3.79 1.42-1.42 2.37 2.37 5.67-5.67 1.42 1.42-7.09 7.09z" />
               </svg>
             </p>
             <p className="text-xs text-slate-500">{u.mobile}</p>
@@ -1150,14 +1153,12 @@ const UsersList = () => {
         u.role !== "SUPER_ADMIN" ? (
           <button
             onClick={() => toggleStatus(u)}
-            className={`w-11 h-6 rounded-full p-1 flex items-center shadow-inner transition-colors duration-300 ${
-              u.isActive ? "bg-green-500" : "bg-gray-300"
-            }`}
+            className={`w-11 h-6 rounded-full p-1 flex items-center shadow-inner transition-colors duration-300 ${u.isActive ? "bg-green-500" : "bg-gray-300"
+              }`}
           >
             <span
-              className={`bg-white w-4 h-4 rounded-full shadow transition-transform duration-300 ${
-                u.isActive ? "translate-x-5" : ""
-              }`}
+              className={`bg-white w-4 h-4 rounded-full shadow transition-transform duration-300 ${u.isActive ? "translate-x-5" : ""
+                }`}
             />
           </button>
         ) : null
@@ -1179,7 +1180,7 @@ const UsersList = () => {
   ];
 
   return (
-    <div className="p-4 md:p-6 space-y-6">
+    <div className="py-3 md:py-6 space-y-5">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-3">
           <Users className="text-teal-700" size={24} />
@@ -1196,9 +1197,10 @@ const UsersList = () => {
 
       <FilterBar filters={filterConfig} params={{ search, roleFilter }} onChange={handleFilterChange} />
 
-      <Table 
+      <Table
         columns={columns}
         data={users}
+        isLoading={isLoading}
         pagination={{
           currentPage: page,
           totalPages: totalPages,
@@ -1454,11 +1456,10 @@ const UsersList = () => {
                 <button
                   onClick={handleConfirmDelete}
                   disabled={deleteType === "hard" && deleteConfirmInput !== "8120"}
-                  className={`font-medium px-5 py-2.5 rounded-xl shadow-md transition active:scale-95 text-sm flex items-center gap-2 text-white disabled:opacity-50 disabled:cursor-not-allowed ${
-                    deleteType === "hard"
-                      ? "bg-red-600 hover:bg-red-700"
-                      : "bg-amber-600 hover:bg-amber-700"
-                  }`}
+                  className={`font-medium px-5 py-2.5 rounded-xl shadow-md transition active:scale-95 text-sm flex items-center gap-2 text-white disabled:opacity-50 disabled:cursor-not-allowed ${deleteType === "hard"
+                    ? "bg-red-600 hover:bg-red-700"
+                    : "bg-amber-600 hover:bg-amber-700"
+                    }`}
                 >
                   {deleteType === "hard" ? "Confirm Permanent Delete" : "Deactivate & Hide"}
                 </button>
