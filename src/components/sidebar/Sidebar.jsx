@@ -25,7 +25,8 @@ import {
   Send,
   User2,
   LogOut,
-  Crown
+  Crown,
+  Image
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useState, useEffect, useRef } from "react";
@@ -183,6 +184,7 @@ const Sidebar = ({ collapsed, setCollapsed, mobile, sidebarOpen, setSidebarOpen 
 
   if (role === "SUPER_ADMIN") {
     menuItems.push({ name: "Fund Requests", path: `${pathPrefix}/fund-requests`, icon: Landmark, badge: pendingRequestsCount });
+    menuItems.push({ name: "Manage Banners", path: `${pathPrefix}/banners`, icon: Image });
   } else {
     menuItems.push({ name: "Request Funds", path: `${pathPrefix}/fund-request`, icon: Landmark });
   }
