@@ -20,6 +20,7 @@ import {
 } from "recharts";
 import StatsCards from "../../../components/common/StatsCards";
 import Table from "../../../components/common/Table";
+import DashboardBanners from "../../../components/common/DashboardBanners";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -163,6 +164,9 @@ const AdminDashboard = () => {
           <span>Refresh</span>
         </button>
       </div>
+
+      {/* Festival & Event Banners */}
+      <DashboardBanners />
 
       {/* Metrics Grid */}
       <StatsCards cards={statsCardsData} />
