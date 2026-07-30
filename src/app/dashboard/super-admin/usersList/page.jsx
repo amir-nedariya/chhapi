@@ -59,6 +59,11 @@ const roleStyles = {
 const UsersList = () => {
   const sidebarColor = useSidebarColor();
   const getAvatarUrl = (userObj) => {
+    if (typeof userObj?.profilePhoto === 'string' && userObj.profilePhoto.startsWith('http')) {
+      return userObj.profilePhoto.includes("ui-avatars.com")
+        ? userObj.profilePhoto.replace(/background=[0-9a-fA-F]+/g, `background=${sidebarColor}`)
+        : userObj.profilePhoto;
+    }
     if (userObj?.profilePhoto?.url) {
       if (userObj.profilePhoto.url.includes("ui-avatars.com")) {
         return userObj.profilePhoto.url.replace(/background=[0-9a-fA-F]+/g, `background=${sidebarColor}`);
@@ -99,6 +104,7 @@ const UsersList = () => {
   const [editMonthlyMonth, setEditMonthlyMonth] = useState("");
   const [editMonthlyAmount, setEditMonthlyAmount] = useState("");
   const [editMonthlyLoading, setEditMonthlyLoading] = useState(false);
+  const [selectedInsightYear, setSelectedInsightYear] = useState(new Date().getFullYear());
 
   // Bulk edit states for super admin
   const [selectedMonthsForBulk, setSelectedMonthsForBulk] = useState([]);
@@ -159,16 +165,16 @@ const UsersList = () => {
   };
 
   /* ================= FETCH USERS ================= */
-  const fetchUsers = async () => {
+  const fetchUsers = async (showLoader = true) => {
     try {
-      setIsLoading(true);
+      if (showLoader) setIsLoading(true);
       const res = await getAllUsersAPI({ page, limit: ITEMS_PER_PAGE, search, role: roleFilter });
       setUsers(res.data.data || []);
       setTotalItems(res.data.total || 0);
     } catch {
       toast.error("Failed to load users");
     } finally {
-      setIsLoading(false);
+      if (showLoader) setIsLoading(false);
     }
   };
 
@@ -183,7 +189,7 @@ const UsersList = () => {
       u.isActive
         ? await deactivateUserAPI(u._id)
         : await activateUserAPI(u._id);
-      fetchUsers();
+      fetchUsers(false);
     } catch {
       toast.error("Status update failed");
     } finally {
@@ -272,7 +278,9 @@ const UsersList = () => {
       setEditMonthlyLoading(true);
       await updateUserStatsAPI(viewUser._id, {
         monthlyStats: {
-          [editMonthlyMonth]: Number(editMonthlyAmount)
+          [selectedInsightYear]: {
+            [editMonthlyMonth]: Number(editMonthlyAmount)
+          }
         }
       });
       toast.success("Monthly insights updated successfully!");
@@ -299,7 +307,9 @@ const UsersList = () => {
       });
 
       await updateUserStatsAPI(viewUser._id, {
-        monthlyStats: updates
+        monthlyStats: {
+          [selectedInsightYear]: updates
+        }
       });
       toast.success("Monthly insights updated successfully!");
       setShowBulkEditModal(false);
@@ -347,101 +357,114 @@ const UsersList = () => {
 
   if (viewUser) {
     return (
-      <div className="animate-in fade-in duration-200">
+      <div className="animate-in fade-in duration-200 py-3 md:py-6 space-y-5">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between mb-6">
+        <div className="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between mb-8">
           <div>
-            <h2 className="text-xl sm:text-2xl font-semibold text-slate-800 flex items-center gap-2.5">
-              <div className="p-2 bg-cyan-50 text-cyan-600 rounded-xl">
+            <h2 className="text-2xl font-bold text-slate-900 flex items-center gap-3">
+              <div className="p-2.5 bg-gradient-to-br from-cyan-500 to-blue-600 text-white rounded-xl shadow-sm shadow-blue-500/20">
                 <Users size={20} />
               </div>
               User Profile & Insights
             </h2>
-            <p className="text-xs text-slate-500 mt-1">Detailed view of user profile and donation history</p>
           </div>
           <button
             onClick={() => {
               setViewUser(null);
               setSelectedMonthsForBulk([]);
             }}
-            className="text-slate-600 hover:text-slate-800 font-medium px-4 py-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200/60 rounded-xl shadow-sm transition text-sm flex items-center justify-center gap-2 self-start sm:self-auto"
+            className="text-slate-600 hover:text-slate-900 font-medium px-4 py-2 hover:bg-slate-100 rounded-xl transition text-sm flex items-center gap-2 self-start sm:self-auto group"
           >
-            <ChevronLeft size={16} /> Back to Users List
+            <ChevronLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> Back to Users List
           </button>
         </div>
 
         {/* Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-8">
           {/* Left Column: Profile Card */}
-          <div className="lg:col-span-1 flex flex-col gap-6">
+          <div className="lg:col-span-1 flex flex-col gap-4 md:gap-6">
             {/* Avatar & Profile actions */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgba(0,0,0,0.015)] flex flex-col items-center text-center">
-              <div className="relative group mb-4">
-                <img
-                  src={getAvatarUrl(viewUser)}
-                  className="w-28 h-28 rounded-full border-4 border-white shadow-md object-cover ring-2 ring-slate-100/80 group-hover:scale-105 transition-all duration-300"
-                />
+            <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden flex flex-col items-center text-center">
+              {/* Cover Photo Area */}
+              <div className="w-full h-24 bg-gradient-to-r from-cyan-50 via-blue-50 to-indigo-50 relative">
+                <div className="absolute -bottom-12 left-1/2 -translate-x-1/2">
+                  <div className="relative group">
+                    <img
+                      src={getAvatarUrl(viewUser)}
+                      className="w-24 h-24 rounded-2xl border-4 border-white shadow-sm object-cover bg-white group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                </div>
               </div>
 
-              <h4 className="text-lg font-semibold text-slate-800 flex items-center gap-1.5 justify-center">
-                {viewUser.name}
-                <svg className="w-4.5 h-4.5 text-blue-500 fill-current flex-shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.71-3.99-3.818-3.99-.48 0-.94.1-1.348.275C14.775 2.5 13.51 1.5 12 1.5c-1.51 0-2.775 1-3.422 2.285-.407-.175-.867-.275-1.348-.275-2.11 0-3.818 1.78-3.818 3.99 0 .495.084.965.238 1.4-1.273.65-2.148 2.02-2.148 3.6 0 1.58.875 2.95 2.148 3.6-.154.435-.238.905-.238 1.4 0 2.21 1.71 3.99 3.818 3.99.48 0 .94-.1 1.348-.275.647 1.285 1.912 2.285 3.422 2.285 1.51 0 2.775-1 3.422-2.285.407 1.75.867.275 1.348.275 2.11 0 3.818-1.78 3.818-3.99 0-.495-.084-.965-.238-1.4 1.273-.65 2.148-2.02 2.148-3.6zm-12.72 3.73-3.79-3.79 1.42-1.42 2.37 2.37 5.67-5.67 1.42 1.42-7.09 7.09z" />
-                </svg>
-              </h4>
-              <p className="text-sm text-slate-500 mb-3">{viewUser.mobile}</p>
+              {/* Profile Info */}
+              <div className="pt-16 pb-6 px-6 w-full flex flex-col items-center">
+                <h4 className="text-xl font-bold text-slate-900 flex items-center gap-1.5 justify-center tracking-tight">
+                  {viewUser.name}
+                  <svg className="w-5 h-5 text-blue-500 fill-current" viewBox="0 0 24 24">
+                    <path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.71-3.99-3.818-3.99-.48 0-.94.1-1.348.275C14.775 2.5 13.51 1.5 12 1.5c-1.51 0-2.775 1-3.422 2.285-.407-.175-.867-.275-1.348-.275-2.11 0-3.818 1.78-3.818 3.99 0 .495.084.965.238 1.4-1.273.65-2.148 2.02-2.148 3.6 0 1.58.875 2.95 2.148 3.6-.154.435-.238.905-.238 1.4 0 2.21 1.71 3.99 3.818 3.99.48 0 .94-.1 1.348-.275.647 1.285 1.912 2.285 3.422 2.285 1.51 0 2.775-1 3.422-2.285.407 1.75.867.275 1.348.275 2.11 0 3.818-1.78 3.818-3.99 0-.495-.084-.965-.238-1.4 1.273-.65 2.148-2.02 2.148-3.6zm-12.72 3.73-3.79-3.79 1.42-1.42 2.37 2.37 5.67-5.67 1.42 1.42-7.09 7.09z" />
+                  </svg>
+                </h4>
+                <p className="text-sm font-medium text-slate-500 mt-1 mb-4">{viewUser.mobile}</p>
 
-              <span className={`px-3 py-1 rounded-full text-xs font-medium ${roleStyles[viewUser.role]}`}>
-                {viewUser.role.replace("_", " ")}
-              </span>
+                <span className={`px-3.5 py-1.5 rounded-lg text-xs font-bold tracking-wide uppercase ${roleStyles[viewUser.role]}`}>
+                  {viewUser.role.replace("_", " ")}
+                </span>
 
-              <div className="w-full border-t border-slate-100 my-5" />
+                <div className="w-full border-t border-slate-100 my-6" />
 
-              {/* Profile Actions */}
-              <div className="flex flex-col gap-3 w-full">
-                <button
-                  onClick={() => {
-                    setDonationMonth(new Date().getMonth() + 1);
-                    setDonationYear(new Date().getFullYear());
-                    setShowDonationModal(true);
-                  }}
-                  className="text-sm font-medium text-emerald-600 bg-emerald-50/50 hover:bg-emerald-50 border border-emerald-100/70 px-4 py-2.5 rounded-xl transition flex items-center justify-center gap-2 active:scale-95 cursor-pointer"
-                >
-                  <PlusCircle size={16} /> Add Donation
-                </button>
-
-                <label className="cursor-pointer text-center text-sm font-medium text-cyan-600 bg-cyan-50/50 hover:bg-cyan-50 border border-cyan-100/70 px-4 py-2.5 rounded-xl transition flex items-center justify-center gap-2 active:scale-95">
-                  <Upload size={16} /> Upload Photo
-                  <input hidden type="file" accept="image/*"
-                    onChange={(e) =>
-                      handlePhotoUpload(viewUser._id, e.target.files[0])
-                    }
-                  />
-                </label>
-
-                {viewUser.profilePhoto && (
+                {/* Profile Actions */}
+                <div className="flex flex-col gap-2.5 w-full">
                   <button
-                    onClick={handlePhotoDelete}
-                    className="text-sm font-medium text-rose-600 bg-rose-50/50 hover:bg-rose-50 border border-rose-100/70 px-4 py-2.5 rounded-xl transition flex items-center justify-center gap-2 active:scale-95 cursor-pointer"
+                    onClick={() => {
+                      setDonationMonth(new Date().getMonth() + 1);
+                      setDonationYear(new Date().getFullYear());
+                      setShowDonationModal(true);
+                    }}
+                    className="text-sm font-semibold text-white bg-slate-900 hover:bg-slate-800 px-4 py-3 rounded-xl transition flex items-center justify-center gap-2 shadow-sm shadow-slate-900/10 active:scale-[0.98] cursor-pointer"
                   >
-                    <Trash2 size={16} /> Delete Photo
+                    <PlusCircle size={18} className="text-slate-300" /> Add New Donation
                   </button>
-                )}
 
-                {viewUser.role !== "SUPER_ADMIN" && (
-                  <button
-                    onClick={() => handleOpenDeleteModal("choice")}
-                    className="text-sm font-medium text-red-600 bg-red-50/50 hover:bg-red-50 border border-red-100/70 px-4 py-2.5 rounded-xl transition flex items-center justify-center gap-2 active:scale-95 cursor-pointer"
-                  >
-                    <Trash2 size={16} /> Delete User
-                  </button>
-                )}
+                  {!viewUser.profilePhoto && (
+                    <label className="cursor-pointer text-center text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 px-4 py-3 rounded-xl transition flex items-center justify-center gap-2 active:scale-[0.98]">
+                      <Upload size={18} className="text-slate-400" /> Upload Photo
+                      <input hidden type="file" accept="image/*"
+                        onChange={(e) =>
+                          handlePhotoUpload(viewUser._id, e.target.files[0])
+                        }
+                      />
+                    </label>
+                  )}
+
+                  {(viewUser.profilePhoto || viewUser.role !== "SUPER_ADMIN") && (
+                    <div className="grid grid-cols-2 gap-2.5 mt-2">
+                      {viewUser.profilePhoto && (
+                        <button
+                          onClick={handlePhotoDelete}
+                          className="text-xs font-medium text-rose-600 bg-rose-50 hover:bg-rose-100 px-3 py-2.5 rounded-lg transition flex items-center justify-center gap-1.5 active:scale-[0.98] cursor-pointer"
+                        >
+                          <Trash2 size={14} /> Remove Photo
+                        </button>
+                      )}
+
+                      {viewUser.role !== "SUPER_ADMIN" && (
+                        <button
+                          onClick={() => handleOpenDeleteModal("choice")}
+                          className={`text-xs font-medium text-rose-600 bg-rose-50 hover:bg-rose-100 px-3 py-2.5 rounded-lg transition flex items-center justify-center gap-1.5 active:scale-[0.98] cursor-pointer ${!viewUser.profilePhoto ? 'col-span-2' : ''}`}
+                        >
+                          <Trash2 size={14} /> Delete User
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
             {/* Account Metadata Details */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgba(0,0,0,0.015)] flex flex-col gap-4">
-              <h5 className="font-semibold text-slate-400 text-xs tracking-wider uppercase">System Information</h5>
+            <div className="bg-white p-4 md:p-6 rounded-2xl border border-slate-200/60 shadow-sm flex flex-col gap-5">
+              <h5 className="font-bold text-slate-800 text-xs tracking-wider uppercase mb-1">System Information</h5>
 
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-indigo-50/50 text-indigo-500 rounded-xl">
@@ -487,12 +510,12 @@ const UsersList = () => {
 
               {/* Change Role Section */}
               {viewUser.role !== "SUPER_ADMIN" && (
-                <div className="border-t border-slate-100 pt-4 mt-2">
-                  <label className="block text-xs font-medium text-slate-500 mb-1.5">Change User Role</label>
+                <div className="border-t border-slate-100 pt-5 mt-2">
+                  <label className="block text-xs font-bold text-slate-800 mb-2 uppercase tracking-wider">User Role</label>
                   <select
                     value={viewUser.role}
                     onChange={(e) => changeRole(viewUser._id, e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200/80 text-slate-700 text-sm focus:bg-white focus:ring-2 focus:ring-cyan-500 focus:outline-none transition shadow-sm cursor-pointer"
+                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm font-medium focus:bg-white focus:border-cyan-400 focus:ring-4 focus:ring-cyan-500/10 outline-none transition-all shadow-sm cursor-pointer"
                   >
                     <option value="USER">USER</option>
                     <option value="ADMIN">ADMIN</option>
@@ -503,43 +526,43 @@ const UsersList = () => {
           </div>
 
           {/* Right Column: Donation Insights */}
-          <div className="lg:col-span-2 flex flex-col gap-6">
+          <div className="lg:col-span-2 flex flex-col gap-4 md:gap-6">
             {/* KPI Cards Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
               {/* KPI 1 */}
-              <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgba(0,0,0,0.015)] flex items-center gap-4">
-                <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl">
-                  <IndianRupee size={22} />
+              <div className="bg-white p-5 md:p-6 rounded-2xl border border-slate-200/60 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
+                <div className="p-3.5 bg-gradient-to-br from-emerald-100 to-emerald-50 text-emerald-600 rounded-2xl shadow-sm shadow-emerald-500/10">
+                  <IndianRupee size={24} strokeWidth={2.5} />
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-slate-400">Total Donated</p>
-                  <p className="text-xl font-semibold text-slate-800">
+                  <p className="text-xs font-semibold tracking-wide text-slate-400 uppercase">Total Donated</p>
+                  <p className="text-2xl font-bold text-slate-900 mt-1">
                     ₹{(viewUser.totalDonations || 0).toLocaleString("en-IN")}
                   </p>
                 </div>
               </div>
 
               {/* KPI 2 */}
-              <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgba(0,0,0,0.015)] flex items-center gap-4">
-                <div className="p-3 bg-sky-50 text-sky-600 rounded-xl">
-                  <CreditCard size={22} />
+              <div className="bg-white p-5 md:p-6 rounded-2xl border border-slate-200/60 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
+                <div className="p-3.5 bg-gradient-to-br from-sky-100 to-sky-50 text-sky-600 rounded-2xl shadow-sm shadow-sky-500/10">
+                  <CreditCard size={24} strokeWidth={2.5} />
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-slate-400">Donation Count</p>
-                  <p className="text-xl font-semibold text-slate-800">
-                    {viewUser.donationCount || 0} times
+                  <p className="text-xs font-semibold tracking-wide text-slate-400 uppercase">Donation Count</p>
+                  <p className="text-2xl font-bold text-slate-900 mt-1">
+                    {viewUser.donationCount || 0} <span className="text-sm font-medium text-slate-500 normal-case tracking-normal">times</span>
                   </p>
                 </div>
               </div>
 
               {/* KPI 3 */}
-              <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgba(0,0,0,0.015)] flex items-center gap-4">
-                <div className="p-3 bg-purple-50 text-purple-600 rounded-xl">
-                  <TrendingUp size={22} />
+              <div className="bg-white p-5 md:p-6 rounded-2xl border border-slate-200/60 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
+                <div className="p-3.5 bg-gradient-to-br from-purple-100 to-purple-50 text-purple-600 rounded-2xl shadow-sm shadow-purple-500/10">
+                  <TrendingUp size={24} strokeWidth={2.5} />
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-slate-400">Avg. Donation</p>
-                  <p className="text-xl font-semibold text-slate-800">
+                  <p className="text-xs font-semibold tracking-wide text-slate-400 uppercase">Avg. Donation</p>
+                  <p className="text-2xl font-bold text-slate-900 mt-1">
                     ₹{Math.round(viewUser.avgDonation || 0).toLocaleString("en-IN")}
                   </p>
                 </div>
@@ -547,26 +570,29 @@ const UsersList = () => {
             </div>
 
             {/* Yearly Stats Breakdown */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgba(0,0,0,0.015)]">
-              <h5 className="font-semibold text-slate-400 text-xs tracking-wider uppercase mb-4 flex items-center gap-2">
-                <BarChart3 size={16} className="text-cyan-600" />
+            <div className="bg-white p-5 md:p-6 rounded-2xl border border-slate-200/60 shadow-sm">
+              <h5 className="font-bold text-slate-800 text-xs tracking-wider uppercase mb-5 flex items-center gap-2">
+                <BarChart3 size={18} className="text-cyan-500" />
                 Yearly Distribution
               </h5>
 
-              <div className="space-y-4">
+              <div className="space-y-5">
                 {Object.entries(viewUser.yearlyStats || { "2025": 0, "2026": 0 }).map(([year, amount]) => {
-                  const maxYearly = Math.max(...Object.values(viewUser.yearlyStats || {}), 0);
-                  const target = maxYearly > 1200 ? maxYearly : 1200; // minimum yearly target is 1200
+                  const expectedYearly = viewUser.avgDonation ? viewUser.avgDonation * 12 : Math.max(amount, 1);
+                  const target = expectedYearly;
                   const percentage = Math.min(Math.round((amount / target) * 100), 100);
                   return (
-                    <div key={year} className="flex flex-col gap-1.5">
+                    <div key={year} className="flex flex-col gap-2">
                       <div className="flex justify-between items-center text-sm">
-                        <span className="font-medium text-slate-600">{year}</span>
-                        <span className="font-semibold text-slate-700">₹{amount.toLocaleString("en-IN")} ({percentage}%)</span>
+                        <span className="font-bold text-slate-700">{year}</span>
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-slate-900">₹{amount.toLocaleString("en-IN")}</span>
+                          <span className="text-xs font-medium text-slate-400 w-10 text-right">({percentage}%)</span>
+                        </div>
                       </div>
-                      <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                      <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden shadow-inner">
                         <div
-                          className="bg-gradient-to-r from-cyan-500 to-blue-500 h-full rounded-full transition-all duration-500"
+                          className="bg-gradient-to-r from-cyan-400 to-blue-500 h-full rounded-full transition-all duration-700 ease-out"
                           style={{ width: `${percentage}%` }}
                         />
                       </div>
@@ -577,16 +603,28 @@ const UsersList = () => {
             </div>
 
             {/* Monthly Stats Breakdown */}
-            <div className="bg-white p-6 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.02)] flex-1">
-              <div className="flex justify-between items-center mb-4">
-                <h5 className="font-semibold text-slate-400 text-xs tracking-wider uppercase flex items-center gap-2">
-                  <Calendar size={16} className="text-cyan-600" />
-                  Monthly Insights (Recent Year)
-                </h5>
+            <div className="bg-white p-5 md:p-6 rounded-2xl border border-slate-200/60 shadow-sm flex-1">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6">
+                <div className="flex items-center justify-between w-full sm:w-auto gap-2">
+                  <h5 className="font-bold text-slate-800 text-xs tracking-wider uppercase flex items-center gap-2 whitespace-nowrap">
+                    <Calendar size={18} className="text-cyan-500 flex-shrink-0" />
+                    Monthly Insights
+                  </h5>
+                  <select
+                    value={selectedInsightYear}
+                    onChange={(e) => setSelectedInsightYear(Number(e.target.value))}
+                    className="bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-lg px-2.5 py-1.5 outline-none font-medium cursor-pointer focus:border-cyan-400 transition-colors"
+                  >
+                    {[...Array(10)].map((_, i) => {
+                      const yr = new Date().getFullYear() - 2 + i;
+                      return <option key={yr} value={yr}>{yr}</option>;
+                    })}
+                  </select>
+                </div>
                 {selectedMonthsForBulk.length > 0 && (
                   <button
                     onClick={() => setShowBulkEditModal(true)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-700 text-white transition font-semibold text-xs shadow-xs cursor-pointer active:scale-95 animate-in fade-in zoom-in duration-200"
+                    className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-700 text-white transition font-semibold text-xs shadow-sm cursor-pointer active:scale-95 animate-in fade-in zoom-in duration-200 whitespace-nowrap w-full sm:w-auto"
                   >
                     Bulk Edit ({selectedMonthsForBulk.length})
                   </button>
@@ -599,9 +637,21 @@ const UsersList = () => {
                     Jan: 0, Feb: 0, Mar: 0, Apr: 0, May: 0, Jun: 0,
                     Jul: 0, Aug: 0, Sep: 0, Oct: 0, Nov: 0, Dec: 0
                   };
+                  
+                  // Safely extract stats for selected year (handling both nested and old flat structure)
+                  const ms = viewUser.monthlyStats || {};
+                  const isOldStructure = ms["Jan"] !== undefined || ms["Feb"] !== undefined || (Object.keys(ms).length > 0 && typeof ms[Object.keys(ms)[0]] !== 'object');
+                  let yearStats = {};
+                  
+                  if (isOldStructure) {
+                    yearStats = String(selectedInsightYear) === String(new Date().getFullYear()) ? ms : {};
+                  } else {
+                    yearStats = ms[String(selectedInsightYear)] || {};
+                  }
+
                   const fullMonthlyStats = {
                     ...defaultMonths,
-                    ...(viewUser.monthlyStats || {})
+                    ...yearStats
                   };
                   const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
                   const currentMonth = monthNames[new Date().getMonth()];
@@ -653,12 +703,12 @@ const UsersList = () => {
                             setSelectedMonthsForBulk(prev => [...prev, month]);
                           }
                         }}
-                        className={`p-4 rounded-xl flex items-center justify-between transition duration-200 cursor-pointer select-none ${cardBg} ${borderStyle}`}
+                        className={`p-3 sm:p-4 rounded-xl flex items-center justify-between transition duration-200 cursor-pointer select-none ${cardBg} ${borderStyle}`}
                       >
                         <div className="flex items-center min-w-0 flex-1">
                           {/* Circular Checkbox */}
                           <div
-                            className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all duration-200 mr-3 ${isSelected
+                            className={`w-[18px] h-[18px] sm:w-5 sm:h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all duration-200 mr-2.5 sm:mr-3 ${isSelected
                               ? "bg-cyan-600 border-cyan-600 text-white shadow-xs scale-110"
                               : "bg-white border-slate-300 hover:border-slate-400"
                               }`}
@@ -666,16 +716,16 @@ const UsersList = () => {
                             {isSelected && <Check size={11} className="stroke-[3.5]" />}
                           </div>
 
-                          <div className="flex flex-col gap-0.5 min-w-0">
-                            <span className={`text-[11px] uppercase tracking-wider ${monthColor} flex items-center gap-1.5`}>
+                          <div className="flex flex-col min-w-0 leading-tight">
+                            <span className={`text-[10px] sm:text-[11px] uppercase tracking-wider ${monthColor} flex items-center gap-1.5`}>
                               {month}
                               {isCurrent && (
-                                <span className="px-1.5 py-0.5 text-[9px] font-bold bg-cyan-100 text-cyan-800 rounded uppercase tracking-wider animate-pulse">
+                                <span className="px-1 py-0.5 text-[8px] sm:text-[9px] font-bold bg-cyan-100 text-cyan-800 rounded uppercase tracking-wider animate-pulse leading-none">
                                   Current
                                 </span>
                               )}
                             </span>
-                            <span className={`text-base ${amountColor}`}>
+                            <span className={`text-sm sm:text-base font-bold mt-0.5 ${amountColor}`}>
                               ₹{amount.toLocaleString("en-IN")}
                             </span>
                           </div>

@@ -343,7 +343,7 @@ export const getAllUsersOnlyAPI = async () => {
 };
 
 export const getUserByIdAPI = async (id) => {
-  return { data: { data: dummyUsers.find(u => u._id === id) || dummyUsers[0] } };
+  return await api.get(`/admin/users/${id}`);
 };
 
 export const getAllAdminsOnlyAPI = async () => {
@@ -376,61 +376,28 @@ export const changeUserRoleAPI = async (userId, data) => {
 };
 
 export const uploadUserPhotoAPI = async (id, file) => {
-  const user = dummyUsers.find(u => u._id === id);
-  if (user) {
-    user.profilePhoto = { url: URL.createObjectURL(file) };
-    saveUsersToStorage();
-  }
-  return { data: { message: "Photo uploaded" } };
+  const formData = new FormData();
+  formData.append("photo", file);
+  // Using POST since our route is POST for photo upload
+  return await api.post(`/admin/users/${id}/photo`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 };
 
 export const deleteUserPhotoAPI = async (id) => {
-  const user = dummyUsers.find(u => u._id === id);
-  if (user) {
-    user.profilePhoto = null;
-    saveUsersToStorage();
-  }
-  return { data: { message: "Photo deleted" } };
+  return await api.delete(`/admin/users/${id}/photo`);
 };
 
 export const softDeleteUserAPI = async (id) => {
-  const user = dummyUsers.find(u => u._id === id);
-  if (user) {
-    user.isDeleted = true;
-    saveUsersToStorage();
-  }
-  return { data: { message: "User soft deleted successfully" } };
+  return await api.patch(`/admin/users/${id}`, { isDeleted: true });
 };
 
 export const hardDeleteUserAPI = async (id) => {
-  const index = dummyUsers.findIndex(u => u._id === id);
-  if (index !== -1) {
-    dummyUsers.splice(index, 1);
-    saveUsersToStorage();
-  }
-  return { data: { message: "User permanently deleted" } };
+  return await api.delete(`/admin/users/${id}`);
 };
 
 export const updateUserStatsAPI = async (id, data) => {
-  const user = dummyUsers.find(u => u._id === id);
-  if (user) {
-    if (data.monthlyStats) {
-      user.monthlyStats = { ...user.monthlyStats, ...data.monthlyStats };
-    }
-    if (data.yearlyStats) {
-      user.yearlyStats = { ...user.yearlyStats, ...data.yearlyStats };
-    }
-    // Update stats:
-    const values = Object.values(user.monthlyStats || {});
-    user.totalDonations = values.reduce((a, b) => a + b, 0);
-    user.donationCount = values.filter(v => v > 0).length;
-    user.avgDonation = user.donationCount > 0 ? user.totalDonations / user.donationCount : 0;
-    
-    // Update yearly stats based on monthlyStats
-    const currentYear = new Date().getFullYear();
-    if (!user.yearlyStats) user.yearlyStats = {};
-    user.yearlyStats[String(currentYear)] = user.totalDonations;
-    saveUsersToStorage();
-  }
-  return { data: { message: "Stats updated successfully" } };
+  return await api.patch(`/admin/users/${id}/stats`, data);
 };

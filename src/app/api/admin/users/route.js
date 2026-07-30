@@ -109,6 +109,20 @@ export async function POST(req) {
       return NextResponse.json({ message: "All fields are required" }, { status: 400 });
     }
 
+    // Lookup the creator's name
+    let creatorName = "System";
+    try {
+      const creator = await prisma.user.findUnique({
+        where: { id: decoded.userId },
+        select: { name: true }
+      });
+      if (creator && creator.name) {
+        creatorName = creator.name;
+      }
+    } catch (e) {
+      console.warn("Could not fetch creator name");
+    }
+
     // Check if mobile already exists
     const existingUser = await prisma.user.findUnique({
       where: { mobile },
@@ -128,6 +142,7 @@ export async function POST(req) {
           mobile,
           password: hashedPassword,
           role,
+          createdBy: creatorName,
         },
       });
     } catch (dbError) {
@@ -142,6 +157,7 @@ export async function POST(req) {
               mobile,
               password: hashedPassword,
               role,
+              createdBy: creatorName,
               createdAt: { $date: new Date().toISOString() },
               updatedAt: { $date: new Date().toISOString() }
             }

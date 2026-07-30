@@ -1,5 +1,6 @@
 // Mock Donation API
 import { dummyUsers } from "./user.api";
+import api from "./axios";
 
 const dummyDonationData = [
   // Rahul Sharma (u1)
@@ -37,26 +38,7 @@ const dummyDonationData = [
 ];
 
 export const createDonationAPI = async (data) => {
-  const user = dummyUsers.find(u => u._id === data.donorId);
-  const donorName = user ? user.name : "Demo User";
-  const donorMobile = user ? user.mobile : "";
-  const newDonation = {
-    _id: "d" + (dummyDonationData.length + 1),
-    donorId: data.donorId,
-    donorName: donorName,
-    donor: { name: donorName },
-    donorMobile: donorMobile,
-    amount: Number(data.amount),
-    date: new Date().toISOString().split("T")[0],
-    year: Number(data.year),
-    month: Number(data.month),
-    status: data.status || "Success",
-    paymentMethod: "Cash",
-    remarks: data.remarks || "",
-    collectedBy: { name: "Demo Admin", role: "ADMIN" }
-  };
-  dummyDonationData.push(newDonation);
-  return { data: { message: "Donation recorded successfully", data: newDonation } };
+  return await api.post("/admin/donations", data);
 };
 
 export const getDonationsByDonorIdAPI = async (donorId) => {

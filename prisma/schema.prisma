@@ -21,6 +21,13 @@ model User {
   role         Role     @default(USER)
   profilePhoto String?
   isActive     Boolean  @default(true)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  monthlyStats Json?
+  yearlyStats  Json?
+  createdBy    String?   @default("System")
+  totalDonations Int?      @default(0)
+  donationCount  Int?      @default(0)
+  avgDonation    Float?    @default(0)
+  isDeleted    Boolean   @default(false)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 }
