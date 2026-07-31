@@ -154,14 +154,27 @@ const MyDonations = () => {
     {
       key: "donor",
       header: "Donor Details",
-      render: (_, d) => <span className="font-semibold text-gray-800 text-sm">{d?.donor?.name || "—"}</span>
+      render: (_, d) => {
+        const initial = (d.donor?.name || "U").charAt(0).toUpperCase();
+        return (
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-full bg-teal-50 flex items-center justify-center border border-teal-100 flex-shrink-0">
+              <span className="text-teal-700 font-bold text-sm">{initial}</span>
+            </div>
+            <div className="flex flex-col">
+              <span className="font-bold text-slate-800">{d.donor?.name || "—"}</span>
+              <span className="text-xs text-slate-500">{d.donor?.mobile || "—"}</span>
+            </div>
+          </div>
+        );
+      }
     },
     {
       key: "amount",
       header: "Amount",
       align: "right",
       render: (_, d) => (
-        <span className={`font-bold ${amountStyles[(d.status || "").toUpperCase()] || "text-gray-800"}`}>
+        <span className={`font-extrabold tracking-tight ${amountStyles[(d.status || "").toUpperCase()] || "text-gray-800"}`}>
           ₹{(Number(d.amount) || 0).toLocaleString("en-IN")}
         </span>
       )
@@ -201,7 +214,7 @@ const MyDonations = () => {
     {
       key: "date",
       header: "Date",
-      render: (_, d) => <span className="text-xs text-gray-500 font-medium">{renderDate(d)}</span>
+      render: (_, d) => <span className="text-xs text-slate-500 font-semibold">{renderDate(d)}</span>
     }
   ];
 
@@ -218,8 +231,8 @@ const MyDonations = () => {
   };
 
   return (
-    <div className="p-4 md:p-6 space-y-6 max-w-[1400px] mx-auto w-full">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="py-3 md:py-6 space-y-5">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-3">
           <Calendar className="text-teal-700" size={24} />
           <div>

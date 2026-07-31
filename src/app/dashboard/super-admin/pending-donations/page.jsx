@@ -206,12 +206,25 @@ const PendingDonations = () => {
     {
       key: "donor",
       header: "Donor",
-      render: (_, d) => <span className="font-medium text-slate-800">{d.donor?.name || "N/A"}</span>
+      render: (_, d) => {
+        const initial = (d.donor?.name || "U").charAt(0).toUpperCase();
+        return (
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-full bg-teal-50 flex items-center justify-center border border-teal-100 flex-shrink-0">
+              <span className="text-teal-700 font-bold text-sm">{initial}</span>
+            </div>
+            <div className="flex flex-col">
+              <span className="font-bold text-slate-800">{d.donor?.name || "—"}</span>
+              <span className="text-xs text-slate-500">{d.donor?.mobile || "—"}</span>
+            </div>
+          </div>
+        );
+      }
     },
     {
       key: "amount",
       header: "Amount",
-      render: (_, d) => <span className="font-bold text-green-600">₹{d.amount}</span>
+      render: (_, d) => <span className="font-extrabold tracking-tight text-green-600">₹{(Number(d.amount) || 0).toLocaleString("en-IN")}</span>
     },
     {
       key: "collectedBy",
@@ -261,9 +274,9 @@ const PendingDonations = () => {
   ];
 
   return (
-    <div className="p-4 sm:p-6 bg-slate-50 min-h-screen">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-2">
-        <div className="flex items-center gap-2 text-[var(--sidebar-teal)]">
+    <div className="py-3 md:py-6 space-y-5">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="flex items-center gap-3">
           <Clock size={24} />
           <h1 className="text-2xl font-extrabold tracking-tight text-slate-800">
             Pending Donations

@@ -367,16 +367,7 @@ export const createUserAPI = async (data) => {
 };
 
 export const changeUserRoleAPI = async (userId, data) => {
-  const user = dummyUsers.find(u => u._id === userId);
-  if (user) {
-    if (userId === "user123" || userId === "superadmin1" || userId === "u1") {
-      // Prevent changing key seed accounts roles
-    } else {
-      user.role = data.role;
-    }
-    saveUsersToStorage();
-  }
-  return { data: { message: "Role changed successfully" } };
+  return await api.patch(`/admin/users/${userId}`, data);
 };
 
 export const uploadUserPhotoAPI = async (id, file) => {

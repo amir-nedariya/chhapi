@@ -22,6 +22,7 @@ import {
   changeUserRoleAPI,
   softDeleteUserAPI
 } from "../../api/user.api";
+import DeleteConfirmModal from "../common/DeleteConfirmModal";
 import {
   createDonationAPI,
   getDonationsByDonorIdAPI,
@@ -63,6 +64,9 @@ const UserDetails = ({ currentRole }) => {
 
   // Filter year for Monthly Insights
   const [selectedYear, setSelectedYear] = useState(now.getFullYear());
+
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const fetchUser = async () => {
     try {
@@ -123,16 +127,22 @@ const UserDetails = ({ currentRole }) => {
     }
   };
 
-  const handleDeleteUser = async () => {
-    if (window.confirm("Are you sure you want to delete this user?")) {
-      try {
-        await softDeleteUserAPI(user._id);
-        toast.success("User deleted successfully");
-        navigate(backPath);
-      } catch {
-        toast.error("Failed to delete user");
-      }
+  const confirmDeleteUser = async () => {
+    try {
+      setDeleteLoading(true);
+      await softDeleteUserAPI(user._id);
+      toast.success("User deleted successfully");
+      navigate(backPath);
+    } catch {
+      toast.error("Failed to delete user");
+    } finally {
+      setDeleteLoading(false);
+      setDeleteModalOpen(false);
     }
+  };
+
+  const handleDeleteUserClick = () => {
+    setDeleteModalOpen(true);
   };
 
   const handleRoleChange = async (newRole) => {
@@ -242,9 +252,13 @@ const UserDetails = ({ currentRole }) => {
                   <UploadCloud size={14} /> Upload Photo
                 </button>
               )}
-              {currentRole !== "USER" && (
-                <button onClick={handleDeleteUser} className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-rose-50 text-rose-500 hover:bg-rose-100 font-bold text-xs transition">
-                  <Trash2 size={14} /> Delete User
+
+              {currentRole === "SUPER_ADMIN" && (
+                <button 
+                  onClick={handleDeleteUserClick} 
+                  className="w-full mt-2 py-2.5 rounded-lg border border-rose-200 text-rose-500 font-medium text-sm flex items-center justify-center gap-2 hover:bg-rose-50 transition"
+                >
+                  <Trash2 size={16} /> Delete User
                 </button>
               )}
             </div>
@@ -505,6 +519,14 @@ const UserDetails = ({ currentRole }) => {
         </div>
       )}
 
+      <DeleteConfirmModal
+        open={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={confirmDeleteUser}
+        title="Delete User"
+        message={<>Are you sure you want to delete <strong>{user?.name}</strong>? This action will remove their access.</>}
+        loading={deleteLoading}
+      />
     </div>
   );
 };

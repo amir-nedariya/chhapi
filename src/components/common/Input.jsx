@@ -14,6 +14,7 @@ const Input = ({
   onChange,
   value = "",
   error,
+  hideDefaultOption,
   ...props
 }) => {
   const sizes = {
@@ -63,7 +64,7 @@ const Input = ({
             className={`${baseInputClasses} appearance-none cursor-pointer pr-8`}
             {...props}
           >
-            {!props.hideDefaultOption && <option value="">{label || "Select"}</option>}
+            {!hideDefaultOption && <option value="">{label || "Select"}</option>}
             {options.map((opt, i) => (
               <option key={i} value={opt.value}>
                 {opt.label}
