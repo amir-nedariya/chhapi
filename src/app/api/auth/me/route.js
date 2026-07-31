@@ -24,7 +24,7 @@ export async function GET(req) {
       where: { id: decoded.userId },
     });
 
-    if (!user) {
+    if (!user || user.isDeleted) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
 

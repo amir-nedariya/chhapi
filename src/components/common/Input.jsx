@@ -26,7 +26,7 @@ const Input = ({
   const baseInputClasses = `
   w-full border ${error ? "border-red-500 ring-1 ring-red-500/20" : "border-gray-100"} 
   text-gray-800 outline-none 
-  ${error ? "focus:border-red-500 focus:ring-2 focus:ring-red-500/20" : "focus:border-primary focus:ring-2 focus:ring-primary/10"} 
+  ${error ? "focus:border-red-500 focus:ring-2 focus:ring-red-500/20" : "focus:border-[var(--sidebar-teal)] focus:ring-2 focus:ring-[var(--sidebar-teal)]/10"} 
   bg-white rounded-sm shadow-sm truncate transition-all
   ${sizes[size]}
   ${startIcon ? "pl-10" : ""}
@@ -44,7 +44,7 @@ const Input = ({
   const textareaClasses = `
   w-full border ${error ? "border-red-500 ring-1 ring-red-500/20" : "border-gray-100"} 
   text-gray-800 outline-none 
-  ${error ? "focus:border-red-500 focus:ring-2 focus:ring-red-500/20" : "focus:border-primary focus:ring-2 focus:ring-primary/10"} 
+  ${error ? "focus:border-red-500 focus:ring-2 focus:ring-red-500/20" : "focus:border-[var(--sidebar-teal)] focus:ring-2 focus:ring-[var(--sidebar-teal)]/10"} 
   bg-white rounded-sm shadow-sm resize-none transition-all
   ${textareaSizes[size]}
   ${className}

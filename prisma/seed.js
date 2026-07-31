@@ -13,6 +13,12 @@ async function main() {
       password,
       role: 'SUPER_ADMIN',
     },
+    {
+      name: 'akil',
+      mobile: '6356417253',
+      password,
+      role: 'SUPER_ADMIN',
+    },
   ];
 
   for (const user of users) {

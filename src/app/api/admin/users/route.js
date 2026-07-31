@@ -33,7 +33,9 @@ export async function GET(req) {
 
     const skip = (page - 1) * limit;
     
-    let whereClause = {};
+    let whereClause = {
+      isDeleted: false
+    };
 
     // Search by name or mobile
     if (search) {
@@ -46,6 +48,12 @@ export async function GET(req) {
     // Filter by role
     if (roleFilter !== "ALL") {
       whereClause.role = roleFilter;
+    }
+
+    // Filter by creator
+    const creatorFilter = url.searchParams.get("creator");
+    if (creatorFilter && creatorFilter !== "ALL") {
+      whereClause.createdBy = creatorFilter;
     }
 
     // Execute queries in parallel

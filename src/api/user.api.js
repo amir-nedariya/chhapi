@@ -325,9 +325,13 @@ export const saveUsersToStorage = () => {
 };
 
 
-export const getAllUsersAPI = async (params = { page: 1, limit: 10, search: "", role: "ALL" }) => {
+export const getAllUsersAPI = async (params = { page: 1, limit: 10, search: "", role: "ALL", creator: "ALL" }) => {
   const query = new URLSearchParams(params).toString();
   return await api.get(`/admin/users?${query}`);
+};
+
+export const getCreatorsAPI = async () => {
+  return await api.get("/admin/creators");
 };
 
 export const activateUserAPI = async (id) => {

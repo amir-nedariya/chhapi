@@ -18,7 +18,7 @@ export async function POST(req) {
       where: { mobile },
     });
 
-    if (!user) {
+    if (!user || user.isDeleted) {
       return NextResponse.json({ message: "Invalid credentials" }, { status: 401 });
     }
 

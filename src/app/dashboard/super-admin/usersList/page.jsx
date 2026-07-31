@@ -13,6 +13,7 @@ import {
   softDeleteUserAPI,
   hardDeleteUserAPI,
   updateUserStatsAPI,
+  getCreatorsAPI,
 } from "../../../../api/user.api";
 import { createDonationAPI } from "../../../../api/donation.api";
 import { toast } from "react-hot-toast";
@@ -42,6 +43,7 @@ import { useSidebarColor } from "../../../../hooks/useSidebarColor";
 import PasswordCell from "../../../../components/common/PasswordCell";
 import Table from "../../../../components/common/Table";
 import FilterBar from "../../../../components/common/FilterBar";
+import Modal from "../../../../components/common/Modal";
 import Button from "../../../../components/common/Button";
 
 const ITEMS_PER_PAGE = 10;
@@ -76,6 +78,8 @@ const UsersList = () => {
   const [loadingId, setLoadingId] = useState(null);
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("ALL");
+  const [creatorFilter, setCreatorFilter] = useState("ALL");
+  const [creatorsList, setCreatorsList] = useState([]);
   const [page, setPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -168,7 +172,7 @@ const UsersList = () => {
   const fetchUsers = async (showLoader = true) => {
     try {
       if (showLoader) setIsLoading(true);
-      const res = await getAllUsersAPI({ page, limit: ITEMS_PER_PAGE, search, role: roleFilter });
+      const res = await getAllUsersAPI({ page, limit: ITEMS_PER_PAGE, search, role: roleFilter, creator: creatorFilter });
       setUsers(res.data.data || []);
       setTotalItems(res.data.total || 0);
     } catch {
@@ -178,9 +182,22 @@ const UsersList = () => {
     }
   };
 
+  const fetchCreators = async () => {
+    try {
+      const res = await getCreatorsAPI();
+      setCreatorsList(res.data.data || []);
+    } catch {
+      toast.error("Failed to load creators");
+    }
+  };
+
+  useEffect(() => {
+    fetchCreators();
+  }, []);
+
   useEffect(() => {
     fetchUsers();
-  }, [page, search, roleFilter]);
+  }, [page, search, roleFilter, creatorFilter]);
 
   /* ================= ACTIONS ================= */
   const toggleStatus = async (u) => {
@@ -1145,6 +1162,7 @@ const UsersList = () => {
     const { name, value } = e.target;
     if (name === "search") setSearch(value);
     if (name === "roleFilter") setRoleFilter(value);
+    if (name === "creatorFilter") setCreatorFilter(value);
     setPage(1);
   };
 
@@ -1156,6 +1174,12 @@ const UsersList = () => {
         { label: "User", value: "USER" },
         { label: "Admin", value: "ADMIN" },
         { label: "Super Admin", value: "SUPER_ADMIN" }
+      ]
+    },
+    {
+      type: "select", name: "creatorFilter", options: [
+        { label: "All Creators", value: "ALL" },
+        ...creatorsList.map(c => ({ label: c, value: c }))
       ]
     }
   ];
@@ -1193,6 +1217,19 @@ const UsersList = () => {
         <span className={`px-3 py-1 rounded-full text-xs ${roleStyles[u.role]}`}>
           {u.role.replace("_", " ")}
         </span>
+      )
+    },
+    {
+      key: "creator",
+      header: "Creator",
+      align: "center",
+      render: (_, u) => (
+        <div className="flex flex-col items-center">
+          <span className="text-sm font-medium text-slate-700">{u.createdBy || 'System'}</span>
+          <span className="text-xs text-slate-500">
+            {u.createdAt ? new Date(u.createdAt).toLocaleDateString() : 'N/A'}
+          </span>
+        </div>
       )
     },
     {
@@ -1245,7 +1282,7 @@ const UsersList = () => {
         </Button>
       </div>
 
-      <FilterBar filters={filterConfig} params={{ search, roleFilter }} onChange={handleFilterChange} />
+      <FilterBar filters={filterConfig} params={{ search, roleFilter, creatorFilter }} onChange={handleFilterChange} />
 
       <Table
         columns={columns}
@@ -1263,118 +1300,97 @@ const UsersList = () => {
 
 
       {/* ================= CREATE USER MODAL ================= */}
-      {isCreateOpen && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white w-full sm:max-w-2xl rounded-2xl shadow-xl overflow-hidden transition-all duration-200">
-            {/* Header */}
-            <div className="flex justify-between items-center px-8 py-5 border-b border-gray-100 bg-white">
-              <h3 className="text-xl sm:text-2xl font-semibold text-[#1e293b]">Create User</h3>
-              <button
-                onClick={() => {
-                  setIsCreateOpen(false);
-                  resetCreateForm();
-                }}
-                className="text-gray-400 hover:text-gray-600 transition"
-              >
-                <X size={24} />
-              </button>
+      <Modal isOpen={isCreateOpen} onClose={() => { setIsCreateOpen(false); resetCreateForm(); }} maxWidth="max-w-2xl">
+        <Modal.Header onClose={() => { setIsCreateOpen(false); resetCreateForm(); }}>
+          Create User
+        </Modal.Header>
+
+        <Modal.Body>
+          <form id="pageCreateUserForm" onSubmit={handleCreateUser} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Full Name */}
+              <div>
+                <label className="block text-[15px] font-bold text-[#1C2434] mb-2">
+                  Full Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={newName}
+                  onChange={(e) => setNewName(e.target.value)}
+                  placeholder="Enter full name"
+                  className="w-full px-4 py-3 rounded-md border border-gray-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-gray-300 transition-all bg-white"
+                />
+              </div>
+
+              {/* Mobile Number */}
+              <div>
+                <label className="block text-[15px] font-bold text-[#1C2434] mb-2">
+                  Mobile Number <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={newMobile}
+                  onChange={(e) => setNewMobile(e.target.value)}
+                  placeholder="10 digit mobile number"
+                  className="w-full px-4 py-3 rounded-md border border-gray-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-gray-300 transition-all bg-white"
+                />
+              </div>
+
+              {/* Password */}
+              <div>
+                <label className="block text-[15px] font-bold text-[#1C2434] mb-2">
+                  Password <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="password"
+                  required
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Minimum 6 characters"
+                  className="w-full px-4 py-3 rounded-md border border-gray-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-gray-300 transition-all bg-white"
+                />
+              </div>
+
+              {/* Role */}
+              <div>
+                <label className="block text-[15px] font-bold text-[#1C2434] mb-2">
+                  Role <span className="text-red-500">*</span>
+                </label>
+                <select
+                  value={newRole}
+                  onChange={(e) => setNewRole(e.target.value)}
+                  className="w-full px-4 py-3 rounded-md border border-gray-200 text-slate-800 focus:outline-none focus:border-gray-300 transition-all bg-white cursor-pointer"
+                >
+                  <option value="USER">USER</option>
+                  <option value="ADMIN">ADMIN</option>
+                </select>
+              </div>
             </div>
+          </form>
+        </Modal.Body>
 
-            <form onSubmit={handleCreateUser}>
-              {/* Form Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 p-8 bg-white">
-                {/* Full Name */}
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-slate-700 flex items-center">
-                    Full Name <span className="text-red-500 ml-1">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={newName}
-                    onChange={(e) => setNewName(e.target.value)}
-                    placeholder="Enter full name"
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-sky-500 focus:ring-2 focus:ring-sky-100 outline-none text-slate-700 placeholder-slate-400 transition"
-                  />
-                </div>
-
-                {/* Mobile Number */}
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-slate-700 flex items-center">
-                    Mobile Number <span className="text-red-500 ml-1">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={newMobile}
-                    onChange={(e) => setNewMobile(e.target.value)}
-                    placeholder="10 digit mobile number"
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-sky-500 focus:ring-2 focus:ring-sky-100 outline-none text-slate-700 placeholder-slate-400 transition"
-                  />
-                </div>
-
-                {/* Password */}
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-slate-700 flex items-center">
-                    Password <span className="text-red-500 ml-1">*</span>
-                  </label>
-                  <input
-                    type="password"
-                    required
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    placeholder="Minimum 6 characters"
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-sky-500 focus:ring-2 focus:ring-sky-100 outline-none text-slate-700 placeholder-slate-400 transition"
-                  />
-                </div>
-
-                {/* Role */}
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-slate-700 flex items-center">
-                    Role <span className="text-red-500 ml-1">*</span>
-                  </label>
-                  <div className="relative">
-                    <select
-                      value={newRole}
-                      onChange={(e) => setNewRole(e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-sky-500 focus:ring-2 focus:ring-sky-100 outline-none text-slate-700 bg-white transition appearance-none cursor-pointer"
-                      style={{
-                        backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
-                        backgroundRepeat: 'no-repeat',
-                        backgroundPosition: 'right 1rem center',
-                        backgroundSize: '1.25em'
-                      }}
-                    >
-                      <option value="USER">USER</option>
-                      <option value="ADMIN">ADMIN</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              {/* Footer */}
-              <div className="flex justify-end items-center gap-4 px-8 py-5 border-t border-gray-100 bg-white">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsCreateOpen(false);
-                    resetCreateForm();
-                  }}
-                  className="text-slate-500 hover:text-slate-800 font-medium px-4 py-2 transition"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="bg-[#0284c7] hover:bg-[#0369a1] text-white font-medium px-6 py-2.5 rounded-xl shadow-md transition active:scale-95"
-                >
-                  Save User
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+        <Modal.Footer>
+          <button
+            type="button"
+            onClick={() => {
+              setIsCreateOpen(false);
+              resetCreateForm();
+            }}
+            className="px-5 py-2.5 text-[15px] font-medium text-slate-500 hover:text-slate-700 transition-colors bg-transparent border-none"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            form="pageCreateUserForm"
+            className="px-6 py-2.5 text-[15px] font-medium text-white bg-[#1C2434] hover:bg-[#1C2434]/90 rounded-md shadow-sm transition-colors"
+          >
+            Save User
+          </button>
+        </Modal.Footer>
+      </Modal>
 
       {/* ================= DELETE CONFIRMATION MODAL ================= */}
       {isDeleteOpen && (

@@ -68,10 +68,15 @@ export async function PATCH(req, { params }) {
     const updateData = {};
     if (body.hasOwnProperty("isDeleted")) {
       updateData.isDeleted = body.isDeleted;
+      if (body.isDeleted) {
+        updateData.deletedAt = new Date();
+        updateData.deletedBy = decoded.userId;
+      }
     }
     if (body.hasOwnProperty("role")) {
       updateData.role = body.role;
     }
+    updateData.updatedBy = decoded.userId;
 
     const updatedUser = await prisma.user.update({
       where: { id },
@@ -101,12 +106,17 @@ export async function DELETE(req, { params }) {
 
     const { id } = await params;
 
-    await prisma.user.delete({
+    await prisma.user.update({
       where: { id },
+      data: {
+        isDeleted: true,
+        deletedAt: new Date(),
+        deletedBy: decoded.userId,
+      },
     });
 
     return NextResponse.json({
-      message: "User permanently deleted",
+      message: "User deleted successfully",
     });
   } catch (error) {
     console.error("Delete user error:", error);

@@ -94,7 +94,7 @@ const Table = ({
             <button
               onClick={() => pagination.onPageChange(Math.max(pagination.currentPage - 1, 1))}
               disabled={pagination.currentPage === 1}
-              className="p-1.5 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:hover:bg-transparent transition bg-white shadow-[0_1px_2px_rgba(0,0,0,0.05)]"
+              className="p-1.5 rounded-lg border border-gray-200 text-gray-500 hover:border-[var(--sidebar-teal)] hover:text-[var(--sidebar-teal)] active:scale-95 disabled:opacity-40 disabled:hover:border-gray-200 disabled:hover:text-gray-500 disabled:active:scale-100 transition-all bg-white shadow-sm"
             >
               <ChevronLeft size={16} />
             </button>
@@ -106,7 +106,7 @@ const Table = ({
             <button
               onClick={() => pagination.onPageChange(Math.min(pagination.currentPage + 1, pagination.totalPages))}
               disabled={pagination.currentPage === pagination.totalPages}
-              className="p-1.5 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:hover:bg-transparent transition bg-white shadow-[0_1px_2px_rgba(0,0,0,0.05)]"
+              className="p-1.5 rounded-lg border border-gray-200 text-gray-500 hover:border-[var(--sidebar-teal)] hover:text-[var(--sidebar-teal)] active:scale-95 disabled:opacity-40 disabled:hover:border-gray-200 disabled:hover:text-gray-500 disabled:active:scale-100 transition-all bg-white shadow-sm"
             >
               <ChevronRight size={16} />
             </button>
