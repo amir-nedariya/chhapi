@@ -4,16 +4,18 @@ import { toast } from "react-hot-toast";
 import {
   getPendingDonationsAPI,
   approveDonationAPI,
+  bulkApproveDonationsAPI,
   rejectDonationAPI,
 } from "../../../../api/donation.api";
 import { Clock } from "lucide-react";
 import Table from "../../../../components/common/Table";
 import FilterBar from "../../../../components/common/FilterBar";
 import DeleteConfirmModal from "../../../../components/common/DeleteConfirmModal";
+import ApproveConfirmModal from "../../../../components/common/ApproveConfirmModal";
 
 const monthNames = [
-  "January","February","March","April","May","June",
-  "July","August","September","October","November","December",
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
 ];
 
 const ITEMS_PER_PAGE = 10;
@@ -23,113 +25,121 @@ const PendingDonations = () => {
   const [loading, setLoading] = useState(false);
   const [loadingId, setLoadingId] = useState(null);
 
-  const [params, setParams] = useState({ collector: "ALL", year: "ALL", month: "ALL" });
+  const [params, setParams] = useState({
+    collector: "ALL",
+    month: "ALL",
+    year: "ALL",
+    search: ""
+  });
   const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const [collectors, setCollectors] = useState([]);
+  const [years, setYears] = useState([]);
 
   const [rejectModalOpen, setRejectModalOpen] = useState(false);
+  const [approveModalOpen, setApproveModalOpen] = useState(false);
+  const [bulkApproveModalOpen, setBulkApproveModalOpen] = useState(false);
   const [selectedDonation, setSelectedDonation] = useState(null);
   const [modalState, setModalState] = useState("idle");
+  
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [isBulkApproving, setIsBulkApproving] = useState(false);
 
+  /* ===== FETCH ===== */
   const fetchPending = async () => {
     try {
       setLoading(true);
-      const res = await getPendingDonationsAPI();
+      const res = await getPendingDonationsAPI({
+        ...params,
+        collectedBy: params.collector,
+        page,
+        limit: ITEMS_PER_PAGE
+      });
       setDonations(res?.data?.data || []);
+      setCollectors(res?.data?.metadata?.collectors || []);
+      setYears(res?.data?.metadata?.years || []);
+      setTotalPages(res?.data?.pagination?.totalPages || 1);
+      setTotalItems(res?.data?.pagination?.totalItems || 0);
+      setSelectedIds([]); // Reset selection on page or filter change
     } catch {
-      toast.error("❌ Failed to load pending donations");
+      toast.error("Failed to load pending donations");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchPending();
-  }, []);
+    const delay = setTimeout(() => {
+      fetchPending();
+    }, 500);
+    return () => clearTimeout(delay);
+  }, [params.collector, params.month, params.year, params.search, page]);
 
-  const approveDonation = async (id) => {
+  const confirmApproval = async (id) => {
+    if (!id) return;
     try {
       setLoadingId(id);
+      setApproveModalOpen(false);
       await approveDonationAPI(id);
 
-      const donation = donations.find(d => d._id === id);
-      if (donation) {
-        const phone = donation.donorMobile || donation.donor?.mobile || "";
-        const donorName = donation.donor?.name || donation.donorName || "Donor";
-        const amount = donation.amount;
-        const campaign = donation.remarks || "our campaigns";
-
-        const messageText = `Hello *${donorName}*,\n\nWe are pleased to inform you that your donation of *₹${amount}* for *${campaign}* has been verified and approved successfully.\n\nThank you for your generous contribution and support! 🙏\n\n— *Chhapi Donation Portal*`;
-        const whatsappUrl = `https://api.whatsapp.com/send?phone=${phone.replace(/[^\d]/g, '')}&text=${encodeURIComponent(messageText)}`;
-
-        window.open(whatsappUrl, "_blank");
-      }
-
-      toast.success("✅ Donation approved & WhatsApp chat opened");
+      toast.success("Donation Approved!");
       fetchPending();
     } catch {
-      toast.error("❌ Approval failed");
+      toast.error("Failed to approve donation");
     } finally {
       setLoadingId(null);
+      setSelectedDonation(null);
+    }
+  };
+
+  const bulkApprove = async () => {
+    if (selectedIds.length === 0) return;
+    try {
+      setIsBulkApproving(true);
+      setBulkApproveModalOpen(false);
+      await bulkApproveDonationsAPI(selectedIds);
+      toast.success(`✅ ${selectedIds.length} donations approved!`);
+      setSelectedIds([]);
+      fetchPending();
+    } catch {
+      toast.error("❌ Failed to approve some donations");
+    } finally {
+      setIsBulkApproving(false);
     }
   };
 
   const confirmRejection = async (id) => {
+    if (!id) return;
     try {
       setModalState("processing");
+      setRejectModalOpen(false);
       await rejectDonationAPI(id);
-      setModalState("success");
-      toast.success("❌ Donation rejected");
+      toast.success("Donation Rejected");
       fetchPending();
-      setTimeout(() => {
-        setRejectModalOpen(false);
-        setSelectedDonation(null);
-        setModalState("idle");
-      }, 1500);
     } catch {
-      setModalState("error");
-      toast.error("❌ Rejection failed");
-      setTimeout(() => {
-        setRejectModalOpen(false);
-        setSelectedDonation(null);
-        setModalState("idle");
-      }, 1500);
+      toast.error("Failed to reject donation");
+    } finally {
+      setModalState("idle");
+      setLoadingId(null);
+      setSelectedDonation(null);
     }
   };
 
-  const collectors = useMemo(() => [
-    ...new Set(donations.map((d) => d.collectedBy?.name).filter(Boolean))
-  ], [donations]);
-
-  const years = useMemo(() => [
-    ...new Set(donations.map(d => d.year))
-  ], [donations]);
-
-  const months = useMemo(() => [
-    ...new Set(donations.map(d => d.month))
-  ], [donations]);
-
-  const filteredDonations = useMemo(() => {
-    return donations.filter((d) => {
-      const collectorMatch = params.collector === "ALL" || d.collectedBy?.name === params.collector;
-      const yearMatch = params.year === "ALL" || d.year === Number(params.year);
-      const monthMatch = params.month === "ALL" || d.month === Number(params.month);
-      return collectorMatch && yearMatch && monthMatch;
-    });
-  }, [donations, params.collector, params.year, params.month]);
-
-  const totalPages = Math.ceil(filteredDonations.length / ITEMS_PER_PAGE);
-  const paginatedData = filteredDonations.slice(
-    (page - 1) * ITEMS_PER_PAGE,
-    page * ITEMS_PER_PAGE
-  );
-
   const handleFilterChange = (e) => {
-    const { name, value } = e.target;
-    setParams(prev => ({ ...prev, [name]: value }));
-    setPage(1);
+    const target = e.target;
+    const name = target.name || target.id || target.getAttribute("name");
+    const value = target.value;
+    if (name) {
+      setParams(prev => ({ ...prev, [name]: value }));
+      setPage(1);
+    } else {
+      console.error("Filter change missing name property", target);
+    }
   };
 
   const filterConfig = [
+    { type: "search", name: "search", placeholder: "Search donor or collector..." },
     {
       type: "select",
       name: "collector",
@@ -151,12 +161,48 @@ const PendingDonations = () => {
       name: "month",
       options: [
         { label: "All Months", value: "ALL" },
-        ...months.map(m => ({ label: monthNames[m - 1], value: m }))
+        ...monthNames.map((m, i) => ({ label: m, value: i + 1 }))
       ]
     }
   ];
 
+  const handleSelectAll = (e) => {
+    if (e.target.checked) {
+      setSelectedIds(donations.map(d => d._id));
+    } else {
+      setSelectedIds([]);
+    }
+  };
+
+  const handleSelectOne = (e, id) => {
+    if (e.target.checked) {
+      setSelectedIds(prev => [...prev, id]);
+    } else {
+      setSelectedIds(prev => prev.filter(i => i !== id));
+    }
+  };
+
   const columns = [
+    {
+      key: "select",
+      header: (
+        <input 
+          type="checkbox" 
+          checked={donations.length > 0 && selectedIds.length === donations.length}
+          onChange={handleSelectAll}
+          className="cursor-pointer w-4 h-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
+        />
+      ),
+      render: (_, d) => (
+        <input 
+          type="checkbox" 
+          checked={selectedIds.includes(d._id)}
+          onChange={(e) => handleSelectOne(e, d._id)}
+          className="cursor-pointer w-4 h-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
+        />
+      ),
+      align: "center"
+    },
     {
       key: "donor",
       header: "Donor",
@@ -197,15 +243,15 @@ const PendingDonations = () => {
         <div className="flex items-center justify-center gap-2">
           <button
             disabled={loadingId !== null}
-            onClick={() => approveDonation(d._id)}
-            className="px-3 py-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-600 hover:text-white border border-emerald-200 rounded-sm transition-all"
+            onClick={() => { setSelectedDonation(d); setApproveModalOpen(true); }}
+            className="px-4 py-1.5 text-[13px] font-medium text-emerald-500 bg-transparent hover:bg-emerald-50 border border-emerald-200 hover:border-emerald-500 rounded-md transition-all"
           >
             {loadingId === d._id ? "..." : "Approve"}
           </button>
           <button
             disabled={loadingId !== null}
             onClick={() => { setSelectedDonation(d); setRejectModalOpen(true); }}
-            className="px-3 py-1.5 text-xs font-semibold text-rose-700 bg-rose-50 hover:bg-rose-600 hover:text-white border border-rose-200 rounded-sm transition-all"
+            className="px-4 py-1.5 text-[13px] font-medium text-rose-500 bg-transparent hover:bg-rose-50 border border-rose-200 hover:border-rose-500 rounded-md transition-all"
           >
             Reject
           </button>
@@ -215,22 +261,35 @@ const PendingDonations = () => {
   ];
 
   return (
-    <div className="p-4 md:p-6 space-y-5">
-      <div className="flex items-center gap-2">
-        <Clock size={24} className="text-teal-700" />
-        <h2 className="text-2xl font-bold text-gray-800">Pending Donations</h2>
+    <div className="p-4 sm:p-6 bg-slate-50 min-h-screen">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-2">
+        <div className="flex items-center gap-2 text-[var(--sidebar-teal)]">
+          <Clock size={24} />
+          <h1 className="text-2xl font-extrabold tracking-tight text-slate-800">
+            Pending Donations
+          </h1>
+        </div>
+        {selectedIds.length > 0 && (
+          <button
+            onClick={() => setBulkApproveModalOpen(true)}
+            disabled={isBulkApproving}
+            className="px-4 py-2 bg-emerald-600 text-white rounded-md text-sm font-semibold shadow-sm hover:bg-emerald-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+          >
+            {isBulkApproving ? "Approving..." : `Approve Selected (${selectedIds.length})`}
+          </button>
+        )}
       </div>
 
       <FilterBar filters={filterConfig} params={params} onChange={handleFilterChange} />
 
       <Table
         columns={columns}
-        data={paginatedData}
+        data={donations}
         isLoading={loading}
         pagination={{
           currentPage: page,
           totalPages: totalPages,
-          totalItems: filteredDonations.length,
+          totalItems: totalItems,
           itemsPerPage: ITEMS_PER_PAGE,
           onPageChange: setPage
         }}
@@ -240,8 +299,29 @@ const PendingDonations = () => {
         }}
       />
 
+      <ApproveConfirmModal
+        open={approveModalOpen}
+        onClose={() => setApproveModalOpen(false)}
+        onConfirm={() => confirmApproval(selectedDonation?._id)}
+        title="Approve Donation?"
+        loading={loadingId !== null}
+      />
+
+      <ApproveConfirmModal
+        open={bulkApproveModalOpen}
+        onClose={() => setBulkApproveModalOpen(false)}
+        onConfirm={bulkApprove}
+        title={`Approve ${selectedIds.length} Donations?`}
+        message={
+          <>
+            This action will <span className="font-medium text-gray-700">approve {selectedIds.length}</span> selected donations.
+          </>
+        }
+        loading={isBulkApproving}
+      />
+
       <DeleteConfirmModal
-        isOpen={rejectModalOpen}
+        open={rejectModalOpen}
         onClose={() => setRejectModalOpen(false)}
         onConfirm={() => confirmRejection(selectedDonation?._id)}
         title="Reject Donation?"

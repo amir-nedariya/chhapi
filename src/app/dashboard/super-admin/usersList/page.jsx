@@ -293,14 +293,15 @@ const UsersList = () => {
 
     try {
       setEditMonthlyLoading(true);
-      await updateUserStatsAPI(viewUser._id, {
-        monthlyStats: {
-          [selectedInsightYear]: {
-            [editMonthlyMonth]: Number(editMonthlyAmount)
-          }
-        }
+      const shortMonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const monthIndex = shortMonths.indexOf(editMonthlyMonth) + 1;
+      await createDonationAPI({
+        donorId: viewUser._id,
+        amount: Number(editMonthlyAmount),
+        month: monthIndex,
+        year: selectedInsightYear
       });
-      toast.success("Monthly insights updated successfully!");
+      toast.success("Donation recorded for the selected month!");
       setShowEditMonthlyModal(false);
       // Refresh user details
       openUserModal(viewUser._id);
@@ -318,17 +319,19 @@ const UsersList = () => {
 
     try {
       setBulkEditLoading(true);
-      const updates = {};
-      selectedMonthsForBulk.forEach((month) => {
-        updates[month] = Number(bulkEditAmount);
+      const shortMonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const promises = selectedMonthsForBulk.map(m => {
+        const monthIndex = shortMonths.indexOf(m) + 1;
+        return createDonationAPI({
+          donorId: viewUser._id,
+          amount: Number(bulkEditAmount),
+          month: monthIndex,
+          year: selectedInsightYear
+        });
       });
-
-      await updateUserStatsAPI(viewUser._id, {
-        monthlyStats: {
-          [selectedInsightYear]: updates
-        }
-      });
-      toast.success("Monthly insights updated successfully!");
+      await Promise.all(promises);
+      
+      toast.success("Donations recorded for selected months!");
       setShowBulkEditModal(false);
       setBulkEditAmount("");
       setSelectedMonthsForBulk([]);
@@ -680,6 +683,12 @@ const UsersList = () => {
                     const monthIndex = monthNames.indexOf(month);
                     const isFuture = monthIndex > currentMonthIndex;
 
+                    const pendingDonationForMonth = viewUser?.pendingDonations?.find(
+                      d => d.month === monthIndex + 1 && d.year === Number(selectedInsightYear)
+                    );
+                    const isPending = !!pendingDonationForMonth;
+                    const displayAmount = isPending ? pendingDonationForMonth.amount : amount;
+
                     const isSelected = selectedMonthsForBulk.includes(month);
 
                     let cardBg = "";
@@ -690,6 +699,10 @@ const UsersList = () => {
                       cardBg = "bg-emerald-50/40 hover:bg-emerald-50/70 text-emerald-800";
                       monthColor = "text-emerald-500 font-semibold";
                       amountColor = "text-emerald-700 font-semibold";
+                    } else if (isPending) {
+                      cardBg = "bg-amber-50/40 hover:bg-amber-50/70 text-amber-800";
+                      monthColor = "text-amber-500 font-semibold";
+                      amountColor = "text-amber-700 font-semibold";
                     } else if (isFuture) {
                       cardBg = "bg-slate-50/40 hover:bg-slate-50/70 text-slate-600";
                       monthColor = "text-slate-400 font-semibold";
@@ -706,9 +719,11 @@ const UsersList = () => {
                         ? "border-2 border-cyan-200 shadow-xs relative"
                         : isPaid
                           ? "border border-emerald-100/70"
-                          : isFuture
-                            ? "border border-slate-200/60"
-                            : "border border-rose-100/70";
+                          : isPending
+                            ? "border border-amber-200/80"
+                            : isFuture
+                              ? "border border-slate-200/60"
+                              : "border border-rose-100/70";
 
                     return (
                       <div
@@ -741,9 +756,14 @@ const UsersList = () => {
                                   Current
                                 </span>
                               )}
+                              {isPending && (
+                                <span className="px-1 py-0.5 text-[8px] sm:text-[9px] font-bold bg-amber-100 text-amber-800 rounded uppercase tracking-wider animate-pulse leading-none">
+                                  Pending
+                                </span>
+                              )}
                             </span>
                             <span className={`text-sm sm:text-base font-bold mt-0.5 ${amountColor}`}>
-                              ₹{amount.toLocaleString("en-IN")}
+                              ₹{displayAmount.toLocaleString("en-IN")}
                             </span>
                           </div>
                         </div>
@@ -1306,7 +1326,7 @@ const UsersList = () => {
         </Modal.Header>
 
         <Modal.Body>
-          <form id="pageCreateUserForm" onSubmit={handleCreateUser} className="space-y-6">
+          <form id="pageCreateUserForm" onSubmit={handleCreateUser} className="space-y-6" autoComplete="off">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Full Name */}
               <div>
@@ -1319,6 +1339,7 @@ const UsersList = () => {
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
                   placeholder="Enter full name"
+                  autoComplete="off"
                   className="w-full px-4 py-3 rounded-md border border-gray-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-gray-300 transition-all bg-white"
                 />
               </div>
@@ -1334,6 +1355,7 @@ const UsersList = () => {
                   value={newMobile}
                   onChange={(e) => setNewMobile(e.target.value)}
                   placeholder="10 digit mobile number"
+                  autoComplete="off"
                   className="w-full px-4 py-3 rounded-md border border-gray-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-gray-300 transition-all bg-white"
                 />
               </div>
@@ -1349,6 +1371,7 @@ const UsersList = () => {
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="Minimum 6 characters"
+                  autoComplete="new-password"
                   className="w-full px-4 py-3 rounded-md border border-gray-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-gray-300 transition-all bg-white"
                 />
               </div>
@@ -1385,7 +1408,8 @@ const UsersList = () => {
           <button
             type="submit"
             form="pageCreateUserForm"
-            className="px-6 py-2.5 text-[15px] font-medium text-white bg-[#1C2434] hover:bg-[#1C2434]/90 rounded-md shadow-sm transition-colors"
+            style={{ backgroundColor: `#${sidebarColor}` }}
+            className="px-6 py-2.5 text-[15px] font-medium text-white hover:opacity-90 rounded-md shadow-sm transition-all"
           >
             Save User
           </button>

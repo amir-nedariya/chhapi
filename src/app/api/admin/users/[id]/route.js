@@ -41,6 +41,12 @@ export async function GET(req, { params }) {
     const { password, ...safeUser } = user;
     safeUser._id = safeUser.id;
 
+    // Fetch pending donations for this user
+    const pendingDonations = await prisma.donation.findMany({
+      where: { donorId: id, status: "Pending" }
+    });
+    safeUser.pendingDonations = pendingDonations;
+
     return NextResponse.json({
       message: "User fetched successfully",
       data: safeUser,

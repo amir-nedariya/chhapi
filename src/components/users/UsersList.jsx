@@ -1,9 +1,8 @@
 "use client";
 import { useEffect, useState, useMemo } from "react";
 import {
-  getAllUsersOnlyAPI,
-  getAllAdminsOnlyAPI,
-  getAllSuperAdminsOnlyAPI,
+  getAllUsersAPI,
+  getCreatorsAPI,
 } from "../../api/user.api";
 import { Eye, UserPlus, BadgeCheck, AlertCircle, XCircle } from "lucide-react";
 import { toast } from "react-hot-toast";
@@ -71,27 +70,26 @@ const UsersList = ({ currentRole }) => {
   };
 
   const [users, setUsers] = useState([]);
+  const [totalItems, setTotalItems] = useState(0);
   const [params, setParams] = useState({ search: "", role: "ALL", createdBy: "ALL" });
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [creatorsList, setCreatorsList] = useState([]);
 
   // FETCH USERS
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      let res;
-
-      if (currentRole === "ADMIN") {
-        if (params.role === "ADMIN") res = await getAllAdminsOnlyAPI();
-        else if (params.role === "SUPER_ADMIN")
-          res = await getAllSuperAdminsOnlyAPI();
-        else res = await getAllUsersOnlyAPI();
-      } else {
-        res = await getAllUsersOnlyAPI();
-      }
-
+      const res = await getAllUsersAPI({
+        page,
+        limit: ITEMS_PER_PAGE,
+        search: params.search,
+        role: params.role,
+        creator: params.createdBy
+      });
       setUsers(res?.data?.data || []);
+      setTotalItems(res?.data?.total || 0);
     } catch {
       toast.error("Failed to load users");
     } finally {
@@ -99,42 +97,26 @@ const UsersList = ({ currentRole }) => {
     }
   };
 
+  // FETCH CREATORS
+  const fetchCreators = async () => {
+    try {
+      const res = await getCreatorsAPI();
+      setCreatorsList(res?.data?.data || []);
+    } catch {
+      console.error("Failed to fetch creators");
+    }
+  };
+
+  useEffect(() => {
+    fetchCreators();
+  }, []);
+
   useEffect(() => {
     fetchUsers();
-    setPage(1);
-  }, [params.role]);
-
-  // UNIQUE CREATED BY LIST
-  const createdByList = useMemo(() => {
-    return [
-      ...new Set(users.map((u) => u.createdByName).filter(Boolean)),
-    ];
-  }, [users]);
-
-  // FILTER USERS
-  const filteredUsers = useMemo(() => {
-    return users.filter((u) => {
-      const matchSearch =
-        u.name?.toLowerCase().includes(params.search.toLowerCase()) ||
-        u.mobile?.includes(params.search);
-
-      const matchRole =
-        params.role === "ALL" || u.role === params.role;
-
-      const matchCreator =
-        params.createdBy === "ALL" ||
-        u.createdByName === params.createdBy;
-
-      return matchSearch && matchRole && matchCreator;
-    });
-  }, [users, params.search, params.role, params.createdBy]);
+  }, [page, params.role, params.createdBy, params.search]);
 
   // PAGINATION
-  const totalPages = Math.ceil(filteredUsers.length / ITEMS_PER_PAGE);
-  const paginatedUsers = filteredUsers.slice(
-    (page - 1) * ITEMS_PER_PAGE,
-    page * ITEMS_PER_PAGE
-  );
+  const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -159,7 +141,7 @@ const UsersList = ({ currentRole }) => {
       name: "createdBy",
       options: [
         { label: "All Creators", value: "ALL" },
-        ...createdByList.map(name => ({ label: name, value: name }))
+        ...creatorsList.map(name => ({ label: name, value: name }))
       ]
     }
   ];
@@ -271,12 +253,12 @@ const UsersList = ({ currentRole }) => {
       {/* TABLE */}
       <Table 
         columns={columns} 
-        data={paginatedUsers} 
+        data={users} 
         isLoading={loading}
         pagination={{
           currentPage: page,
           totalPages: totalPages,
-          totalItems: filteredUsers.length,
+          totalItems: totalItems,
           itemsPerPage: ITEMS_PER_PAGE,
           onPageChange: setPage
         }}

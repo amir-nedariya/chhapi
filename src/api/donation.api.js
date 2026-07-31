@@ -74,36 +74,34 @@ export const deleteDonationAPI = async (id) => {
   return { data: { message: "Donation not found" } };
 };
 
-export const getMyDonationsAPI = async () => {
-  return { data: { data: dummyDonationData } };
+export const getMyDonationsAPI = async (params = {}) => {
+  const query = new URLSearchParams(params).toString();
+  return await api.get(`/admin/donations/my-donations?${query}`);
 };
 
-export const getPendingDonationsAPI = async () => {
-  return { data: { data: dummyDonationData.filter(d => d.status === "Pending") } };
+export const getPendingDonationsAPI = async (params = {}) => {
+  const query = new URLSearchParams(params).toString();
+  return await api.get(`/admin/donations/pending?${query}`);
 };
 
 export const approveDonationAPI = async (id) => {
-  const donation = dummyDonationData.find(d => d._id === id);
-  if (donation) {
-    donation.status = "Success";
-  }
-  return { data: { message: "Donation approved successfully" } };
+  return await api.put(`/admin/donations/${id}/approve`);
+};
+
+export const bulkApproveDonationsAPI = async (ids) => {
+  return await api.post(`/admin/donations/bulk-approve`, { ids });
 };
 
 export const rejectDonationAPI = async (id) => {
-  const donation = dummyDonationData.find(d => d._id === id);
-  if (donation) {
-    donation.status = "Failed";
-  }
-  return { data: { message: "Donation rejected successfully" } };
+  return await api.put(`/admin/donations/${id}/reject`);
 };
 
 export const getAllDonationsAPI = async () => {
-  return { data: { data: dummyDonationData } };
+  return await api.get("/admin/donations/my-donations");
 };
 
 export const viewDonationsAPI = async () => {
-  return { data: { data: dummyDonationData } };
+  return await api.get("/admin/donations/my-donations");
 };
 
 export const getDonationByIdAPI = async (id) => {

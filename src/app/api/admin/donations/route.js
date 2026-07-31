@@ -31,7 +31,7 @@ export async function POST(req) {
     }
 
     const body = await req.json();
-    const { donorId, amount, month, year } = body;
+    const { donorId, amount, month, year, paymentMethod, remarks } = body;
 
     if (!donorId || !amount || !month || !year) {
       return NextResponse.json({ message: "Missing required fields" }, { status: 400 });
@@ -42,59 +42,82 @@ export async function POST(req) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
 
-    // Convert month number to month short name
-    const monthName = monthNames[month - 1];
-    
-    // Update user stats
-    let monthlyStats = user.monthlyStats ? (typeof user.monthlyStats === 'string' ? JSON.parse(user.monthlyStats) : user.monthlyStats) : {};
-    let yearlyStats = user.yearlyStats ? (typeof user.yearlyStats === 'string' ? JSON.parse(user.yearlyStats) : user.yearlyStats) : {};
-    
-    // Migration for old flat structure
-    if (monthlyStats["Jan"] !== undefined || monthlyStats["Feb"] !== undefined || (Object.keys(monthlyStats).length > 0 && typeof monthlyStats[Object.keys(monthlyStats)[0]] !== 'object')) {
-       monthlyStats = { [String(new Date().getFullYear())]: monthlyStats };
-    }
-    
-    // Update monthly stats by year
-    if (!monthlyStats[String(year)]) {
-      monthlyStats[String(year)] = {};
-    }
-    const currentMonthAmount = Number(monthlyStats[String(year)][monthName]) || 0;
-    monthlyStats[String(year)][monthName] = currentMonthAmount + Number(amount);
-    
-    // Update yearly stats
-    const currentYearAmount = Number(yearlyStats[String(year)]) || 0;
-    yearlyStats[String(year)] = currentYearAmount + Number(amount);
+    const adminUser = await prisma.user.findUnique({ where: { id: decoded.userId } });
 
-    // Calculate totals across all years
-    let totalDonations = 0;
-    let donationCount = 0;
-    
-    for (const yr in monthlyStats) {
-      const values = Object.values(monthlyStats[yr] || {});
-      totalDonations += values.reduce((a, b) => Number(a) + Number(b), 0);
-      donationCount += values.filter((v) => Number(v) > 0).length;
-    }
-    
-    const avgDonation = donationCount > 0 ? totalDonations / donationCount : 0;
+    // Determine Status
+    const isSuperAdmin = decoded.role === "SUPER_ADMIN";
+    const status = isSuperAdmin ? "Success" : "Pending";
 
-    const updatedUser = await prisma.user.update({
-      where: { id: donorId },
+    // Create Donation Record
+    const donation = await prisma.donation.create({
       data: {
-        monthlyStats,
-        yearlyStats,
-        totalDonations,
-        donationCount,
-        avgDonation,
-      },
+        donorId: user.id,
+        donorName: user.name || "Unknown Donor",
+        amount: Number(amount),
+        month: Number(month),
+        year: Number(year),
+        status,
+        paymentMethod: paymentMethod || "Cash",
+        remarks: remarks || "",
+        collectedById: adminUser?.id || "",
+        collectedByName: adminUser?.name || "System"
+      }
     });
 
+    if (isSuperAdmin) {
+      // Update user stats directly if Super Admin created it
+      const monthName = monthNames[Number(month) - 1];
+      
+      let monthlyStats = user.monthlyStats ? (typeof user.monthlyStats === 'string' ? JSON.parse(user.monthlyStats) : user.monthlyStats) : {};
+      let yearlyStats = user.yearlyStats ? (typeof user.yearlyStats === 'string' ? JSON.parse(user.yearlyStats) : user.yearlyStats) : {};
+      
+      // Migration for old flat structure
+      if (monthlyStats["Jan"] !== undefined || monthlyStats["Feb"] !== undefined || (Object.keys(monthlyStats).length > 0 && typeof monthlyStats[Object.keys(monthlyStats)[0]] !== 'object')) {
+         monthlyStats = { [String(new Date().getFullYear())]: monthlyStats };
+      }
+      
+      // Update monthly stats by year
+      if (!monthlyStats[String(year)]) {
+        monthlyStats[String(year)] = {};
+      }
+      const currentMonthAmount = Number(monthlyStats[String(year)][monthName]) || 0;
+      monthlyStats[String(year)][monthName] = currentMonthAmount + Number(amount);
+      
+      // Update yearly stats
+      const currentYearAmount = Number(yearlyStats[String(year)]) || 0;
+      yearlyStats[String(year)] = currentYearAmount + Number(amount);
+
+      // Calculate totals across all years
+      let totalDonations = 0;
+      let donationCount = 0;
+      
+      for (const yr in monthlyStats) {
+        const values = Object.values(monthlyStats[yr] || {});
+        totalDonations += values.reduce((a, b) => Number(a) + Number(b), 0);
+        donationCount += values.filter((v) => Number(v) > 0).length;
+      }
+      
+      const avgDonation = donationCount > 0 ? totalDonations / donationCount : 0;
+
+      await prisma.user.update({
+        where: { id: donorId },
+        data: {
+          monthlyStats,
+          yearlyStats,
+          totalDonations,
+          donationCount,
+          avgDonation,
+        },
+      });
+    }
+
     return NextResponse.json({
-      message: "Donation added successfully",
-      data: { ...updatedUser, _id: updatedUser.id }
+      message: "Donation recorded successfully",
+      data: donation
     });
 
   } catch (error) {
     console.error("Create donation error:", error);
-    return NextResponse.json({ message: "Failed to create donation", error: error.message }, { status: 500 });
+    return NextResponse.json({ message: "Failed to record donation", error: error.message }, { status: 500 });
   }
 }

@@ -56,13 +56,21 @@ const MyDonations = () => {
     year: "ALL"
   });
   const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [grandTotal, setGrandTotal] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
+  const [years, setYears] = useState([]);
 
   /* ===== FETCH ===== */
   const fetchDonations = async () => {
     try {
       setLoading(true);
-      const res = await getMyDonationsAPI();
+      const res = await getMyDonationsAPI({ ...params, page, limit: ITEMS_PER_PAGE });
       setDonations(res?.data?.data || []);
+      setGrandTotal(res?.data?.grandTotal || 0);
+      setYears(res?.data?.metadata?.years || []);
+      setTotalPages(res?.data?.pagination?.totalPages || 1);
+      setTotalItems(res?.data?.pagination?.totalItems || 0);
     } catch {
       toast.error("Failed to load donations");
     } finally {
@@ -70,34 +78,15 @@ const MyDonations = () => {
     }
   };
 
+  // Debounce search so we don't spam the API on every keystroke
   useEffect(() => {
-    fetchDonations();
-  }, []);
+    const delay = setTimeout(() => {
+      fetchDonations();
+    }, 500);
+    return () => clearTimeout(delay);
+  }, [params.search, params.status, params.month, params.year, page]);
 
-  /* ===== FILTER LOGIC ===== */
-  const filteredDonations = useMemo(() => {
-    return donations.filter((d) => {
-      const text = `${d?.donor?.name || ""} ${d?.collectedBy?.name || d?.collectedByName || ""} ${d?.amount || ""}`.toLowerCase();
-      if (!text.includes(params.search.toLowerCase())) return false;
-
-      if (params.status !== "ALL" && d.status !== params.status) return false;
-      if (params.month !== "ALL" && d.month !== Number(params.month)) return false;
-      if (params.year !== "ALL" && d.year !== Number(params.year)) return false;
-
-      return true;
-    });
-  }, [donations, params.search, params.status, params.month, params.year]);
-
-  /* ===== PAGINATION ===== */
-  const totalPages = Math.ceil(filteredDonations.length / ITEMS_PER_PAGE) || 1;
-
-  const paginatedDonations = filteredDonations.slice(
-    (page - 1) * ITEMS_PER_PAGE,
-    page * ITEMS_PER_PAGE
-  );
-
-  /* ===== GRAND TOTAL ===== */
-  const grandTotal = filteredDonations.reduce((sum, d) => sum + (Number(d.amount) || 0), 0);
+  /* ===== GRAND TOTAL & PAGINATION ARE NOW FROM BACKEND ===== */
 
   const downloadPDF = () => {
     try {
@@ -106,10 +95,10 @@ const MyDonations = () => {
       doc.setFontSize(10);
       doc.text(`Generated on: ${new Date().toLocaleDateString()} | Total Donations: Rs. ${grandTotal.toLocaleString("en-IN")}`, 14, 22);
 
-      const tableData = filteredDonations.map((d, index) => [
-        index + 1,
-        d?.donor?.name || "—",
-        `Rs. ${Number(d.amount).toLocaleString("en-IN")}`,
+      const tableData = donations.map((d, index) => [
+        (page - 1) * ITEMS_PER_PAGE + index + 1,
+        d.donor?.name || "—",
+        `Rs. ${Number(d.amount || 0).toLocaleString("en-IN")}`,
         d.year,
         monthNames[d.month - 1] || "—",
         d.status,
@@ -131,12 +120,6 @@ const MyDonations = () => {
     }
   };
 
-  const handleFilterChange = (e) => {
-    const { name, value } = e.target;
-    setParams(prev => ({ ...prev, [name]: value }));
-    setPage(1);
-  };
-
   const filterConfig = [
     { type: "search", name: "search", placeholder: "Search by donor name..." },
     {
@@ -144,9 +127,9 @@ const MyDonations = () => {
       name: "status",
       options: [
         { label: "All Status", value: "ALL" },
-        { label: "Success", value: "SUCCESS" },
-        { label: "Pending", value: "PENDING" },
-        { label: "Failed", value: "FAILED" }
+        { label: "Pending", value: "Pending" },
+        { label: "Success", value: "Success" },
+        { label: "Failed", value: "Failed" }
       ]
     },
     {
@@ -162,8 +145,7 @@ const MyDonations = () => {
       name: "year",
       options: [
         { label: "All Years", value: "ALL" },
-        { label: String(currentYear), value: currentYear },
-        { label: String(currentYear - 1), value: currentYear - 1 }
+        ...years.map(y => ({ label: y.toString(), value: y }))
       ]
     }
   ];
@@ -223,8 +205,20 @@ const MyDonations = () => {
     }
   ];
 
+  const handleFilterChange = (e) => {
+    const target = e.target;
+    const name = target.name || target.id || target.getAttribute("name");
+    const value = target.value;
+    if (name) {
+      setParams(prev => ({ ...prev, [name]: value }));
+      setPage(1);
+    } else {
+      console.error("Filter change missing name property", target);
+    }
+  };
+
   return (
-    <div className="p-4 md:p-6 space-y-6">
+    <div className="p-4 md:p-6 space-y-6 max-w-[1400px] mx-auto w-full">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-3">
           <Calendar className="text-teal-700" size={24} />
@@ -251,16 +245,20 @@ const MyDonations = () => {
         </div>
       </div>
 
-      <FilterBar filters={filterConfig} params={params} onChange={handleFilterChange} />
+      <FilterBar 
+        filters={filterConfig} 
+        params={params} 
+        onChange={handleFilterChange} 
+      />
 
       <Table 
         columns={columns}
-        data={paginatedDonations}
+        data={donations}
         isLoading={loading}
         pagination={{
           currentPage: page,
           totalPages: totalPages,
-          totalItems: filteredDonations.length,
+          totalItems: totalItems,
           itemsPerPage: ITEMS_PER_PAGE,
           onPageChange: setPage
         }}
