@@ -461,6 +461,7 @@ const UserDetails = ({ currentRole }) => {
           
         </div>
       </div>
+      </div>
 
       {/* MODALS */}
       {currentRole !== "USER" && (
