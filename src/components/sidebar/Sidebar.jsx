@@ -131,13 +131,11 @@ const Sidebar = ({ collapsed, setCollapsed, mobile, sidebarOpen, setSidebarOpen 
       userMgmtChildren.push(
         { name: "Users List", path: `${pathPrefix}/usersList` },
         { name: "Pending Donations", path: `${pathPrefix}/pending-donations` },
-        { name: "Send Reminders", path: `${pathPrefix}/reminders` },
         { name: "Reports", path: `${pathPrefix}/reports` }
       );
     } else if (role === "ADMIN") {
       userMgmtChildren.push(
         { name: "Users List", path: `${pathPrefix}/GetAllUser` },
-        { name: "Send Reminders", path: `${pathPrefix}/reminders` },
         { name: "My Donations history", path: `${pathPrefix}/MyDonations` }
       );
     }
