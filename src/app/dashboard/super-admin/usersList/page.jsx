@@ -672,10 +672,11 @@ const UsersList = () => {
                   const currentMonthIndex = new Date().getMonth();
 
                   return Object.entries(fullMonthlyStats).map(([month, amount]) => {
-                    const isCurrent = month === currentMonth;
+                    const currentYear = new Date().getFullYear();
+                    const isCurrent = month === currentMonth && selectedInsightYear === currentYear;
                     const isPaid = amount > 0;
                     const monthIndex = monthNames.indexOf(month);
-                    const isFuture = monthIndex > currentMonthIndex;
+                    const isFuture = selectedInsightYear > currentYear || (selectedInsightYear === currentYear && monthIndex > currentMonthIndex);
 
                     const pendingDonationForMonth = viewUser?.pendingDonations?.find(
                       d => d.month === monthIndex + 1 && d.year === Number(selectedInsightYear)

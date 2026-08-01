@@ -672,10 +672,11 @@ const AdminAllUsersPage = () => {
                   const currentMonthIndex = new Date().getMonth();
 
                   return Object.entries(fullMonthlyStats).map(([month, amount]) => {
-                    const isCurrent = month === currentMonth;
+                    const currentYear = new Date().getFullYear();
+                    const isCurrent = month === currentMonth && selectedInsightYear === currentYear;
                     const isPaid = amount > 0;
                     const monthIndex = monthNames.indexOf(month);
-                    const isFuture = monthIndex > currentMonthIndex;
+                    const isFuture = selectedInsightYear > currentYear || (selectedInsightYear === currentYear && monthIndex > currentMonthIndex);
 
                     const pendingDonationForMonth = viewUser?.pendingDonations?.find(
                       d => d.month === monthIndex + 1 && d.year === Number(selectedInsightYear)
@@ -718,7 +719,7 @@ const AdminAllUsersPage = () => {
                           >
                             {isSelected && <Check size={12} strokeWidth={4} />}
                           </div>
-                          
+
                           {/* Center Text */}
                           <div className="absolute inset-0 flex flex-col items-center justify-center">
                             <span className={`text-xs font-bold uppercase tracking-widest mb-0.5 ${statusLabel === 'paid' ? 'text-[#166534]' : statusLabel === 'missed' ? 'text-[#991b1b]' : statusLabel === 'current' ? 'text-[#075985]' : statusLabel === 'pending' ? 'text-[#92400e]' : 'text-[#475569]'}`}>
