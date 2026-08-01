@@ -10,16 +10,17 @@
   --font-poppins-family: 'Poppins', sans-serif;
 
   /* Global Colors */
-  --primary: #007380; /* Core teal */
+  --primary: #007380;
+  /* Core teal */
   --primary-hover: #005a63;
   --secondary: #64748b;
-  
+
   /* Status Colors */
   --success: #10b981;
   --success-bg: #e6f4ea;
   --success-border: #ceead6;
   --success-text: #137333;
-  
+
   --warning: #f59e0b;
   --warning-bg: #fef3c7;
   --warning-border: #fde68a;
@@ -29,7 +30,7 @@
   --danger-bg: #fee2e2;
   --danger-border: #fecaca;
   --danger-text: #991b1b;
-  
+
   --info: #3b82f6;
   --info-bg: #eff6ff;
   --info-border: #bfdbfe;
@@ -39,11 +40,11 @@
   --page-bg: #f8fafc;
   --card-bg: #ffffff;
   --border-main: #e2e8f0;
-  
+
   /* Text Colors */
   --text-main: #0f172a;
   --text-muted: #64748b;
-  
+
   /* Sidebar default dynamic fallback */
   --sidebar-from: #007380;
   --sidebar-via: #005f6a;
@@ -63,31 +64,31 @@
   --color-primary: var(--primary);
   --color-primary-hover: var(--primary-hover);
   --color-secondary: var(--secondary);
-  
+
   --color-success: var(--success);
   --color-success-bg: var(--success-bg);
   --color-success-border: var(--success-border);
   --color-success-text: var(--success-text);
-  
+
   --color-warning: var(--warning);
   --color-warning-bg: var(--warning-bg);
   --color-warning-border: var(--warning-border);
   --color-warning-text: var(--warning-text);
-  
+
   --color-danger: var(--danger);
   --color-danger-bg: var(--danger-bg);
   --color-danger-border: var(--color-danger-border);
   --color-danger-text: var(--danger-text);
-  
+
   --color-info: var(--info);
   --color-info-bg: var(--info-bg);
   --color-info-border: var(--info-border);
   --color-info-text: var(--info-text);
-  
+
   --color-page-bg: var(--page-bg);
   --color-card-bg: var(--card-bg);
   --color-border-main: var(--border-main);
-  
+
   --color-text-main: var(--text-main);
   --color-text-muted: var(--text-muted);
 
@@ -107,22 +108,25 @@ body {
 
 /* Remove default yellow background for Chrome autofill */
 input:-webkit-autofill,
-input:-webkit-autofill:hover, 
-input:-webkit-autofill:focus, 
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
-    -webkit-box-shadow: 0 0 0 30px white inset !important;
-    -webkit-text-fill-color: var(--text-main) !important;
-    transition: background-color 5000s ease-in-out 0s;
+  -webkit-box-shadow: 0 0 0 30px white inset !important;
+  -webkit-text-fill-color: var(--text-main) !important;
+  transition: background-color 5000s ease-in-out 0s;
 }
 
 /* Custom Scrollbar for Sidebar */
 .custom-scrollbar {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
 }
 
 .custom-scrollbar::-webkit-scrollbar {
-  display: none; /* Chrome, Safari and Opera */
+  display: none;
+  /* Chrome, Safari and Opera */
 }
 
 /* Custom Visible Scrollbar for Modals */
@@ -215,7 +219,8 @@ input:-webkit-autofill:active {
 .sidebar-link-inactive:hover {
   background-color: var(--sidebar-hover);
   color: #ffffff;
-  padding-left: 28px; /* Smooth sliding hover effect */
+  padding-left: 28px;
+  /* Smooth sliding hover effect */
 }
 
 /* Premium Icon Container Styles */

@@ -23,6 +23,7 @@ import {
   softDeleteUserAPI
 } from "../../api/user.api";
 import DeleteConfirmModal from "../common/DeleteConfirmModal";
+import Modal from "../common/Modal";
 import {
   createDonationAPI,
   getDonationsByDonorIdAPI,
@@ -447,10 +448,10 @@ const UserDetails = ({ currentRole }) => {
       </div>
 
       {/* MODALS */}
-      {showModal && currentRole !== "USER" && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center animate-fade-in">
-          <div className="w-[90%] max-w-md rounded-3xl bg-white p-6 shadow-2xl">
-            <h3 className="text-lg font-bold text-[#2B3674] mb-4">Add New Donation</h3>
+      {currentRole !== "USER" && (
+        <Modal isOpen={showModal} onClose={() => setShowModal(false)} maxWidth="max-w-md">
+          <Modal.Header onClose={() => setShowModal(false)}>Add New Donation</Modal.Header>
+          <Modal.Body>
             <div className="space-y-4">
               <div>
                 <label className="text-xs text-slate-400 font-bold uppercase tracking-wider">Amount</label>
@@ -471,18 +472,18 @@ const UserDetails = ({ currentRole }) => {
                 </div>
               </div>
             </div>
-            <div className="flex justify-end gap-3 mt-6">
-              <button onClick={() => setShowModal(false)} className="px-5 py-2.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs">Cancel</button>
-              <button onClick={handleCreateDonation} disabled={donationLoading} className="px-5 py-2.5 rounded-xl bg-[#111C44] text-white font-bold text-xs">{donationLoading ? "Adding..." : "Add Donation"}</button>
-            </div>
-          </div>
-        </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <button onClick={() => setShowModal(false)} className="px-5 py-2.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs">Cancel</button>
+            <button onClick={handleCreateDonation} disabled={donationLoading} className="px-5 py-2.5 rounded-xl bg-[#111C44] text-white font-bold text-xs">{donationLoading ? "Adding..." : "Add Donation"}</button>
+          </Modal.Footer>
+        </Modal>
       )}
 
-      {showEditModal && currentRole !== "USER" && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center animate-fade-in">
-          <div className="w-[90%] max-w-md rounded-3xl bg-white p-6 shadow-2xl">
-            <h3 className="text-lg font-bold text-[#2B3674] mb-4">Edit Donation</h3>
+      {currentRole !== "USER" && (
+        <Modal isOpen={showEditModal} onClose={() => setShowEditModal(false)} maxWidth="max-w-md">
+          <Modal.Header onClose={() => setShowEditModal(false)}>Edit Donation</Modal.Header>
+          <Modal.Body>
             <div className="space-y-4">
               <div>
                 <label className="text-xs text-slate-400 font-bold uppercase tracking-wider">Amount</label>
@@ -511,12 +512,12 @@ const UserDetails = ({ currentRole }) => {
                 </select>
               </div>
             </div>
-            <div className="flex justify-end gap-3 mt-6">
-              <button onClick={() => setShowEditModal(false)} className="px-5 py-2.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs">Cancel</button>
-              <button onClick={handleUpdateDonation} disabled={editDonationLoading} className="px-5 py-2.5 rounded-xl bg-[#111C44] text-white font-bold text-xs">{editDonationLoading ? "Saving..." : "Save Changes"}</button>
-            </div>
-          </div>
-        </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <button onClick={() => setShowEditModal(false)} className="px-5 py-2.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs">Cancel</button>
+            <button onClick={handleUpdateDonation} disabled={editDonationLoading} className="px-5 py-2.5 rounded-xl bg-[#111C44] text-white font-bold text-xs">{editDonationLoading ? "Saving..." : "Save Changes"}</button>
+          </Modal.Footer>
+        </Modal>
       )}
 
       <DeleteConfirmModal

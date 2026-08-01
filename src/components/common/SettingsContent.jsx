@@ -6,7 +6,6 @@ import { useState } from "react";
 import { changePasswordAPI } from "../../api/auth.api";
 import toast from "react-hot-toast";
 import { useSidebarColor } from "../../hooks/useSidebarColor";
-import ThemeSettings from "../theme/ThemeSettings";
 
 const SettingsContent = () => {
   const { user, logout } = useAuth();
@@ -21,7 +20,6 @@ const SettingsContent = () => {
     confirmPassword: "",
   });
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState("profile");
 
   const handleChange = (e) => {
     setPasswordData({ ...passwordData, [e.target.name]: e.target.value });
@@ -55,45 +53,18 @@ const SettingsContent = () => {
 
   return (
     <div className="min-h-screen bg-[#f8fafc] p-4 sm:p-8 flex justify-center items-start font-sans text-slate-800">
-      <div className={`w-full ${activeTab === 'appearance' ? 'max-w-5xl' : 'max-w-3xl'} space-y-8 mt-2 transition-all duration-500`}>
+      <div className="w-full max-w-3xl space-y-8 mt-2 transition-all duration-500">
         
         {/* HEADER */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 px-2">
           <div>
             <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">Account Settings</h2>
-            <p className="text-slate-500 font-medium text-sm mt-1.5">Manage your profile details, security settings and appearance</p>
-          </div>
-          
-          {/* PREMIUM SEGMENTED CONTROL TABS */}
-          <div className="flex p-1 bg-white border border-slate-200/60 rounded-xl shadow-sm">
-            <button
-              onClick={() => setActiveTab("profile")}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-bold transition-all duration-300 outline-none ${
-                activeTab === "profile"
-                  ? "bg-slate-900 text-white shadow-md"
-                  : "text-slate-500 hover:text-slate-700 hover:bg-slate-50"
-              }`}
-            >
-              <UserIcon size={16} />
-              Profile & Security
-            </button>
-            <button
-              onClick={() => setActiveTab("appearance")}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-bold transition-all duration-300 outline-none ${
-                activeTab === "appearance"
-                  ? "bg-slate-900 text-white shadow-md"
-                  : "text-slate-500 hover:text-slate-700 hover:bg-slate-50"
-              }`}
-            >
-              <Palette size={16} />
-              Appearance
-            </button>
+            <p className="text-slate-500 font-medium text-sm mt-1.5">Manage your profile details and security settings</p>
           </div>
         </div>
 
-        {activeTab === "profile" ? (
-          /* Profile Details Card */
-          <div className="w-full bg-white border border-slate-200/60 rounded-3xl p-8 md:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] animate-in fade-in slide-in-from-bottom-4 duration-500">
+        {/* Profile Details Card */}
+        <div className="w-full bg-white border border-slate-200/60 rounded-3xl p-8 md:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] animate-in fade-in slide-in-from-bottom-4 duration-500">
             
             <div className="flex flex-col md:flex-row gap-10 items-start">
               
@@ -174,12 +145,6 @@ const SettingsContent = () => {
               </div>
             </div>
           </div>
-        ) : (
-          /* Theme Settings Card */
-          <div className="w-full bg-white border border-slate-200/60 rounded-3xl p-8 md:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <ThemeSettings />
-          </div>
-        )}
 
         {/* Change Password Modal */}
         {showChangePasswordModal && (
