@@ -179,16 +179,19 @@ const UserDetails = ({ currentRole }) => {
   if (loading) return <div className="text-center py-20 font-bold text-slate-500">Loading...</div>;
   if (!user) return <div className="text-center py-20 font-bold text-rose-500">User not found</div>;
 
-  const successfulDonations = donations.filter(d => d.status === "Success" || d.status === "Approved");
-  const totalDonated = successfulDonations.reduce((acc, curr) => acc + curr.amount, 0);
-  const donationCount = successfulDonations.length;
-  const avgDonation = donationCount > 0 ? Math.round(totalDonated / donationCount) : 0;
+  const totalDonated = user.totalDonations || 0;
+  const donationCount = user.donationCount || 0;
+  const avgDonation = user.avgDonation || 0;
 
   // Yearly Distribution
-  const yearlyData = {};
-  successfulDonations.forEach(d => {
-    yearlyData[d.year] = (yearlyData[d.year] || 0) + d.amount;
-  });
+  let yearlyData = {};
+  if (user.yearlyStats) {
+    if (typeof user.yearlyStats === 'string') {
+      try { yearlyData = JSON.parse(user.yearlyStats); } catch {}
+    } else {
+      yearlyData = user.yearlyStats;
+    }
+  }
   const years = Object.keys(yearlyData).sort();
   if (!years.includes(String(now.getFullYear()))) {
     years.push(String(now.getFullYear()));
@@ -275,7 +278,7 @@ const UserDetails = ({ currentRole }) => {
                 <div className="p-1.5 rounded-md bg-blue-50 text-blue-500"><UserIcon size={14} /></div>
                 <div>
                   <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Created By</p>
-                  <p className="text-sm font-semibold text-[#2B3674] mt-0.5">{user.createdByName || "System"}</p>
+                  <p className="text-sm font-semibold text-[#2B3674] mt-0.5">{user.createdBy || "System"}</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
@@ -360,15 +363,18 @@ const UserDetails = ({ currentRole }) => {
             <div className="space-y-5">
               {years.map(y => {
                 const amount = yearlyData[y];
-                const pct = totalDonated > 0 ? Math.round((amount / totalDonated) * 100) : 0;
+                const expectedYearly = avgDonation ? avgDonation * 12 : Math.max(amount, 1);
+                const target = expectedYearly;
+                const percentage = Math.min(Math.round((amount / target) * 100), 100);
+                
                 return (
                   <div key={y}>
                     <div className="flex justify-between items-end mb-1">
                       <span className="text-sm font-bold text-[#2B3674]">{y}</span>
-                      <span className="text-sm font-bold text-[#2B3674]">₹{amount.toLocaleString('en-IN')} <span className="text-xs text-slate-400 font-medium ml-1">({pct}%)</span></span>
+                      <span className="text-sm font-bold text-[#2B3674]">₹{amount.toLocaleString('en-IN')} <span className="text-xs text-slate-400 font-medium ml-1">({percentage}%)</span></span>
                     </div>
-                    <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
-                      <div className="h-full bg-[#111C44] rounded-full transition-all duration-500" style={{ width: `${pct}%` }}></div>
+                    <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden shadow-inner">
+                      <div className="bg-gradient-to-r from-cyan-400 to-blue-500 h-full rounded-full transition-all duration-700 ease-out" style={{ width: `${percentage}%` }}></div>
                     </div>
                   </div>
                 );
@@ -397,24 +403,45 @@ const UserDetails = ({ currentRole }) => {
             <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-8 px-1 pb-4">
               {monthNamesShort.map((mName, idx) => {
                 const monthNum = idx + 1;
-                const d = successfulDonations.find(x => x.year === selectedYear && x.month === monthNum);
+                
+                // Process Monthly Stats
+                let monthlyStatsObj = {};
+                if (user.monthlyStats) {
+                  if (typeof user.monthlyStats === 'string') {
+                    try { monthlyStatsObj = JSON.parse(user.monthlyStats); } catch {}
+                  } else {
+                    monthlyStatsObj = user.monthlyStats;
+                  }
+                }
+                const isOldStructure = monthlyStatsObj["Jan"] !== undefined || monthlyStatsObj["Feb"] !== undefined || (Object.keys(monthlyStatsObj).length > 0 && typeof monthlyStatsObj[Object.keys(monthlyStatsObj)[0]] !== 'object');
+                let yearStats = {};
+                if (isOldStructure) {
+                  yearStats = String(selectedYear) === String(now.getFullYear()) ? monthlyStatsObj : {};
+                } else {
+                  yearStats = monthlyStatsObj[String(selectedYear)] || {};
+                }
+                const monthNameProper = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][idx];
+                const paidAmount = Number(yearStats[monthNameProper]) || 0;
+                
+                // Pending Donations array
+                const pendingDonation = user.pendingDonations?.find(
+                  x => x.year === selectedYear && x.month === monthNum
+                );
+                
                 const isCurrentMonth = selectedYear === now.getFullYear() && monthNum === now.getMonth() + 1;
                 const isPast = selectedYear < now.getFullYear() || (selectedYear === now.getFullYear() && monthNum <= now.getMonth() + 1);
                 
                 let status = 'future';
-                let amt = d ? d.amount : 0;
+                let amt = paidAmount > 0 ? paidAmount : (pendingDonation ? pendingDonation.amount : (avgDonation || 50));
 
-                if (d) {
+                if (paidAmount > 0) {
                   status = 'paid';
+                } else if (pendingDonation) {
+                  status = 'pending';
                 } else if (isPast) {
-                  // If it's this month, but not paid yet -> current/pending? 
-                  // Let's use 'missed' for past months, and 'current' for this month.
                   if (isCurrentMonth) {
                     status = 'current';
                   } else {
-                    // Past months are usually missed. Let's color them red.
-                    // Or if we have a "pending" status (like FEB in the image), we can use amber.
-                    // For now, if past and no donation -> missed.
                     status = 'missed';
                   }
                 } else if (isCurrentMonth) {

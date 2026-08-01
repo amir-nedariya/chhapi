@@ -24,7 +24,7 @@ export async function GET(req, { params }) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    if (decoded.role !== "SUPER_ADMIN" && decoded.role !== "ADMIN") {
+    if (!["SUPER_ADMIN", "ADMIN", "USER"].includes(decoded.role)) {
       return NextResponse.json({ message: "Forbidden" }, { status: 403 });
     }
 

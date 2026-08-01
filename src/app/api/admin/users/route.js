@@ -20,8 +20,8 @@ export async function GET(req) {
       return NextResponse.json({ message: "Invalid or expired token" }, { status: 401 });
     }
 
-    // Only SUPER_ADMIN or ADMIN can view users
-    if (decoded.role !== "SUPER_ADMIN" && decoded.role !== "ADMIN") {
+    // Allow SUPER_ADMIN, ADMIN, and USER to view users
+    if (!["SUPER_ADMIN", "ADMIN", "USER"].includes(decoded.role)) {
       return NextResponse.json({ message: "Forbidden" }, { status: 403 });
     }
 

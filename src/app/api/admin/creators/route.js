@@ -19,7 +19,7 @@ export async function GET(req) {
       return NextResponse.json({ message: "Invalid or expired token" }, { status: 401 });
     }
 
-    if (decoded.role !== "SUPER_ADMIN" && decoded.role !== "ADMIN") {
+    if (!["SUPER_ADMIN", "ADMIN", "USER"].includes(decoded.role)) {
       return NextResponse.json({ message: "Forbidden" }, { status: 403 });
     }
 

@@ -681,7 +681,7 @@ const AdminAllUsersPage = () => {
                       d => d.month === monthIndex + 1 && d.year === Number(selectedInsightYear)
                     );
                     const isPending = !!pendingDonationForMonth;
-                    const displayAmount = isPending ? pendingDonationForMonth.amount : amount;
+                    const displayAmount = isPending ? pendingDonationForMonth.amount : (amount > 0 ? amount : (viewUser?.avgDonation || 50));
 
                     const isSelected = selectedMonthsForBulk.includes(month);
 
