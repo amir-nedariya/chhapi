@@ -617,7 +617,7 @@ const UsersList = () => {
             </div>
 
             {/* Monthly Stats Breakdown */}
-            <div className="bg-white p-5 md:p-6 rounded-2xl border border-slate-200/60 shadow-sm flex-1">
+            <div className="mt-8 flex-1">
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6">
                 <div className="flex items-center justify-between w-full sm:w-auto gap-2">
                   <h5 className="font-bold text-slate-800 text-xs tracking-wider uppercase flex items-center gap-2 whitespace-nowrap">

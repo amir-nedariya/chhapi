@@ -377,7 +377,7 @@ const UserDetails = ({ currentRole }) => {
           </div>
 
           {/* Monthly Insights */}
-          <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm">
+          <div className="mt-8">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-2">
                 <Calendar size={16} className="text-cyan-500" />
