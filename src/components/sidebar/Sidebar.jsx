@@ -182,20 +182,13 @@ const Sidebar = ({ collapsed, setCollapsed, mobile, sidebarOpen, setSidebarOpen 
 
   if (role === "SUPER_ADMIN") {
     menuItems.push({ name: "Fund Requests", path: `${pathPrefix}/fund-requests`, icon: Landmark, badge: pendingRequestsCount });
-    menuItems.push({ name: "Manage Banners", path: `${pathPrefix}/banners`, icon: Image });
   } else {
     menuItems.push({ name: "Request Funds", path: `${pathPrefix}/fund-request`, icon: Landmark });
   }
 
-  menuItems.push({ name: "Rules & Regulations", path: `${pathPrefix}/rules`, icon: ScrollText });
-
   if (role === "USER") {
     menuItems.push({ name: "All Users", path: `${pathPrefix}/all-users`, icon: UserPlus });
   }
-
-  menuItems.push(
-    { name: "Leads", path: `${pathPrefix}/leads`, icon: Target }
-  );
 
 
 
