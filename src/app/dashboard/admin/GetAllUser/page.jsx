@@ -429,16 +429,7 @@ const AdminAllUsersPage = () => {
 
                 {/* Profile Actions */}
                 <div className="flex flex-col gap-2.5 w-full">
-                  <button
-                    onClick={() => {
-                      setDonationMonth(new Date().getMonth() + 1);
-                      setDonationYear(new Date().getFullYear());
-                      setShowDonationModal(true);
-                    }}
-                    className="text-sm font-semibold text-white bg-slate-900 hover:bg-slate-800 px-4 py-3 rounded-xl transition flex items-center justify-center gap-2 shadow-sm shadow-slate-900/10 active:scale-[0.98] cursor-pointer"
-                  >
-                    <PlusCircle size={18} className="text-slate-300" /> Add New Donation
-                  </button>
+                  {/* Add New Donation button has been removed from Admin */}
 
                   {!viewUser.profilePhoto && (
                     <label className="cursor-pointer text-center text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 px-4 py-3 rounded-xl transition flex items-center justify-center gap-2 active:scale-[0.98]">
@@ -733,20 +724,9 @@ const AdminAllUsersPage = () => {
                             <span className={`text-2xl font-bold tracking-tight leading-none ${statusLabel === 'paid' ? 'text-[#166534]' : statusLabel === 'missed' ? 'text-[#991b1b]' : statusLabel === 'current' ? 'text-[#075985]' : statusLabel === 'pending' ? 'text-[#92400e]' : 'text-[#475569]'}`}>₹{displayAmount.toLocaleString("en-IN")}</span>
                           </div>
 
-                          {/* EDIT ICON */}
-                          <div className="pointer-events-auto relative z-20" onClick={(e) => e.stopPropagation()}>
-                            {statusLabel !== 'paid' && (
-                              <button
-                                onClick={() => {
-                                  setEditMonthlyMonth(month);
-                                  setEditMonthlyAmount(String(amount));
-                                  setShowEditMonthlyModal(true);
-                                }}
-                                className={`p-2 rounded-full transition-transform hover:scale-110 cursor-pointer ${statusLabel === 'current' ? 'bg-[#e0f2fe]' : statusLabel === 'pending' ? 'bg-[#fef3c7]' : statusLabel === 'missed' ? 'bg-[#fee2e2]' : 'bg-black/5'}`}
-                              >
-                                <Edit size={16} className={statusLabel === 'current' ? 'text-[#0369a1]' : statusLabel === 'pending' ? 'text-[#92400e]' : statusLabel === 'missed' ? 'text-[#991b1b]' : 'text-current opacity-70'} strokeWidth={2.5} />
-                              </button>
-                            )}
+                          {/* EDIT ICON (Removed from Admin) */}
+                          <div className="pointer-events-auto relative z-20 w-8">
+                            {/* The edit button has been completely removed for Admin */}
                           </div>
                         </div>
                       </div>
@@ -815,49 +795,49 @@ const AdminAllUsersPage = () => {
 
         {/* ================= BULK EDIT MONTHLY STATS MODAL ================= */}
         {showBulkEditModal && (
-          <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center animate-in fade-in duration-200">
-            <div className="w-[90%] max-w-md rounded-3xl bg-white border border-slate-200 p-6 space-y-4 shadow-2xl animate-in zoom-in duration-200 text-left">
-              <div className="flex justify-between items-center border-b border-slate-100 pb-3">
-                <h3 className="text-lg font-bold text-slate-800">Bulk Edit Monthly Insights</h3>
+          <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center animate-in fade-in duration-200 px-4">
+            <div className="w-full max-w-md bg-white rounded-lg shadow-2xl p-8 space-y-6 animate-in zoom-in duration-200 text-left">
+              <div className="flex justify-between items-center">
+                <h3 className="text-[22px] font-extrabold text-slate-800 tracking-tight">Bulk Edit Monthly Insights</h3>
                 <button
                   onClick={() => setShowBulkEditModal(false)}
-                  className="text-slate-400 hover:text-slate-650 p-1 rounded-lg hover:bg-slate-50 transition cursor-pointer"
+                  className="text-gray-400 hover:text-gray-600 transition"
                 >
-                  ✕
+                  <X size={24} />
                 </button>
               </div>
 
               {/* MONTHS DISPLAY */}
-              <div className="space-y-1">
-                <label className="text-xs text-slate-400 font-bold uppercase tracking-wider">Selected Months</label>
-                <div className="w-full px-4 py-2.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 font-bold uppercase tracking-wider text-xs flex flex-wrap gap-1.5">
+              <div>
+                <label className="block text-[15px] font-bold text-[#1C2434] mb-2">Selected Months</label>
+                <div className="w-full px-4 py-3 rounded-md border border-gray-200 text-slate-800 bg-slate-50 font-bold uppercase tracking-wider text-sm flex flex-wrap gap-1.5 min-h-[48px]">
                   {selectedMonthsForBulk.join(", ")}
                 </div>
               </div>
 
               {/* AMOUNT INPUT */}
-              <div className="space-y-1">
-                <label className="text-xs text-slate-400 font-bold uppercase tracking-wider">Donation Amount (₹) for Selected Months</label>
+              <div>
+                <label className="block text-[15px] font-bold text-[#1C2434] mb-2">Donation Amount (₹) <span className="text-red-500">*</span></label>
                 <input
                   type="number"
                   placeholder="Enter amount (0 to clear)"
                   value={bulkEditAmount}
                   onChange={(e) => setBulkEditAmount(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-850 outline-none focus:ring-2 focus:ring-cyan-500 transition font-semibold"
+                  className="w-full px-4 py-3 rounded-md border border-gray-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20 transition-all bg-white"
                 />
               </div>
 
-              <div className="flex justify-end gap-3 pt-2">
+              <div className="flex justify-end gap-3 pt-4">
                 <button
                   onClick={() => setShowBulkEditModal(false)}
-                  className="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold transition active:scale-95 cursor-pointer text-xs"
+                  className="px-6 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[16px] py-3 rounded-md transition flex items-center justify-center"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleBulkSaveMonthlyStats}
                   disabled={bulkEditLoading}
-                  className="px-5 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white font-bold transition active:scale-95 shadow-md disabled:opacity-50 cursor-pointer text-xs"
+                  className="flex-1 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white font-bold text-[16px] py-3 rounded-md transition flex items-center justify-center disabled:opacity-70"
                 >
                   {bulkEditLoading ? "Saving..." : "Save Changes"}
                 </button>
