@@ -688,14 +688,14 @@ const AdminAllUsersPage = () => {
                       <div
                         key={month}
                         onClick={() => {
-                          if (statusLabel === 'paid') return; // Prevent selection if paid
+                          if (statusLabel === 'paid' || statusLabel === 'pending') return; // Prevent selection if paid or pending
                           if (selectedMonthsForBulk.includes(month)) {
                             setSelectedMonthsForBulk(prev => prev.filter(m => m !== month));
                           } else {
                             setSelectedMonthsForBulk(prev => [...prev, month]);
                           }
                         }}
-                        className={`group relative flex items-center justify-between p-5 transition-all hover:-translate-y-0.5 ${statusLabel !== 'paid' ? 'cursor-pointer' : ''} select-none h-[90px] w-full`}
+                        className={`group relative flex items-center justify-between p-5 transition-all hover:-translate-y-0.5 ${(statusLabel !== 'paid' && statusLabel !== 'pending') ? 'cursor-pointer' : ''} select-none h-[90px] w-full`}
                       >
                         {/* SVG BACKGROUND */}
                         <TicketBackground status={statusLabel} />
@@ -703,13 +703,13 @@ const AdminAllUsersPage = () => {
                         {/* CONTENT */}
                         <div className="flex items-center justify-between relative z-10 w-full px-1 sm:px-3 pointer-events-none">
                           {/* Empty Circle Indicator */}
-                          {statusLabel === 'paid' ? (
+                          {(statusLabel === 'paid' || statusLabel === 'pending') ? (
                             <div className="w-5 h-5 shrink-0"></div>
                           ) : (
                             <div
                               className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all duration-200 bg-white ${isSelected
                                 ? "border-cyan-500 text-cyan-500 shadow-sm"
-                                : statusLabel === 'missed' ? 'border-[#ef4444]' : statusLabel === 'current' ? 'border-[#0ea5e9]' : statusLabel === 'pending' ? 'border-[#f59e0b]' : 'border-[#cbd5e1]'
+                                : statusLabel === 'missed' ? 'border-[#ef4444]' : statusLabel === 'current' ? 'border-[#0ea5e9]' : 'border-[#cbd5e1]'
                                 }`}
                             >
                               {isSelected && <Check size={12} strokeWidth={4} />}
