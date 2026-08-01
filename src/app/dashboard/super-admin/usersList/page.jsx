@@ -297,13 +297,15 @@ const UsersList = () => {
       setEditMonthlyLoading(true);
       const shortMonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
       const monthIndex = shortMonths.indexOf(editMonthlyMonth) + 1;
-      await createDonationAPI({
-        donorId: viewUser._id,
+      
+      // Update the user's monthly stats via the stats API instead of creating a new donation
+      await updateUserStatsAPI(viewUser._id, {
         amount: Number(editMonthlyAmount),
         month: monthIndex,
         year: selectedInsightYear
       });
-      toast.success("Donation recorded for the selected month!");
+      
+      toast.success("Monthly stats updated successfully!");
       setShowEditMonthlyModal(false);
       // Refresh user details
       openUserModal(viewUser._id);
@@ -324,8 +326,7 @@ const UsersList = () => {
       const shortMonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
       const promises = selectedMonthsForBulk.map(m => {
         const monthIndex = shortMonths.indexOf(m) + 1;
-        return createDonationAPI({
-          donorId: viewUser._id,
+        return updateUserStatsAPI(viewUser._id, {
           amount: Number(bulkEditAmount),
           month: monthIndex,
           year: selectedInsightYear
@@ -333,7 +334,7 @@ const UsersList = () => {
       });
       await Promise.all(promises);
       
-      toast.success("Donations recorded for selected months!");
+      toast.success("Monthly stats updated for selected months!");
       setShowBulkEditModal(false);
       setBulkEditAmount("");
       setSelectedMonthsForBulk([]);
@@ -682,7 +683,7 @@ const UsersList = () => {
                       d => d.month === monthIndex + 1 && d.year === Number(selectedInsightYear)
                     );
                     const isPending = !!pendingDonationForMonth;
-                    const displayAmount = isPending ? pendingDonationForMonth.amount : (amount > 0 ? amount : (viewUser?.avgDonation || 50));
+                    const displayAmount = isPending ? pendingDonationForMonth.amount : (amount > 0 ? amount : 50);
 
                     const isSelected = selectedMonthsForBulk.includes(month);
 
@@ -755,49 +756,49 @@ const UsersList = () => {
 
         {/* ================= EDIT MONTHLY STATS MODAL ================= */}
         {showEditMonthlyModal && (
-          <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center animate-in fade-in duration-200">
-            <div className="w-[90%] max-w-md rounded-3xl bg-white border border-slate-200 p-6 space-y-4 shadow-2xl animate-in zoom-in duration-200 text-left">
-              <div className="flex justify-between items-center border-b border-slate-100 pb-3">
-                <h3 className="text-lg font-bold text-slate-800">Edit Monthly Insight</h3>
+          <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center animate-in fade-in duration-200 px-4">
+            <div className="w-full max-w-md bg-white rounded-lg shadow-2xl p-8 space-y-6 animate-in zoom-in duration-200 text-left">
+              <div className="flex justify-between items-center">
+                <h3 className="text-[22px] font-extrabold text-slate-800 tracking-tight">Edit Monthly Insight</h3>
                 <button
                   onClick={() => setShowEditMonthlyModal(false)}
-                  className="text-slate-400 hover:text-slate-650 p-1 rounded-lg hover:bg-slate-50 transition cursor-pointer"
+                  className="text-gray-400 hover:text-gray-600 transition"
                 >
-                  ✕
+                  <X size={24} />
                 </button>
               </div>
 
               {/* MONTH DISPLAY */}
-              <div className="space-y-1">
-                <label className="text-xs text-slate-400 font-bold uppercase tracking-wider">Month</label>
-                <div className="w-full px-4 py-2.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 font-bold uppercase tracking-wider">
+              <div>
+                <label className="block text-[15px] font-bold text-[#1C2434] mb-2">Month</label>
+                <div className="w-full px-4 py-3 rounded-md border border-gray-200 text-slate-800 bg-slate-50 font-bold uppercase tracking-wider text-sm">
                   {editMonthlyMonth}
                 </div>
               </div>
 
               {/* AMOUNT INPUT */}
-              <div className="space-y-1">
-                <label className="text-xs text-slate-400 font-bold uppercase tracking-wider">Donation Amount (₹)</label>
+              <div>
+                <label className="block text-[15px] font-bold text-[#1C2434] mb-2">Donation Amount (₹) <span className="text-red-500">*</span></label>
                 <input
                   type="number"
                   placeholder="Enter amount (0 to clear)"
                   value={editMonthlyAmount}
                   onChange={(e) => setEditMonthlyAmount(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 outline-none focus:ring-2 focus:ring-cyan-500 transition font-semibold"
+                  className="w-full px-4 py-3 rounded-md border border-gray-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20 transition-all bg-white"
                 />
               </div>
 
-              <div className="flex justify-end gap-3 pt-2">
+              <div className="flex justify-end gap-3 pt-4">
                 <button
                   onClick={() => setShowEditMonthlyModal(false)}
-                  className="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold transition active:scale-95 cursor-pointer text-xs"
+                  className="px-6 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[16px] py-3 rounded-md transition flex items-center justify-center"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleSaveMonthlyStats}
                   disabled={editMonthlyLoading}
-                  className="px-5 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white font-bold transition active:scale-95 shadow-md disabled:opacity-50 cursor-pointer text-xs"
+                  className="flex-1 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white font-bold text-[16px] py-3 rounded-md transition flex items-center justify-center disabled:opacity-70"
                 >
                   {editMonthlyLoading ? "Saving..." : "Save Changes"}
                 </button>
@@ -808,49 +809,49 @@ const UsersList = () => {
 
         {/* ================= BULK EDIT MONTHLY STATS MODAL ================= */}
         {showBulkEditModal && (
-          <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center animate-in fade-in duration-200">
-            <div className="w-[90%] max-w-md rounded-3xl bg-white border border-slate-200 p-6 space-y-4 shadow-2xl animate-in zoom-in duration-200 text-left">
-              <div className="flex justify-between items-center border-b border-slate-100 pb-3">
-                <h3 className="text-lg font-bold text-slate-800">Bulk Edit Monthly Insights</h3>
+          <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center animate-in fade-in duration-200 px-4">
+            <div className="w-full max-w-md bg-white rounded-lg shadow-2xl p-8 space-y-6 animate-in zoom-in duration-200 text-left">
+              <div className="flex justify-between items-center">
+                <h3 className="text-[22px] font-extrabold text-slate-800 tracking-tight">Bulk Edit Monthly Insights</h3>
                 <button
                   onClick={() => setShowBulkEditModal(false)}
-                  className="text-slate-400 hover:text-slate-650 p-1 rounded-lg hover:bg-slate-50 transition cursor-pointer"
+                  className="text-gray-400 hover:text-gray-600 transition"
                 >
-                  ✕
+                  <X size={24} />
                 </button>
               </div>
 
               {/* MONTHS DISPLAY */}
-              <div className="space-y-1">
-                <label className="text-xs text-slate-400 font-bold uppercase tracking-wider">Selected Months</label>
-                <div className="w-full px-4 py-2.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 font-bold uppercase tracking-wider text-xs flex flex-wrap gap-1.5">
+              <div>
+                <label className="block text-[15px] font-bold text-[#1C2434] mb-2">Selected Months</label>
+                <div className="w-full px-4 py-3 rounded-md border border-gray-200 text-slate-800 bg-slate-50 font-bold uppercase tracking-wider text-sm flex flex-wrap gap-1.5 min-h-[48px]">
                   {selectedMonthsForBulk.join(", ")}
                 </div>
               </div>
 
               {/* AMOUNT INPUT */}
-              <div className="space-y-1">
-                <label className="text-xs text-slate-400 font-bold uppercase tracking-wider">Donation Amount (₹) for Selected Months</label>
+              <div>
+                <label className="block text-[15px] font-bold text-[#1C2434] mb-2">Donation Amount (₹) <span className="text-red-500">*</span></label>
                 <input
                   type="number"
                   placeholder="Enter amount (0 to clear)"
                   value={bulkEditAmount}
                   onChange={(e) => setBulkEditAmount(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-850 outline-none focus:ring-2 focus:ring-cyan-500 transition font-semibold"
+                  className="w-full px-4 py-3 rounded-md border border-gray-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20 transition-all bg-white"
                 />
               </div>
 
-              <div className="flex justify-end gap-3 pt-2">
+              <div className="flex justify-end gap-3 pt-4">
                 <button
                   onClick={() => setShowBulkEditModal(false)}
-                  className="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold transition active:scale-95 cursor-pointer text-xs"
+                  className="px-6 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[16px] py-3 rounded-md transition flex items-center justify-center"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleBulkSaveMonthlyStats}
                   disabled={bulkEditLoading}
-                  className="px-5 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white font-bold transition active:scale-95 shadow-md disabled:opacity-50 cursor-pointer text-xs"
+                  className="flex-1 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white font-bold text-[16px] py-3 rounded-md transition flex items-center justify-center disabled:opacity-70"
                 >
                   {bulkEditLoading ? "Saving..." : "Save Changes"}
                 </button>

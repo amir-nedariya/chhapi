@@ -115,7 +115,7 @@ const AdminAllUsersPage = () => {
   // Bulk edit states for super admin
   const [selectedMonthsForBulk, setSelectedMonthsForBulk] = useState([]);
   const [showBulkEditModal, setShowBulkEditModal] = useState(false);
-  const [bulkEditAmount, setBulkEditAmount] = useState("");
+  const [bulkEditAmount, setBulkEditAmount] = useState("50");
   const [bulkEditLoading, setBulkEditLoading] = useState(false);
 
   const monthsList = [
@@ -673,7 +673,7 @@ const AdminAllUsersPage = () => {
                       d => d.month === monthIndex + 1 && d.year === Number(selectedInsightYear)
                     );
                     const isPending = !!pendingDonationForMonth;
-                    const displayAmount = isPending ? pendingDonationForMonth.amount : (amount > 0 ? amount : (viewUser?.avgDonation || 50));
+                    const displayAmount = isPending ? pendingDonationForMonth.amount : (amount > 0 ? amount : 50);
 
                     const isSelected = selectedMonthsForBulk.includes(month);
 
