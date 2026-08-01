@@ -16,6 +16,8 @@ import {
   Users,
   PlusCircle
 } from "lucide-react";
+import TicketBackground from "../common/TicketBackground";
+import FullScreenLoader from "../common/FullScreenLoader";
 
 import { 
   getUserByIdAPI,
@@ -390,53 +392,66 @@ const UserDetails = ({ currentRole }) => {
               </select>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+          {/* MONTHS GRID */}
+          <div className="w-full">
+            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-8 px-1 pb-4">
               {monthNamesShort.map((mName, idx) => {
                 const monthNum = idx + 1;
                 const d = successfulDonations.find(x => x.year === selectedYear && x.month === monthNum);
                 const isCurrentMonth = selectedYear === now.getFullYear() && monthNum === now.getMonth() + 1;
                 const isPast = selectedYear < now.getFullYear() || (selectedYear === now.getFullYear() && monthNum <= now.getMonth() + 1);
                 
-                let boxClass = "rounded-2xl p-4 border transition-all relative flex flex-col justify-between ";
-                let nameClass = "text-xs font-bold mb-1 tracking-wider uppercase ";
-                let amtClass = "text-lg font-extrabold ";
+                let status = 'future';
                 let amt = d ? d.amount : 0;
-                
-                if (!d && isPast) {
-                  // Missed past month
-                  boxClass += "bg-[#FFF5F8] border-[#FFE4EE]";
-                  nameClass += "text-[#FF8F9C]";
-                  amtClass += "text-[#FF5B6E]";
-                } else if (!d && !isPast) {
-                  // Future month
-                  boxClass += "bg-white border-slate-100";
-                  nameClass += "text-slate-300";
-                  amtClass += "text-slate-400";
-                } else if (d) {
-                  // Paid month. In mockup, paid amounts were actually red text on white bg? Let's use red text.
-                  boxClass += "bg-white border-slate-100 shadow-xs hover:shadow-sm";
-                  nameClass += "text-slate-400";
-                  amtClass += "text-rose-500";
-                }
 
-                if (isCurrentMonth) {
-                  boxClass += " border-2 border-cyan-400 shadow-sm";
+                if (d) {
+                  status = 'paid';
+                } else if (isPast) {
+                  // If it's this month, but not paid yet -> current/pending? 
+                  // Let's use 'missed' for past months, and 'current' for this month.
+                  if (isCurrentMonth) {
+                    status = 'current';
+                  } else {
+                    // Past months are usually missed. Let's color them red.
+                    // Or if we have a "pending" status (like FEB in the image), we can use amber.
+                    // For now, if past and no donation -> missed.
+                    status = 'missed';
+                  }
+                } else if (isCurrentMonth) {
+                  status = 'current';
                 }
+                
+                let ticketClass = "group relative flex items-center justify-between p-5 transition-all hover:-translate-y-0.5 h-[90px] w-full ";
 
                 return (
-                  <div key={idx} className={boxClass}>
-                    <div className="flex justify-between items-start">
-                      <div className="flex flex-col">
-                        <span className={nameClass}>
-                          {mName} {isCurrentMonth && <span className="text-[8px] text-cyan-600 bg-cyan-50 px-1 py-0.5 rounded ml-1">CURRENT</span>}
+                  <div key={idx} className={ticketClass}>
+                    {/* SVG BACKGROUND */}
+                    <TicketBackground status={status} />
+
+                    {/* CONTENT */}
+                    <div className="flex items-center justify-between relative z-10 w-full px-1 sm:px-3 pointer-events-none">
+                      {/* Empty Circle Indicator */}
+                      <div className={`w-5 h-5 rounded-full border-2 ${status === 'paid' || status === 'current' ? 'border-[#22c55e]' : 'border-[#cbd5e1]'} bg-white shrink-0`}></div>
+                      
+                      {/* Center Text */}
+                      <div className="absolute inset-0 flex flex-col items-center justify-center">
+                        <span className={`text-xs font-bold uppercase tracking-widest mb-0.5 ${status === 'paid' ? 'text-[#166534]' : status === 'missed' ? 'text-[#991b1b]' : status === 'current' ? 'text-[#075985]' : status === 'pending' ? 'text-[#92400e]' : 'text-[#475569]'}`}>
+                          {mName}
                         </span>
-                        <span className={amtClass}>₹{amt.toLocaleString('en-IN')}</span>
+                        <span className={`text-2xl font-bold tracking-tight leading-none ${status === 'paid' ? 'text-[#166534]' : status === 'missed' ? 'text-[#991b1b]' : status === 'current' ? 'text-[#075985]' : status === 'pending' ? 'text-[#92400e]' : 'text-[#475569]'}`}>₹{amt}</span>
                       </div>
-                      {currentRole !== "USER" && (
-                        <button onClick={() => handleMonthClick(idx)} className="text-slate-300 hover:text-cyan-500 transition">
-                          <Edit size={14} />
-                        </button>
-                      )}
+
+                      {/* EDIT ICON */}
+                      <div className="pointer-events-auto relative z-20">
+                        {currentRole !== "USER" && (
+                          <button 
+                            onClick={(e) => { e.stopPropagation(); handleMonthClick(idx); }} 
+                            className={`p-2 rounded-full transition-transform hover:scale-110 cursor-pointer ${status === 'paid' ? 'bg-[#dcfce7]' : status === 'current' ? 'bg-[#e0f2fe]' : status === 'pending' ? 'bg-[#fef3c7]' : status === 'missed' ? 'bg-[#fee2e2]' : 'bg-black/5'}`}
+                          >
+                            <Edit size={16} className={status === 'paid' ? 'text-[#166534]' : status === 'current' ? 'text-[#0369a1]' : status === 'pending' ? 'text-[#92400e]' : status === 'missed' ? 'text-[#991b1b]' : 'text-current opacity-70'} strokeWidth={2.5} />
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 );

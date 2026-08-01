@@ -47,6 +47,7 @@ import DeleteConfirmModal from "../../../../components/common/DeleteConfirmModal
 import FilterBar from "../../../../components/common/FilterBar";
 import Modal from "../../../../components/common/Modal";
 import Button from "../../../../components/common/Button";
+import TicketBackground from "../../../../components/common/TicketBackground";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -331,7 +332,7 @@ const AdminAllUsersPage = () => {
         });
       });
       await Promise.all(promises);
-      
+
       toast.success("Donations recorded for selected months!");
       setShowBulkEditModal(false);
       setBulkEditAmount("");
@@ -644,18 +645,18 @@ const AdminAllUsersPage = () => {
                 )}
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
                 {(() => {
                   const defaultMonths = {
                     Jan: 0, Feb: 0, Mar: 0, Apr: 0, May: 0, Jun: 0,
                     Jul: 0, Aug: 0, Sep: 0, Oct: 0, Nov: 0, Dec: 0
                   };
-                  
+
                   // Safely extract stats for selected year (handling both nested and old flat structure)
                   const ms = viewUser.monthlyStats || {};
                   const isOldStructure = ms["Jan"] !== undefined || ms["Feb"] !== undefined || (Object.keys(ms).length > 0 && typeof ms[Object.keys(ms)[0]] !== 'object');
                   let yearStats = {};
-                  
+
                   if (isOldStructure) {
                     yearStats = String(selectedInsightYear) === String(new Date().getFullYear()) ? ms : {};
                   } else {
@@ -684,39 +685,12 @@ const AdminAllUsersPage = () => {
 
                     const isSelected = selectedMonthsForBulk.includes(month);
 
-                    let cardBg = "";
-                    let monthColor = "";
-                    let amountColor = "";
-
-                    if (isPaid) {
-                      cardBg = "bg-emerald-50/40 hover:bg-emerald-50/70 text-emerald-800";
-                      monthColor = "text-emerald-500 font-semibold";
-                      amountColor = "text-emerald-700 font-semibold";
-                    } else if (isPending) {
-                      cardBg = "bg-amber-50/40 hover:bg-amber-50/70 text-amber-800";
-                      monthColor = "text-amber-500 font-semibold";
-                      amountColor = "text-amber-700 font-semibold";
-                    } else if (isFuture) {
-                      cardBg = "bg-slate-50/40 hover:bg-slate-50/70 text-slate-600";
-                      monthColor = "text-slate-400 font-semibold";
-                      amountColor = "text-slate-500 font-semibold";
-                    } else {
-                      cardBg = "bg-rose-50/40 hover:bg-rose-50/70 text-rose-800";
-                      monthColor = "text-rose-400 font-semibold";
-                      amountColor = "text-rose-600 font-semibold";
-                    }
-
-                    const borderStyle = isSelected
-                      ? "border-2 border-cyan-500 shadow-md scale-[1.02] z-10 relative"
-                      : isCurrent
-                        ? "border-2 border-cyan-200 shadow-xs relative"
-                        : isPaid
-                          ? "border border-emerald-100/70"
-                          : isPending
-                            ? "border border-amber-200/80"
-                            : isFuture
-                              ? "border border-slate-200/60"
-                              : "border border-rose-100/70";
+                    let statusLabel = 'default';
+                    if (isPaid) statusLabel = 'paid';
+                    else if (isPending) statusLabel = 'pending';
+                    else if (isCurrent) statusLabel = 'current';
+                    else if (isFuture) statusLabel = 'default';
+                    else statusLabel = 'missed';
 
                     return (
                       <div
@@ -728,52 +702,44 @@ const AdminAllUsersPage = () => {
                             setSelectedMonthsForBulk(prev => [...prev, month]);
                           }
                         }}
-                        className={`p-3 sm:p-4 rounded-xl flex items-center justify-between transition duration-200 cursor-pointer select-none ${cardBg} ${borderStyle}`}
+                        className={`group relative flex items-center justify-between p-5 transition-all hover:-translate-y-0.5 cursor-pointer select-none h-[90px] w-full`}
                       >
-                        <div className="flex items-center min-w-0 flex-1">
-                          {/* Circular Checkbox */}
+                        {/* SVG BACKGROUND */}
+                        <TicketBackground status={statusLabel} />
+
+                        {/* CONTENT */}
+                        <div className="flex items-center justify-between relative z-10 w-full px-1 sm:px-3 pointer-events-none">
+                          {/* Empty Circle Indicator */}
                           <div
-                            className={`w-[18px] h-[18px] sm:w-5 sm:h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all duration-200 mr-2.5 sm:mr-3 ${isSelected
-                              ? "bg-cyan-600 border-cyan-600 text-white shadow-xs scale-110"
-                              : "bg-white border-slate-300 hover:border-slate-400"
+                            className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all duration-200 bg-white ${isSelected
+                              ? "border-cyan-500 text-cyan-500 shadow-sm"
+                              : statusLabel === 'paid' ? 'border-[#22c55e]' : statusLabel === 'missed' ? 'border-[#ef4444]' : statusLabel === 'current' ? 'border-[#0ea5e9]' : statusLabel === 'pending' ? 'border-[#f59e0b]' : 'border-[#cbd5e1]'
                               }`}
                           >
-                            {isSelected && <Check size={11} className="stroke-[3.5]" />}
+                            {isSelected && <Check size={12} strokeWidth={4} />}
                           </div>
-
-                          <div className="flex flex-col min-w-0 leading-tight">
-                            <span className={`text-[10px] sm:text-[11px] uppercase tracking-wider ${monthColor} flex items-center gap-1.5`}>
+                          
+                          {/* Center Text */}
+                          <div className="absolute inset-0 flex flex-col items-center justify-center">
+                            <span className={`text-xs font-bold uppercase tracking-widest mb-0.5 ${statusLabel === 'paid' ? 'text-[#166534]' : statusLabel === 'missed' ? 'text-[#991b1b]' : statusLabel === 'current' ? 'text-[#075985]' : statusLabel === 'pending' ? 'text-[#92400e]' : 'text-[#475569]'}`}>
                               {month}
-                              {isCurrent && (
-                                <span className="px-1 py-0.5 text-[8px] sm:text-[9px] font-bold bg-cyan-100 text-cyan-800 rounded uppercase tracking-wider animate-pulse leading-none">
-                                  Current
-                                </span>
-                              )}
-                              {isPending && (
-                                <span className="px-1 py-0.5 text-[8px] sm:text-[9px] font-bold bg-amber-100 text-amber-800 rounded uppercase tracking-wider animate-pulse leading-none">
-                                  Pending
-                                </span>
-                              )}
                             </span>
-                            <span className={`text-sm sm:text-base font-bold mt-0.5 ${amountColor}`}>
-                              ₹{displayAmount.toLocaleString("en-IN")}
-                            </span>
+                            <span className={`text-2xl font-bold tracking-tight leading-none ${statusLabel === 'paid' ? 'text-[#166534]' : statusLabel === 'missed' ? 'text-[#991b1b]' : statusLabel === 'current' ? 'text-[#075985]' : statusLabel === 'pending' ? 'text-[#92400e]' : 'text-[#475569]'}`}>₹{displayAmount.toLocaleString("en-IN")}</span>
                           </div>
-                        </div>
 
-                        {/* Right side badge indicating status & Edit Button */}
-                        <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                          <button
-                            onClick={() => {
-                              setEditMonthlyMonth(month);
-                              setEditMonthlyAmount(String(amount));
-                              setShowEditMonthlyModal(true);
-                            }}
-                            className="p-1.5 rounded-lg text-slate-400 hover:text-cyan-655 hover:bg-slate-100 transition cursor-pointer"
-                            title="Edit Monthly Stats"
-                          >
-                            <Edit size={14} />
-                          </button>
+                          {/* EDIT ICON */}
+                          <div className="pointer-events-auto relative z-20" onClick={(e) => e.stopPropagation()}>
+                            <button
+                              onClick={() => {
+                                setEditMonthlyMonth(month);
+                                setEditMonthlyAmount(String(amount));
+                                setShowEditMonthlyModal(true);
+                              }}
+                              className={`p-2 rounded-full transition-transform hover:scale-110 cursor-pointer ${statusLabel === 'paid' ? 'bg-[#dcfce7]' : statusLabel === 'current' ? 'bg-[#e0f2fe]' : statusLabel === 'pending' ? 'bg-[#fef3c7]' : statusLabel === 'missed' ? 'bg-[#fee2e2]' : 'bg-black/5'}`}
+                            >
+                              <Edit size={16} className={statusLabel === 'paid' ? 'text-[#166534]' : statusLabel === 'current' ? 'text-[#0369a1]' : statusLabel === 'pending' ? 'text-[#92400e]' : statusLabel === 'missed' ? 'text-[#991b1b]' : 'text-current opacity-70'} strokeWidth={2.5} />
+                            </button>
+                          </div>
                         </div>
                       </div>
                     );
