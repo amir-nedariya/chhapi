@@ -2,8 +2,8 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { toast } from "react-hot-toast";
 import { jsonReportAPI } from "../../../../api/report";
-import { 
-  FileDown, LayoutDashboard, TrendingUp, CheckCircle 
+import {
+  FileDown, LayoutDashboard, TrendingUp, CheckCircle, FileText
 } from "lucide-react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -11,43 +11,27 @@ import FilterBar from "../../../../components/common/FilterBar";
 import Table from "../../../../components/common/Table";
 import Button from "../../../../components/common/Button";
 
-// DUMMY DATA for demonstration
-const DUMMY_DONATIONS = [
-  { donor: "Aarav Sharma", mobile: "9876543210", year: 2026, month: "January", amount: 1500 },
-  { donor: "Aarav Sharma", mobile: "9876543210", year: 2026, month: "February", amount: 1500 },
-  { donor: "Vihaan Patel", mobile: "9876543211", year: 2026, month: "January", amount: 500 },
-  { donor: "Vivaan Singh", mobile: "9876543212", year: 2026, month: "January", amount: 50 },
-  { donor: "Ananya Gupta", mobile: "9876543213", year: 2026, month: "February", amount: 50 },
-  { donor: "Ananya Gupta", mobile: "9876543213", year: 2026, month: "March", amount: 50 },
-  { donor: "Riya Verma", mobile: "9876543214", year: 2026, month: "April", amount: 1000 },
-  { donor: "Arjun Reddy", mobile: "9876543215", year: 2026, month: "May", amount: 2500 },
-];
-
 const SuperAdminReports = () => {
   const [donations, setDonations] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [params, setParams] = useState({ 
-    search: "", 
-    year: new Date().getFullYear().toString(), 
-    month: "All" 
+  const [params, setParams] = useState({
+    search: "",
+    year: new Date().getFullYear().toString(),
+    month: "All"
   });
 
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  const fullMonths = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const fullMonths = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
   useEffect(() => {
     const fetchDonations = async () => {
       try {
         setLoading(true);
         const res = await jsonReportAPI();
-        if (res.data?.data?.length > 0) {
-          setDonations(res.data.data);
-        } else {
-          setDonations(DUMMY_DONATIONS);
-        }
+        setDonations(res.data?.data || []);
       } catch (err) {
-        setDonations(DUMMY_DONATIONS);
-        toast.success("Loaded dummy data for preview");
+        toast.error("Failed to fetch report data");
+        setDonations([]);
       } finally {
         setLoading(false);
       }
@@ -131,16 +115,16 @@ const SuperAdminReports = () => {
       theme: "grid",
       headStyles: { fillColor: [15, 23, 42], textColor: [0, 204, 255], fontSize: 8 },
       styles: { fontSize: 7, halign: "center" },
-      columnStyles: { 
+      columnStyles: {
         0: { halign: "left", fontStyle: "bold" },
-        [headers[0].length - 1]: { 
+        [headers[0].length - 1]: {
           fontStyle: "bold",
-          textColor: params.month === "All" ? [16, 185, 129] : [0, 204, 255] 
-        } 
+          textColor: params.month === "All" ? [16, 185, 129] : [0, 204, 255]
+        }
       },
       didParseCell: (data) => {
         if (data.section === "body" && data.cell.text[0] === "50") {
-          data.cell.styles.textColor = [16, 185, 129]; 
+          data.cell.styles.textColor = [16, 185, 129];
           data.cell.styles.fontStyle = "bold";
         }
       }
@@ -171,8 +155,8 @@ const SuperAdminReports = () => {
     }
   ];
 
-  const tableMonths = params.month === "All" ? months : [params.month.slice(0,3)];
-  
+  const tableMonths = params.month === "All" ? months : [params.month.slice(0, 3)];
+
   const columns = [
     {
       key: "donor",
@@ -211,10 +195,14 @@ const SuperAdminReports = () => {
 
   return (
     <div className="p-4 md:p-6 space-y-8">
-      <div className="flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-4">
-        <div>
-          <h1 className="text-3xl font-black text-gray-800">Financial <span className="text-teal-600">Reports</span></h1>
-          <p className="text-gray-500 text-sm mt-1">Consolidated donor activity tracking</p>
+      <div className="flex flex-row justify-between items-center gap-4">
+        <div className="flex items-center gap-3">
+          <FileText className="text-teal-700" size={24} />
+          <div>
+            <h2 className="text-2xl font-bold text-gray-800 tracking-tight">
+              Reports
+            </h2>
+          </div>
         </div>
         <Button onClick={handlePDF} iconLeft={FileDown} size="lg" variant="solid">
           DOWNLOAD PDF
@@ -234,12 +222,12 @@ const SuperAdminReports = () => {
           <h3 className="text-4xl font-black text-gray-800 mt-2">{processedData.length}</h3>
         </div>
         <div className="bg-emerald-50 p-6 rounded-2xl border border-emerald-100 shadow-sm flex items-center justify-center">
-            <CheckCircle size={24} className="text-emerald-500 mr-2" />
-            <span className="text-sm font-bold text-emerald-700">System Verified Report</span>
+          <CheckCircle size={24} className="text-emerald-500 mr-2" />
+          <span className="text-sm font-bold text-emerald-700">System Verified Report</span>
         </div>
       </div>
 
-      <Table 
+      <Table
         columns={columns}
         data={processedData}
         isLoading={loading}

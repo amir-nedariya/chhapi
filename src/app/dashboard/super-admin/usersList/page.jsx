@@ -373,23 +373,16 @@ const UsersList = () => {
     return (
       <div className="animate-in fade-in duration-200 py-3 md:py-6 space-y-5">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between mb-8">
-          <div>
-            <h2 className="text-2xl font-bold text-slate-900 flex items-center gap-3">
-              <div className="p-2.5 bg-gradient-to-br from-cyan-500 to-blue-600 text-white rounded-xl shadow-sm shadow-blue-500/20">
-                <Users size={20} />
-              </div>
-              User Profile & Insights
-            </h2>
-          </div>
+        <div className="mb-6 flex items-center">
           <button
             onClick={() => {
               setViewUser(null);
               setSelectedMonthsForBulk([]);
             }}
-            className="text-slate-600 hover:text-slate-900 font-medium px-4 py-2 hover:bg-slate-100 rounded-xl transition text-sm flex items-center gap-2 self-start sm:self-auto group"
+            className="group flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors"
           >
-            <ChevronLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> Back to Users List
+            <ChevronLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
+            Back to Users List
           </button>
         </div>
 
@@ -398,7 +391,7 @@ const UsersList = () => {
           {/* Left Column: Profile Card */}
           <div className="lg:col-span-1 flex flex-col gap-4 md:gap-6">
             {/* Avatar & Profile actions */}
-            <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden flex flex-col items-center text-center">
+            <div className="bg-white border border-slate-200/60 shadow-sm overflow-hidden flex flex-col items-center text-center">
               {/* Cover Photo Area */}
               <div className="w-full h-24 bg-gradient-to-r from-cyan-50 via-blue-50 to-indigo-50 relative">
                 <div className="absolute -bottom-12 left-1/2 -translate-x-1/2">
@@ -428,21 +421,22 @@ const UsersList = () => {
                 <div className="w-full border-t border-slate-100 my-6" />
 
                 {/* Profile Actions */}
-                <div className="flex flex-col gap-2.5 w-full">
+                <div className="flex justify-center items-center gap-3 w-full">
                   <button
+                    title="Add New Donation"
                     onClick={() => {
                       setDonationMonth(new Date().getMonth() + 1);
                       setDonationYear(new Date().getFullYear());
                       setShowDonationModal(true);
                     }}
-                    className="text-sm font-semibold text-white bg-slate-900 hover:bg-slate-800 px-4 py-3 rounded-xl transition flex items-center justify-center gap-2 shadow-sm shadow-slate-900/10 active:scale-[0.98] cursor-pointer"
+                    className="p-3 rounded-xl bg-slate-900 hover:bg-slate-800 transition text-white shadow-sm shadow-slate-900/10 cursor-pointer active:scale-[0.98]"
                   >
-                    <PlusCircle size={18} className="text-slate-300" /> Add New Donation
+                    <PlusCircle size={20} className="text-slate-300" />
                   </button>
 
                   {!viewUser.profilePhoto && (
-                    <label className="cursor-pointer text-center text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 px-4 py-3 rounded-xl transition flex items-center justify-center gap-2 active:scale-[0.98]">
-                      <Upload size={18} className="text-slate-400" /> Upload Photo
+                    <label title="Upload Photo" className="cursor-pointer p-3 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 transition text-slate-700 active:scale-[0.98]">
+                      <Upload size={20} className="text-slate-400" />
                       <input hidden type="file" accept="image/*"
                         onChange={(e) =>
                           handlePhotoUpload(viewUser._id, e.target.files[0])
@@ -451,33 +445,31 @@ const UsersList = () => {
                     </label>
                   )}
 
-                  {(viewUser.profilePhoto || viewUser.role !== "SUPER_ADMIN") && (
-                    <div className="grid grid-cols-2 gap-2.5 mt-2">
-                      {viewUser.profilePhoto && (
-                        <button
-                          onClick={handlePhotoDelete}
-                          className="text-xs font-medium text-rose-600 bg-rose-50 hover:bg-rose-100 px-3 py-2.5 rounded-lg transition flex items-center justify-center gap-1.5 active:scale-[0.98] cursor-pointer"
-                        >
-                          <Trash2 size={14} /> Remove Photo
-                        </button>
-                      )}
+                  {viewUser.profilePhoto && (
+                    <button
+                      title="Remove Photo"
+                      onClick={handlePhotoDelete}
+                      className="p-3 rounded-xl bg-rose-50 hover:bg-rose-100 transition text-rose-600 active:scale-[0.98] cursor-pointer"
+                    >
+                      <Trash2 size={20} />
+                    </button>
+                  )}
 
-                      {viewUser.role !== "SUPER_ADMIN" && (
-                        <button
-                          onClick={handleOpenDeleteModal}
-                          className={`text-xs font-medium text-rose-600 bg-rose-50 hover:bg-rose-100 px-3 py-2.5 rounded-lg transition flex items-center justify-center gap-1.5 active:scale-[0.98] cursor-pointer ${!viewUser.profilePhoto ? 'col-span-2' : ''}`}
-                        >
-                          <Trash2 size={14} /> Delete User
-                        </button>
-                      )}
-                    </div>
+                  {viewUser.role !== "SUPER_ADMIN" && (
+                    <button
+                      title="Delete User"
+                      onClick={handleOpenDeleteModal}
+                      className="p-3 rounded-xl bg-rose-50 hover:bg-rose-100 transition text-rose-600 active:scale-[0.98] cursor-pointer"
+                    >
+                      <Trash2 size={20} />
+                    </button>
                   )}
                 </div>
               </div>
             </div>
 
             {/* Account Metadata Details */}
-            <div className="bg-white p-4 md:p-6 rounded-2xl border border-slate-200/60 shadow-sm flex flex-col gap-5">
+            <div className="bg-white p-4 md:p-6 border border-slate-200/60 shadow-sm flex flex-col gap-5">
               <h5 className="font-bold text-slate-800 text-xs tracking-wider uppercase mb-1">System Information</h5>
 
               <div className="flex items-center gap-3">
@@ -542,49 +534,30 @@ const UsersList = () => {
           {/* Right Column: Donation Insights */}
           <div className="lg:col-span-2 flex flex-col gap-4 md:gap-6">
             {/* KPI Cards Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
               {/* KPI 1 */}
-              <div className="bg-white p-5 md:p-6 rounded-2xl border border-slate-200/60 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
-                <div className="p-3.5 bg-gradient-to-br from-emerald-100 to-emerald-50 text-emerald-600 rounded-2xl shadow-sm shadow-emerald-500/10">
-                  <IndianRupee size={24} strokeWidth={2.5} />
-                </div>
+              <div className="bg-white p-5 md:p-6 border border-slate-200/60 shadow-sm flex flex-col justify-center hover:shadow-md transition-shadow">
                 <div>
-                  <p className="text-xs font-semibold tracking-wide text-slate-400 uppercase">Total Donated</p>
-                  <p className="text-2xl font-bold text-slate-900 mt-1">
+                  <p className="text-xs font-semibold tracking-wide text-slate-400 uppercase mb-1">Total Donated</p>
+                  <p className="text-3xl font-extrabold text-slate-900">
                     ₹{(viewUser.totalDonations || 0).toLocaleString("en-IN")}
                   </p>
                 </div>
               </div>
 
               {/* KPI 2 */}
-              <div className="bg-white p-5 md:p-6 rounded-2xl border border-slate-200/60 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
-                <div className="p-3.5 bg-gradient-to-br from-sky-100 to-sky-50 text-sky-600 rounded-2xl shadow-sm shadow-sky-500/10">
-                  <CreditCard size={24} strokeWidth={2.5} />
-                </div>
+              <div className="bg-white p-5 md:p-6 border border-slate-200/60 shadow-sm flex flex-col justify-center hover:shadow-md transition-shadow">
                 <div>
-                  <p className="text-xs font-semibold tracking-wide text-slate-400 uppercase">Donation Count</p>
-                  <p className="text-2xl font-bold text-slate-900 mt-1">
-                    {viewUser.donationCount || 0} <span className="text-sm font-medium text-slate-500 normal-case tracking-normal">times</span>
-                  </p>
-                </div>
-              </div>
-
-              {/* KPI 3 */}
-              <div className="bg-white p-5 md:p-6 rounded-2xl border border-slate-200/60 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
-                <div className="p-3.5 bg-gradient-to-br from-purple-100 to-purple-50 text-purple-600 rounded-2xl shadow-sm shadow-purple-500/10">
-                  <TrendingUp size={24} strokeWidth={2.5} />
-                </div>
-                <div>
-                  <p className="text-xs font-semibold tracking-wide text-slate-400 uppercase">Avg. Donation</p>
-                  <p className="text-2xl font-bold text-slate-900 mt-1">
-                    ₹{Math.round(viewUser.avgDonation || 0).toLocaleString("en-IN")}
+                  <p className="text-xs font-semibold tracking-wide text-slate-400 uppercase mb-1">Donation Count</p>
+                  <p className="text-3xl font-extrabold text-slate-900">
+                    {viewUser.donationCount || 0} <span className="text-base font-semibold text-slate-500 normal-case tracking-normal">times</span>
                   </p>
                 </div>
               </div>
             </div>
 
             {/* Yearly Stats Breakdown */}
-            <div className="bg-white p-5 md:p-6 rounded-2xl border border-slate-200/60 shadow-sm">
+            <div className="bg-white p-5 md:p-6 border border-slate-200/60 shadow-sm">
               <h5 className="font-bold text-slate-800 text-xs tracking-wider uppercase mb-5 flex items-center gap-2">
                 <BarChart3 size={18} className="text-cyan-500" />
                 Yearly Distribution
@@ -870,48 +843,13 @@ const UsersList = () => {
         />
 
         {/* ================= PHOTO DELETE CONFIRMATION MODAL ================= */}
-        {isPhotoDeleteOpen && (
-          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
-            <div className="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden transition-all duration-200 text-left">
-              {/* Header */}
-              <div className="flex justify-between items-center px-6 py-4 border-b border-gray-100 bg-white">
-                <h3 className="text-lg font-semibold text-red-600 flex items-center gap-2">
-                  <Trash2 size={20} /> Delete Profile Photo
-                </h3>
-                <button
-                  onClick={() => setIsPhotoDeleteOpen(false)}
-                  className="text-gray-400 hover:text-gray-600 transition"
-                >
-                  <X size={20} />
-                </button>
-              </div>
-
-              {/* Body */}
-              <div className="p-6">
-                <p className="text-sm text-slate-600">
-                  Are you sure you want to delete the profile photo for <span className="font-semibold text-slate-800">{viewUser?.name}</span>? This will reset their avatar to the default image.
-                </p>
-              </div>
-
-              {/* Footer */}
-              <div className="flex justify-end items-center gap-3 px-6 py-4 border-t border-gray-100 bg-white">
-                <button
-                  type="button"
-                  onClick={() => setIsPhotoDeleteOpen(false)}
-                  className="text-slate-500 hover:text-slate-800 font-medium px-4 py-2 transition text-sm"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleConfirmPhotoDelete}
-                  className="bg-red-600 hover:bg-red-700 font-medium px-5 py-2.5 rounded-xl shadow-md transition active:scale-95 text-sm text-white"
-                >
-                  Delete Photo
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        <DeleteConfirmModal
+          open={isPhotoDeleteOpen}
+          onClose={() => setIsPhotoDeleteOpen(false)}
+          onConfirm={handleConfirmPhotoDelete}
+          title="Delete Profile Photo"
+          loading={false}
+        />
 
         {/* ================= ADD DONATION MODAL ================= */}
         {showDonationModal && (
@@ -1115,12 +1053,12 @@ const UsersList = () => {
 
   return (
     <div className="py-3 md:py-6 space-y-5">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-row justify-between items-center gap-4">
         <div className="flex items-center gap-3">
           <Users className="text-teal-700" size={24} />
           <div>
             <h2 className="text-2xl font-bold text-gray-800 tracking-tight">
-              User Management
+              User List
             </h2>
           </div>
         </div>

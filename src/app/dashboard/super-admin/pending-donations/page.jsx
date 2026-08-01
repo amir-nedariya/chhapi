@@ -277,7 +277,7 @@ const PendingDonations = () => {
     <div className="py-3 md:py-6 space-y-5">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-3">
-          <Clock size={24} />
+          <Clock className="text-teal-700" size={24} />
           <h1 className="text-2xl font-extrabold tracking-tight text-slate-800">
             Pending Donations
           </h1>
