@@ -697,13 +697,14 @@ const AdminAllUsersPage = () => {
                       <div
                         key={month}
                         onClick={() => {
+                          if (statusLabel === 'paid') return; // Prevent selection if paid
                           if (selectedMonthsForBulk.includes(month)) {
                             setSelectedMonthsForBulk(prev => prev.filter(m => m !== month));
                           } else {
                             setSelectedMonthsForBulk(prev => [...prev, month]);
                           }
                         }}
-                        className={`group relative flex items-center justify-between p-5 transition-all hover:-translate-y-0.5 cursor-pointer select-none h-[90px] w-full`}
+                        className={`group relative flex items-center justify-between p-5 transition-all hover:-translate-y-0.5 ${statusLabel !== 'paid' ? 'cursor-pointer' : ''} select-none h-[90px] w-full`}
                       >
                         {/* SVG BACKGROUND */}
                         <TicketBackground status={statusLabel} />
@@ -711,14 +712,18 @@ const AdminAllUsersPage = () => {
                         {/* CONTENT */}
                         <div className="flex items-center justify-between relative z-10 w-full px-1 sm:px-3 pointer-events-none">
                           {/* Empty Circle Indicator */}
-                          <div
-                            className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all duration-200 bg-white ${isSelected
-                              ? "border-cyan-500 text-cyan-500 shadow-sm"
-                              : statusLabel === 'paid' ? 'border-[#22c55e]' : statusLabel === 'missed' ? 'border-[#ef4444]' : statusLabel === 'current' ? 'border-[#0ea5e9]' : statusLabel === 'pending' ? 'border-[#f59e0b]' : 'border-[#cbd5e1]'
-                              }`}
-                          >
-                            {isSelected && <Check size={12} strokeWidth={4} />}
-                          </div>
+                          {statusLabel === 'paid' ? (
+                            <div className="w-5 h-5 shrink-0"></div>
+                          ) : (
+                            <div
+                              className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all duration-200 bg-white ${isSelected
+                                ? "border-cyan-500 text-cyan-500 shadow-sm"
+                                : statusLabel === 'missed' ? 'border-[#ef4444]' : statusLabel === 'current' ? 'border-[#0ea5e9]' : statusLabel === 'pending' ? 'border-[#f59e0b]' : 'border-[#cbd5e1]'
+                                }`}
+                            >
+                              {isSelected && <Check size={12} strokeWidth={4} />}
+                            </div>
+                          )}
 
                           {/* Center Text */}
                           <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -730,16 +735,18 @@ const AdminAllUsersPage = () => {
 
                           {/* EDIT ICON */}
                           <div className="pointer-events-auto relative z-20" onClick={(e) => e.stopPropagation()}>
-                            <button
-                              onClick={() => {
-                                setEditMonthlyMonth(month);
-                                setEditMonthlyAmount(String(amount));
-                                setShowEditMonthlyModal(true);
-                              }}
-                              className={`p-2 rounded-full transition-transform hover:scale-110 cursor-pointer ${statusLabel === 'paid' ? 'bg-[#dcfce7]' : statusLabel === 'current' ? 'bg-[#e0f2fe]' : statusLabel === 'pending' ? 'bg-[#fef3c7]' : statusLabel === 'missed' ? 'bg-[#fee2e2]' : 'bg-black/5'}`}
-                            >
-                              <Edit size={16} className={statusLabel === 'paid' ? 'text-[#166534]' : statusLabel === 'current' ? 'text-[#0369a1]' : statusLabel === 'pending' ? 'text-[#92400e]' : statusLabel === 'missed' ? 'text-[#991b1b]' : 'text-current opacity-70'} strokeWidth={2.5} />
-                            </button>
+                            {statusLabel !== 'paid' && (
+                              <button
+                                onClick={() => {
+                                  setEditMonthlyMonth(month);
+                                  setEditMonthlyAmount(String(amount));
+                                  setShowEditMonthlyModal(true);
+                                }}
+                                className={`p-2 rounded-full transition-transform hover:scale-110 cursor-pointer ${statusLabel === 'current' ? 'bg-[#e0f2fe]' : statusLabel === 'pending' ? 'bg-[#fef3c7]' : statusLabel === 'missed' ? 'bg-[#fee2e2]' : 'bg-black/5'}`}
+                              >
+                                <Edit size={16} className={statusLabel === 'current' ? 'text-[#0369a1]' : statusLabel === 'pending' ? 'text-[#92400e]' : statusLabel === 'missed' ? 'text-[#991b1b]' : 'text-current opacity-70'} strokeWidth={2.5} />
+                              </button>
+                            )}
                           </div>
                         </div>
                       </div>
