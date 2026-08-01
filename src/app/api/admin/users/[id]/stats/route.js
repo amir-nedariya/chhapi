@@ -48,7 +48,20 @@ export async function PATCH(req, { params }) {
       // Deep merge for nested year data
       for (const year in body.monthlyStats) {
         if (!monthlyStats[year]) monthlyStats[year] = {};
-        monthlyStats[year] = { ...monthlyStats[year], ...body.monthlyStats[year] };
+        
+        for (const month in body.monthlyStats[year]) {
+          const val = Number(body.monthlyStats[year][month]);
+          if (val === 0) {
+            delete monthlyStats[year][month];
+          } else {
+            monthlyStats[year][month] = val;
+          }
+        }
+        
+        // if year becomes empty, optionally delete it
+        if (Object.keys(monthlyStats[year]).length === 0) {
+          delete monthlyStats[year];
+        }
       }
     }
     if (body.yearlyStats) {
@@ -70,9 +83,13 @@ export async function PATCH(req, { params }) {
     // Update yearly stats for the current edited years
     if (body.monthlyStats) {
       for (const year in body.monthlyStats) {
-        const values = Object.values(monthlyStats[year] || {});
-        const yearTotal = values.reduce((a, b) => Number(a) + Number(b), 0);
-        yearlyStats[year] = yearTotal;
+        if (!monthlyStats[year]) {
+          delete yearlyStats[year];
+        } else {
+          const values = Object.values(monthlyStats[year]);
+          const yearTotal = values.reduce((a, b) => Number(a) + Number(b), 0);
+          yearlyStats[year] = yearTotal;
+        }
       }
     }
 

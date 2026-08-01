@@ -295,14 +295,14 @@ const UsersList = () => {
 
     try {
       setEditMonthlyLoading(true);
-      const shortMonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-      const monthIndex = shortMonths.indexOf(editMonthlyMonth) + 1;
       
       // Update the user's monthly stats via the stats API instead of creating a new donation
       await updateUserStatsAPI(viewUser._id, {
-        amount: Number(editMonthlyAmount),
-        month: monthIndex,
-        year: selectedInsightYear
+        monthlyStats: {
+          [selectedInsightYear]: {
+            [editMonthlyMonth]: Number(editMonthlyAmount)
+          }
+        }
       });
       
       toast.success("Monthly stats updated successfully!");
@@ -323,16 +323,15 @@ const UsersList = () => {
 
     try {
       setBulkEditLoading(true);
-      const shortMonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-      const promises = selectedMonthsForBulk.map(m => {
-        const monthIndex = shortMonths.indexOf(m) + 1;
-        return updateUserStatsAPI(viewUser._id, {
-          amount: Number(bulkEditAmount),
-          month: monthIndex,
-          year: selectedInsightYear
-        });
+      
+      const monthlyStatsPayload = { [selectedInsightYear]: {} };
+      selectedMonthsForBulk.forEach(m => {
+        monthlyStatsPayload[selectedInsightYear][m] = Number(bulkEditAmount);
       });
-      await Promise.all(promises);
+      
+      await updateUserStatsAPI(viewUser._id, {
+        monthlyStats: monthlyStatsPayload
+      });
       
       toast.success("Monthly stats updated for selected months!");
       setShowBulkEditModal(false);
