@@ -36,7 +36,7 @@ const MonthlyDonationTable = () => {
     }
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(userObj?.name || "User")}&background=${sidebarColor}&color=fff`;
   };
-  
+
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -165,7 +165,7 @@ const MonthlyDonationTable = () => {
   ];
 
   return (
-    <div className="p-4 md:p-6 space-y-6">
+    <div className="py-3 md:py-6 space-y-5">
       <div className="flex items-center gap-3">
         <BarChart3 className="text-teal-700" size={24} />
         <div>
@@ -178,7 +178,7 @@ const MonthlyDonationTable = () => {
 
       <FilterBar filters={filterConfig} params={params} onChange={handleFilterChange} />
 
-      <Table 
+      <Table
         columns={columns}
         data={rows}
         isLoading={loading}

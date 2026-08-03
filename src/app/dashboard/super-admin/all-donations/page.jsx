@@ -23,8 +23,8 @@ const amountStyles = {
 };
 
 const months = [
-  "January","February","March","April","May","June",
-  "July","August","September","October","November","December",
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
 ];
 
 const ITEMS_PER_PAGE = 10;
@@ -36,10 +36,10 @@ const AllDonations = () => {
   const [page, setPage] = useState(1);
 
   const now = new Date();
-  const [params, setParams] = useState({ 
-    month: now.getMonth() + 1, 
-    year: now.getFullYear(), 
-    search: "" 
+  const [params, setParams] = useState({
+    month: now.getMonth() + 1,
+    year: now.getFullYear(),
+    search: ""
   });
 
   const fetchDonations = async () => {
@@ -79,7 +79,7 @@ const AllDonations = () => {
   const metrics = useMemo(() => {
     const approved = donations.filter(d => (d.status || "").toUpperCase() === "SUCCESS" || (d.status || "").toUpperCase() === "APPROVED");
     const pending = donations.filter(d => (d.status || "").toUpperCase() === "PENDING");
-    
+
     const totalAmount = approved.reduce((sum, d) => sum + (Number(d.amount) || 0), 0);
     const uniqueDonors = new Set(donations.map(d => d.donor?.name?.toLowerCase() || d.donorName?.toLowerCase())).size;
 
@@ -137,7 +137,7 @@ const AllDonations = () => {
     {
       type: "select",
       name: "year",
-      options: years.length === 0 
+      options: years.length === 0
         ? [{ label: now.getFullYear().toString(), value: now.getFullYear() }]
         : years.map(y => ({ label: y.toString(), value: y }))
     }
@@ -210,7 +210,7 @@ const AllDonations = () => {
   ];
 
   return (
-    <div className="p-4 md:p-6 space-y-6">
+    <div className="py-3 md:py-6 space-y-5">
       <div className="flex items-center gap-3">
         <FileText className="text-teal-700" size={24} />
         <div>

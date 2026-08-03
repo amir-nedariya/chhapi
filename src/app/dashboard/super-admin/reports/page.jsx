@@ -194,7 +194,7 @@ const SuperAdminReports = () => {
   ];
 
   return (
-    <div className="p-4 md:p-6 space-y-8">
+    <div className="py-3 md:py-6 space-y-5">
       <div className="flex flex-row justify-between items-center gap-4">
         <div className="flex items-center gap-3">
           <FileText className="text-teal-700" size={24} />

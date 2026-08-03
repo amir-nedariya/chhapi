@@ -2,16 +2,23 @@ import React from "react";
 
 
 const StatsCards = ({ cards }) => {
+  const gridColsClass = 
+    cards.length === 1 ? "lg:grid-cols-1" :
+    cards.length === 2 ? "lg:grid-cols-2" :
+    cards.length === 3 ? "lg:grid-cols-3" :
+    cards.length === 4 ? "lg:grid-cols-4" :
+    "lg:grid-cols-5";
+
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+    <div className={`grid grid-cols-2 md:grid-cols-3 ${gridColsClass} gap-4`}>
       {cards.map((card, index) => (
         <div
           key={index}
           className="bg-white border border-gray-200 p-3 lg:p-4 rounded-sm"
         >
           <div className="flex items-start justify-between">
-            <div className="flex flex-col overflow-hidden">
-              <p className="text-[12px] lg:text-[14px] text-gray-800 mb-1 lg:mb-[8px] truncate">
+            <div className="flex flex-col">
+              <p className="text-[12px] lg:text-[14px] text-gray-800 mb-1 lg:mb-[8px] break-words">
                 {card.title}
               </p>
               <p className={`text-[17px] lg:text-[22px] font-semibold ${card.valueColor || "text-gray-900"} leading-none`}>
