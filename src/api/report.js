@@ -1,4 +1,9 @@
+import api from "./axios";
 import { getAllDonationsAPI } from "./donation.api";
+
+export const emailPdfReportAPI = async (payload) => {
+  return await api.post("/admin/reports/email-pdf", payload);
+};
 
 export const jsonReportAPI = async (params) => {
   try {

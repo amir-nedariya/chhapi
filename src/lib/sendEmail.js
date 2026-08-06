@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 
-export async function sendEmail({ to, subject, html, text }) {
+export async function sendEmail({ to, subject, html, text, attachments }) {
   const host = process.env.SMTP_HOST || process.env.EMAIL_HOST;
   const port = Number(process.env.SMTP_PORT || process.env.EMAIL_PORT || 587);
   const user = process.env.SMTP_USER || process.env.EMAIL_USER;
@@ -11,6 +11,7 @@ export async function sendEmail({ to, subject, html, text }) {
   console.log(`[EMAIL SENDING] To: ${to}`);
   console.log(`[EMAIL SUBJECT]: ${subject}`);
   if (text) console.log(`[EMAIL CONTENT]: ${text}`);
+  if (attachments) console.log(`[EMAIL ATTACHMENTS]: ${attachments.length} file(s) attached`);
   console.log(`========================================\n`);
 
   if (!host || !user || !pass) {
@@ -35,6 +36,7 @@ export async function sendEmail({ to, subject, html, text }) {
       subject,
       text,
       html,
+      attachments,
     });
 
     console.log("✅ Email sent successfully:", info.messageId);

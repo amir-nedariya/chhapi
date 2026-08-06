@@ -37,7 +37,12 @@ import {
   PlusCircle,
   Edit,
   Check,
+  FileText,
+  Mail,
+  Send,
 } from "lucide-react";
+import { exportAllUsersDonationPDF, getDonationPDFBase64 } from "../../../../utils/donationPdfReport";
+import { emailPdfReportAPI } from "../../../../api/report";
 
 import { useSidebarColor } from "../../../../hooks/useSidebarColor";
 import CreateUserModal from "../../../../components/common/CreateUserModal";
@@ -112,11 +117,99 @@ const AdminAllUsersPage = () => {
   const [editMonthlyLoading, setEditMonthlyLoading] = useState(false);
   const [selectedInsightYear, setSelectedInsightYear] = useState(new Date().getFullYear());
 
-  // Bulk edit states for super admin
+  // Bulk edit states for admin
   const [selectedMonthsForBulk, setSelectedMonthsForBulk] = useState([]);
   const [showBulkEditModal, setShowBulkEditModal] = useState(false);
-  const [bulkEditAmount, setBulkEditAmount] = useState("50");
+  const [bulkEditAmount, setBulkEditAmount] = useState("");
   const [bulkEditLoading, setBulkEditLoading] = useState(false);
+
+  // PDF Report states
+  const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
+  const [selectedPdfYear, setSelectedPdfYear] = useState(new Date().getFullYear());
+  const [pdfLoading, setPdfLoading] = useState(false);
+  const [emailLoading, setEmailLoading] = useState(false);
+  const [customPdfEmail, setCustomPdfEmail] = useState("");
+  const [allModalUsers, setAllModalUsers] = useState([]);
+  const [selectedEmails, setSelectedEmails] = useState([]);
+  const [emailSearchTerm, setEmailSearchTerm] = useState("");
+  const [modalUsersLoading, setModalUsersLoading] = useState(false);
+
+  const handleOpenPdfModal = async () => {
+    setIsPdfModalOpen(true);
+    try {
+      setModalUsersLoading(true);
+      const res = await getAllUsersAPI({ page: 1, limit: 10000 });
+      const fetched = res.data?.data || [];
+      setAllModalUsers(fetched);
+      const validEmailUsers = fetched.filter(u => u.email && u.email.includes("@"));
+      setSelectedEmails(validEmailUsers.map(u => u.email));
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setModalUsersLoading(false);
+    }
+  };
+
+  const handleDownloadPDF = async () => {
+    try {
+      setPdfLoading(true);
+      const res = await getAllUsersAPI({ page: 1, limit: 10000, search, role: roleFilter, creator: creatorFilter });
+      const allUsers = res.data?.data || [];
+      if (!allUsers.length) {
+        toast.error("No users found to generate PDF report");
+        return;
+      }
+      exportAllUsersDonationPDF({
+        users: allUsers,
+        year: selectedPdfYear,
+        title: "ALL USERS DONATION REPORT"
+      });
+      toast.success("Donation PDF Report opened in a new tab!");
+      setIsPdfModalOpen(false);
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to generate PDF report");
+    } finally {
+      setPdfLoading(false);
+    }
+  };
+
+  const handleSendEmailPDF = async () => {
+    if (selectedEmails.length === 0 && !customPdfEmail.trim()) {
+      toast.error("Please select at least one recipient email address");
+      return;
+    }
+    try {
+      setEmailLoading(true);
+      const res = await getAllUsersAPI({ page: 1, limit: 10000 });
+      const allUsers = res.data?.data || [];
+      if (!allUsers.length) {
+        toast.error("No users found to generate PDF report");
+        return;
+      }
+      const pdfBase64 = getDonationPDFBase64({
+        users: allUsers,
+        year: selectedPdfYear,
+        title: "ALL USERS DONATION REPORT"
+      });
+
+      const response = await emailPdfReportAPI({
+        pdfBase64,
+        year: selectedPdfYear,
+        targetEmails: selectedEmails,
+        customEmail: customPdfEmail.trim()
+      });
+
+      toast.success(response.data?.message || "PDF report emailed successfully to selected recipients!");
+      setIsPdfModalOpen(false);
+      setCustomPdfEmail("");
+    } catch (err) {
+      console.error(err);
+      toast.error(err.response?.data?.message || "Failed to send PDF report via email");
+    } finally {
+      setEmailLoading(false);
+    }
+  };
 
   const monthsList = [
     "January", "February", "March", "April", "May", "June",
@@ -1044,18 +1137,28 @@ const AdminAllUsersPage = () => {
 
   return (
     <div className="py-3 md:py-6 space-y-5">
-      <div className="flex flex-row justify-between items-center gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-3">
           <Users className="text-teal-700" size={24} />
           <div>
             <h2 className="text-2xl font-bold text-gray-800 tracking-tight">
               User List
             </h2>
+            <p className="text-xs text-slate-500 font-medium">Manage all users & export donation reports</p>
           </div>
         </div>
-        <Button onClick={() => setIsCreateOpen(true)} iconLeft={UserPlus} variant="solid">
-          Create User
-        </Button>
+        <div className="flex items-center gap-2.5 w-full sm:w-auto">
+          <button
+            onClick={handleOpenPdfModal}
+            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm transition shadow-sm cursor-pointer active:scale-95"
+          >
+            <FileText size={18} />
+            Donation PDF Report
+          </button>
+          <Button onClick={() => setIsCreateOpen(true)} iconLeft={UserPlus} variant="solid">
+            Create User
+          </Button>
+        </div>
       </div>
 
       <FilterBar filters={filterConfig} params={{ search, roleFilter, creatorFilter }} onChange={handleFilterChange} />
@@ -1203,6 +1306,204 @@ const AdminAllUsersPage = () => {
           </div>
         </div>
       )}
+
+      {/* ================= DONATION PDF REPORT MODAL (EXACT LOGIN FORM STYLE - NO OUTER SCROLLBAR) ================= */}
+      {isPdfModalOpen && (() => {
+        const emailUsers = allModalUsers.filter(u => u.email && u.email.includes("@"));
+        const noEmailUsers = allModalUsers.filter(u => !u.email || !u.email.includes("@"));
+        const filteredEmailUsers = emailUsers.filter(u => 
+          (u.name || "").toLowerCase().includes(emailSearchTerm.toLowerCase()) ||
+          (u.email || "").toLowerCase().includes(emailSearchTerm.toLowerCase())
+        );
+        const totalTargetRecipients = selectedEmails.length + (customPdfEmail.trim() ? 1 : 0);
+
+        return (
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
+            <div className="bg-white w-full max-w-md rounded-lg shadow-2xl overflow-hidden transition-all duration-200 text-left border border-gray-100">
+              
+              {/* Header matching Login Page */}
+              <div className="flex justify-between items-center px-6 py-4 border-b border-gray-100 bg-white">
+                <div className="flex items-center gap-3">
+                  <img 
+                    src="/logo.png" 
+                    alt="Chhapi Logo" 
+                    className="w-9 h-auto mix-blend-multiply drop-shadow-xs"
+                    onError={(e) => { e.target.src = '/applogo.png'; }}
+                  />
+                  <div>
+                    <h2 className="text-lg font-extrabold text-[#1C2434] tracking-tight leading-tight">
+                      Donation PDF Statement
+                    </h2>
+                    <p className="text-xs text-slate-500 font-medium">
+                      Select target year & email recipients
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => setIsPdfModalOpen(false)}
+                  className="text-gray-400 hover:text-gray-600 transition cursor-pointer p-1 rounded-md hover:bg-gray-100"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              {/* Body matching Login Form (NO OUTER SCROLLBAR) */}
+              <div className="p-6 space-y-4 bg-white">
+                
+                {/* Target Year */}
+                <div>
+                  <label className="block text-xs font-bold text-[#1C2434] mb-1">
+                    Target Year <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    value={selectedPdfYear}
+                    onChange={(e) => setSelectedPdfYear(Number(e.target.value))}
+                    className="w-full px-3.5 py-2 rounded-md border border-gray-200 text-slate-800 text-xs font-semibold focus:outline-none focus:border-[#007380] focus:ring-2 focus:ring-[#007380]/20 transition-all bg-white cursor-pointer"
+                  >
+                    {[2024, 2025, 2026, 2027].map((y) => (
+                      <option key={y} value={y}>
+                        Year {y}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Select Recipients Section */}
+                <div>
+                  <div className="flex justify-between items-center mb-1.5">
+                    <label className="block text-xs font-bold text-[#1C2434]">
+                      Select Email Recipients ({selectedEmails.length}/{emailUsers.length})
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (selectedEmails.length === emailUsers.length) {
+                          setSelectedEmails([]);
+                        } else {
+                          setSelectedEmails(emailUsers.map(u => u.email));
+                        }
+                      }}
+                      className="text-xs font-bold text-[#007380] hover:underline cursor-pointer"
+                    >
+                      {selectedEmails.length === emailUsers.length ? "Deselect All" : "Select All"}
+                    </button>
+                  </div>
+
+                  {/* Search Filter */}
+                  <div className="relative mb-2">
+                    <Search size={14} className="absolute left-3 top-2.5 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Search recipient by name or email..."
+                      value={emailSearchTerm}
+                      onChange={(e) => setEmailSearchTerm(e.target.value)}
+                      className="w-full pl-9 pr-3 py-2 rounded-md border border-gray-200 text-slate-800 text-xs focus:outline-none focus:border-[#007380] focus:ring-2 focus:ring-[#007380]/20 transition-all bg-white"
+                    />
+                  </div>
+
+                  {/* Scrollable Recipient List Box */}
+                  <div className="max-h-36 overflow-y-auto border border-gray-200 rounded-md divide-y divide-gray-100 bg-white">
+                    {modalUsersLoading ? (
+                      <p className="text-xs text-slate-400 text-center py-3">Loading users...</p>
+                    ) : filteredEmailUsers.length === 0 ? (
+                      <p className="text-xs text-slate-400 text-center py-3">No matching users with email.</p>
+                    ) : (
+                      filteredEmailUsers.map((u) => {
+                        const isChecked = selectedEmails.includes(u.email);
+                        return (
+                          <label
+                            key={u._id || u.id || u.email}
+                            className={`flex items-center justify-between p-2.5 transition cursor-pointer select-none ${
+                              isChecked ? "bg-teal-50/50" : "hover:bg-gray-50"
+                            }`}
+                          >
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <input
+                                type="checkbox"
+                                checked={isChecked}
+                                onChange={() => {
+                                  if (isChecked) {
+                                    setSelectedEmails(prev => prev.filter(e => e !== u.email));
+                                  } else {
+                                    setSelectedEmails(prev => [...prev, u.email]);
+                                  }
+                                }}
+                                className="w-4 h-4 rounded border-gray-300 text-[#007380] focus:ring-[#007380] cursor-pointer"
+                              />
+                              <div className="truncate">
+                                <p className="text-xs font-bold text-slate-800 flex items-center gap-1.5 truncate">
+                                  {u.name}
+                                  <span className="text-[10px] font-semibold text-slate-500 uppercase">
+                                    ({u.role})
+                                  </span>
+                                </p>
+                                <p className="text-[11px] text-slate-500 font-medium truncate mt-0.5">{u.email}</p>
+                              </div>
+                            </div>
+                            {isChecked && <Check size={15} className="text-[#007380] shrink-0 ml-2" />}
+                          </label>
+                        );
+                      })
+                    )}
+                  </div>
+
+                  {noEmailUsers.length > 0 && (
+                    <p className="text-[11px] text-amber-700 mt-1.5 font-medium">
+                      ⚠️ {noEmailUsers.length} user(s) without email will be omitted.
+                    </p>
+                  )}
+                </div>
+
+                {/* Additional Recipient Email */}
+                <div>
+                  <label className="block text-xs font-bold text-[#1C2434] mb-1">
+                    Additional Recipient Email (Optional)
+                  </label>
+                  <input
+                    type="email"
+                    placeholder="e.g. manager@example.com"
+                    value={customPdfEmail}
+                    onChange={(e) => setCustomPdfEmail(e.target.value)}
+                    className="w-full px-3.5 py-2 rounded-md border border-gray-200 text-slate-800 text-xs placeholder-slate-400 focus:outline-none focus:border-[#007380] focus:ring-2 focus:ring-[#007380]/20 transition-all bg-white"
+                  />
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="flex flex-col sm:flex-row justify-between items-center gap-3 px-6 py-4 border-t border-gray-100 bg-white">
+                <button
+                  type="button"
+                  onClick={() => setIsPdfModalOpen(false)}
+                  className="text-slate-500 hover:text-slate-800 font-bold px-3 py-2 transition text-xs cursor-pointer w-full sm:w-auto"
+                >
+                  Cancel
+                </button>
+
+                <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
+                  <button
+                    onClick={handleDownloadPDF}
+                    disabled={pdfLoading || emailLoading}
+                    className="bg-slate-800 hover:bg-slate-900 text-white font-bold px-3.5 py-2 rounded-md shadow-sm transition active:scale-95 text-xs flex items-center gap-1.5 disabled:opacity-60 cursor-pointer"
+                  >
+                    <FileText size={15} />
+                    {pdfLoading ? "Opening..." : "View PDF"}
+                  </button>
+
+                  <button
+                    onClick={handleSendEmailPDF}
+                    disabled={pdfLoading || emailLoading || totalTargetRecipients === 0}
+                    className="bg-[#007380] hover:bg-[#005a63] text-white font-bold px-4 py-2 rounded-md shadow-md transition active:scale-95 text-xs flex items-center gap-1.5 disabled:opacity-60 cursor-pointer"
+                  >
+                    <Send size={15} />
+                    {emailLoading ? "Sending..." : `Send PDF (${totalTargetRecipients})`}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 };
