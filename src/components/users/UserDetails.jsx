@@ -14,7 +14,8 @@ import {
   UploadCloud,
   Trash2,
   Users,
-  PlusCircle
+  PlusCircle,
+  Mail
 } from "lucide-react";
 import TicketBackground from "../common/TicketBackground";
 import FullScreenLoader from "../common/FullScreenLoader";
@@ -241,7 +242,8 @@ const UserDetails = ({ currentRole }) => {
             </div>
 
             <h3 className="text-lg font-bold text-[#2B3674] uppercase tracking-wide">{user.name}</h3>
-            <p className="text-xs text-slate-400 font-medium mb-3">{user.mobile}</p>
+            <p className="text-xs text-slate-400 font-medium mb-1">{user.mobile}</p>
+            {user.email && <p className="text-xs text-teal-600 font-medium mb-3">{user.email}</p>}
             
             <span className="px-4 py-1 mb-6 rounded-full text-[10px] font-bold bg-cyan-50 text-cyan-600 uppercase tracking-widest border border-cyan-100">
               {user.role}
@@ -274,6 +276,15 @@ const UserDetails = ({ currentRole }) => {
           <div className="bg-white rounded-3xl border border-slate-100 shadow-sm p-6">
             <h4 className="text-[10px] font-extrabold text-slate-800 uppercase tracking-widest mb-5">System Information</h4>
             <div className="space-y-4">
+              {user.email && (
+                <div className="flex items-start gap-3">
+                  <div className="p-1.5 rounded-md bg-teal-50 text-teal-600"><Mail size={14} /></div>
+                  <div>
+                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Email Address</p>
+                    <p className="text-sm font-semibold text-[#2B3674] mt-0.5">{user.email}</p>
+                  </div>
+                </div>
+              )}
               <div className="flex items-start gap-3">
                 <div className="p-1.5 rounded-md bg-blue-50 text-blue-500"><UserIcon size={14} /></div>
                 <div>

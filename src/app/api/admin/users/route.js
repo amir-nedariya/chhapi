@@ -37,11 +37,12 @@ export async function GET(req) {
       isDeleted: false
     };
 
-    // Search by name or mobile
+    // Search by name, mobile or email
     if (search) {
       whereClause.OR = [
         { name: { contains: search, mode: "insensitive" } },
-        { mobile: { contains: search } }
+        { mobile: { contains: search } },
+        { email: { contains: search, mode: "insensitive" } }
       ];
     }
 
@@ -111,11 +112,13 @@ export async function POST(req) {
     }
 
     const body = await req.json();
-    const { name, mobile, password, role } = body;
+    const { name, mobile, email, password, role } = body;
 
     if (!name || !mobile || !password || !role) {
-      return NextResponse.json({ message: "All fields are required" }, { status: 400 });
+      return NextResponse.json({ message: "All required fields must be filled" }, { status: 400 });
     }
+
+    const cleanEmail = email && email.trim() ? email.trim().toLowerCase() : null;
 
     // Lookup the creator's name
     let creatorName = "System";
@@ -140,6 +143,19 @@ export async function POST(req) {
       return NextResponse.json({ message: "User with this mobile number already exists" }, { status: 400 });
     }
 
+    // Check if email already exists if provided
+    if (cleanEmail) {
+      const existingEmail = await prisma.user.findFirst({
+        where: {
+          email: { equals: cleanEmail, mode: "insensitive" },
+          isDeleted: false
+        }
+      });
+      if (existingEmail) {
+        return NextResponse.json({ message: "User with this email address already exists" }, { status: 400 });
+      }
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     let newUser;
@@ -148,6 +164,7 @@ export async function POST(req) {
         data: {
           name,
           mobile,
+          email: cleanEmail,
           password: hashedPassword,
           role,
           createdBy: creatorName,
@@ -163,6 +180,7 @@ export async function POST(req) {
             {
               name,
               mobile,
+              email: cleanEmail,
               password: hashedPassword,
               role,
               createdBy: creatorName,

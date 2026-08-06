@@ -157,9 +157,12 @@ const UsersList = ({ currentRole }) => {
             className="w-9 h-9 rounded-full border border-gray-200 object-cover"
             alt=""
           />
-          <div className="font-medium text-slate-800 flex items-center gap-1.5">
-            {u.name}
-            {getPaymentBadge(u)}
+          <div>
+            <div className="font-medium text-slate-800 flex items-center gap-1.5">
+              {u.name}
+              {getPaymentBadge(u)}
+            </div>
+            {u.email && <div className="text-[11px] text-slate-400 font-normal">{u.email}</div>}
           </div>
         </div>
       )

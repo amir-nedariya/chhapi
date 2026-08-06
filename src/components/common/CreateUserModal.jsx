@@ -13,6 +13,7 @@ const CreateUserModal = ({ isOpen, onClose, onSuccess, initialData }) => {
   const [form, setForm] = useState({
     name: initialData?.name || "",
     mobile: initialData?.mobile || "",
+    email: initialData?.email || "",
     password: "",
     role: "USER",
   });
@@ -22,6 +23,7 @@ const CreateUserModal = ({ isOpen, onClose, onSuccess, initialData }) => {
       setForm({
         name: initialData?.name || "",
         mobile: initialData?.mobile || "",
+        email: initialData?.email || "",
         password: "",
         role: "USER",
       });
@@ -95,7 +97,7 @@ const CreateUserModal = ({ isOpen, onClose, onSuccess, initialData }) => {
         console.error("Error updating leads after user creation:", e);
       }
 
-      setForm({ name: "", mobile: "", password: "", role: "USER" });
+      setForm({ name: "", mobile: "", email: "", password: "", role: "USER" });
       fireConfetti();
       onSuccess?.();
       onClose();
@@ -143,6 +145,21 @@ const CreateUserModal = ({ isOpen, onClose, onSuccess, initialData }) => {
                 value={form.mobile}
                 onChange={handleChange}
                 placeholder="10 digit mobile number"
+                className="w-full px-4 py-3 rounded-md border border-gray-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-gray-300 transition-all bg-white"
+              />
+            </div>
+
+            {/* EMAIL */}
+            <div>
+              <label className="block text-[15px] font-bold text-[#1C2434] mb-2">
+                Email Address
+              </label>
+              <input
+                type="email"
+                name="email"
+                value={form.email}
+                onChange={handleChange}
+                placeholder="e.g. user@example.com"
                 className="w-full px-4 py-3 rounded-md border border-gray-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-gray-300 transition-all bg-white"
               />
             </div>

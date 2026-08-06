@@ -6,6 +6,7 @@ import { loginAPI, meAPI } from "../../api/auth.api";
 import { useAuth } from "../../context/AuthContext";
 import toast from "react-hot-toast";
 import FullScreenLoader from "../../components/common/FullScreenLoader";
+import ForgotPasswordModal from "../../components/auth/ForgotPasswordModal";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -18,6 +19,7 @@ const Login = () => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showForgotModal, setShowForgotModal] = useState(false);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -180,11 +182,31 @@ const Login = () => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white font-bold text-[16px] py-3.5 rounded-md transition mt-4 flex items-center justify-center"
+          className="w-full bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white font-bold text-[16px] py-3.5 rounded-md transition mt-4 flex items-center justify-center cursor-pointer shadow-md hover:shadow-lg"
         >
           {loading ? "Logging in..." : "Login"}
         </button>
+
+        {/* FORGOT PASSWORD BUTTON */}
+        <div className="flex justify-end pt-1">
+          <button
+            type="button"
+            onClick={() => setShowForgotModal(true)}
+            className="text-[14px] font-bold text-[var(--primary)] hover:text-[var(--primary-hover)] hover:underline transition cursor-pointer"
+          >
+            Forgot Password?
+          </button>
+        </div>
       </form>
+
+      {/* FORGOT PASSWORD MODAL */}
+      <ForgotPasswordModal
+        isOpen={showForgotModal}
+        onClose={() => setShowForgotModal(false)}
+        onResetSuccess={(resEmail) => {
+          console.log("Password reset successful for:", resEmail);
+        }}
+      />
     </div>
   );
 };

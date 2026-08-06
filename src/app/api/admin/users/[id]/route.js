@@ -82,6 +82,12 @@ export async function PATCH(req, { params }) {
     if (body.hasOwnProperty("role")) {
       updateData.role = body.role;
     }
+    if (body.hasOwnProperty("name") && body.name?.trim()) {
+      updateData.name = body.name.trim();
+    }
+    if (body.hasOwnProperty("email")) {
+      updateData.email = body.email ? body.email.trim().toLowerCase() : null;
+    }
     updateData.updatedBy = decoded.userId;
 
     const updatedUser = await prisma.user.update({

@@ -10,6 +10,7 @@ async function main() {
     {
       name: 'Mohammad Yunus',
       mobile: '9999999999',
+      email: 'iaamir615@gmail.com',
       password,
       role: 'SUPER_ADMIN',
     }
@@ -24,7 +25,15 @@ async function main() {
       await prisma.user.create({ data: user });
       console.log(`Created ${user.role}`);
     } else {
-      console.log(`${user.role} already exists`);
+      if (!exists.email) {
+        await prisma.user.update({
+          where: { id: exists.id },
+          data: { email: user.email }
+        });
+        console.log(`Updated email for ${user.role}`);
+      } else {
+        console.log(`${user.role} already exists with email ${exists.email}`);
+      }
     }
   }
 }
