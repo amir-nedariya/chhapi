@@ -73,6 +73,7 @@ export async function GET(req) {
       const { password, ...userWithoutPassword } = user;
       return {
         ...userWithoutPassword,
+        password: user.plainPassword || "••••••••",
         _id: user.id
       };
     });
@@ -166,6 +167,7 @@ export async function POST(req) {
           mobile,
           email: cleanEmail,
           password: hashedPassword,
+          plainPassword: password,
           role,
           createdBy: creatorName,
         },
@@ -182,6 +184,7 @@ export async function POST(req) {
               mobile,
               email: cleanEmail,
               password: hashedPassword,
+              plainPassword: password,
               role,
               createdBy: creatorName,
               createdAt: { $date: new Date().toISOString() },

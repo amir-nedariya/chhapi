@@ -19,6 +19,7 @@ model User {
   mobile       String   @unique
   email        String?  @unique
   password     String
+  plainPassword String?
   role         Role     @default(USER)
   profilePhoto String?
   isActive     Boolean  @default(true)

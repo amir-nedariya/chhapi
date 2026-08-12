@@ -39,6 +39,7 @@ export async function GET(req, { params }) {
     }
 
     const { password, ...safeUser } = user;
+    safeUser.password = user.plainPassword || "••••••••";
     safeUser._id = safeUser.id;
 
     // Fetch pending donations for this user
