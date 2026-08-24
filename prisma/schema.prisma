@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "mongodb"
-  url      = env("MONGO_URI")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 enum Role {
@@ -14,18 +15,18 @@ enum Role {
 }
 
 model User {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  name         String?
-  mobile       String   @unique
-  email        String?  @unique
-  password     String
-  role         Role     @default(USER)
-  profilePhoto String?
-  isActive     Boolean  @default(true)
+  id             String    @id @default(uuid())
+  name           String?
+  mobile         String    @unique
+  email          String?   @unique
+  password       String
+  role           Role      @default(USER)
+  profilePhoto   String?
+  isActive       Boolean   @default(true)
   resetOtp       String?
   resetOtpExpiry DateTime?
-  monthlyStats Json?
-  yearlyStats  Json?
+  monthlyStats   Json?
+  yearlyStats    Json?
   totalDonations Int?      @default(0)
   donationCount  Int?      @default(0)
   avgDonation    Float?    @default(0)
@@ -39,17 +40,17 @@ model User {
 }
 
 model Donation {
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
-  donorId       String   @db.ObjectId
-  donorName     String?
-  amount        Float
-  month         Int
-  year          Int
-  status        String   @default("Pending") // "Pending", "Success", "Failed"
-  paymentMethod String?
-  remarks       String?
-  collectedById String?  @db.ObjectId
+  id              String   @id @default(uuid())
+  donorId         String
+  donorName       String?
+  amount          Float
+  month           Int
+  year            Int
+  status          String   @default("Pending")
+  paymentMethod   String?
+  remarks         String?
+  collectedById   String?
   collectedByName String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }

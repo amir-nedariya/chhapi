@@ -158,43 +158,16 @@ export async function POST(req) {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    let newUser;
-    try {
-      newUser = await prisma.user.create({
-        data: {
-          name,
-          mobile,
-          email: cleanEmail,
-          password: hashedPassword,
-          role,
-          createdBy: creatorName,
-        },
-      });
-    } catch (dbError) {
-      // Fallback for local MongoDB standalone
-      if (dbError.message?.includes("replica set")) {
-        console.log("Fallback to raw insert due to replica set requirement");
-        await prisma.$runCommandRaw({
-          insert: "User",
-          documents: [
-            {
-              name,
-              mobile,
-              email: cleanEmail,
-              password: hashedPassword,
-              role,
-              createdBy: creatorName,
-              createdAt: { $date: new Date().toISOString() },
-              updatedAt: { $date: new Date().toISOString() }
-            }
-          ]
-        });
-        
-        newUser = await prisma.user.findUnique({ where: { mobile } });
-      } else {
-        throw dbError;
-      }
-    }
+    const newUser = await prisma.user.create({
+      data: {
+        name,
+        mobile,
+        email: cleanEmail,
+        password: hashedPassword,
+        role,
+        createdBy: creatorName,
+      },
+    });
 
     const userWithoutPassword = { ...newUser };
     delete userWithoutPassword.password;

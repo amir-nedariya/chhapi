@@ -43,14 +43,9 @@ export async function POST(req) {
 
     const hashedNewPassword = await bcrypt.hash(newPassword, 10);
 
-    await prisma.$runCommandRaw({
-      update: "User",
-      updates: [
-        {
-          q: { _id: { $oid: user.id } },
-          u: { $set: { password: hashedNewPassword } }
-        }
-      ]
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { password: hashedNewPassword },
     });
 
     return NextResponse.json({

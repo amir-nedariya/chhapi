@@ -42,30 +42,10 @@ export async function PATCH(req, { params }) {
       return NextResponse.json({ message: "Cannot change status of Super Admin" }, { status: 403 });
     }
 
-    let updatedUser;
-    try {
-      updatedUser = await prisma.user.update({
-        where: { id },
-        data: { isActive },
-      });
-    } catch (dbError) {
-       // Fallback for local standalone MongoDB if Prisma complains about transactions
-      if (dbError.message?.includes("replica set")) {
-        console.log("Fallback to raw update for status");
-        await prisma.$runCommandRaw({
-          update: "User",
-          updates: [
-            {
-              q: { _id: { $oid: id } },
-              u: { $set: { isActive, updatedAt: { $date: new Date().toISOString() } } }
-            }
-          ]
-        });
-        updatedUser = await prisma.user.findUnique({ where: { id } });
-      } else {
-        throw dbError;
-      }
-    }
+    const updatedUser = await prisma.user.update({
+      where: { id },
+      data: { isActive },
+    });
 
     return NextResponse.json({
       message: `User ${isActive ? 'activated' : 'deactivated'} successfully`,
