@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState, useMemo } from "react";
-import { getFundSummaryAPI } from "../../../../api/fund.api";
+import { getFundSummaryAPI, createFundAPI } from "../../../../api/fund.api";
 import toast from "react-hot-toast";
 import {
   Wallet,
@@ -10,6 +10,9 @@ import {
   ChevronLeft,
   ChevronRight,
   Filter,
+  Plus,
+  X,
+  Landmark,
 } from "lucide-react";
 
 /* MONTH NAMES */
@@ -31,22 +34,74 @@ const FundSummary = () => {
   /* PAGINATION */
   const [page, setPage] = useState(1);
 
+  /* MODAL STATE */
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [form, setForm] = useState({
+    title: "",
+    year: new Date().getFullYear(),
+    month: new Date().getMonth() + 1,
+    totalAmount: "",
+  });
+  const [createLoading, setCreateLoading] = useState(false);
+
   /* FETCH DATA */
-  useEffect(() => {
-    const fetchFunds = async () => {
-      try {
-        const res = await getFundSummaryAPI();
-        if (res.data?.success && Array.isArray(res.data.data)) {
-          setFunds(res.data.data);
-        }
-      } catch (error) {
-        toast.error("Failed to load fund summary");
-      } finally {
-        setLoading(false);
+  const fetchFunds = async () => {
+    try {
+      setLoading(true);
+      const res = await getFundSummaryAPI();
+      if (res.data?.success && Array.isArray(res.data.data)) {
+        setFunds(res.data.data);
       }
-    };
+    } catch (error) {
+      toast.error("Failed to load fund summary");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchFunds();
   }, []);
+
+  const handleFormChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleCreateFund = async (e) => {
+    e.preventDefault();
+    if (!form.title || !form.year || !form.month || !form.totalAmount) {
+      toast.error("All fields are required");
+      return;
+    }
+
+    try {
+      setCreateLoading(true);
+      const res = await createFundAPI({
+        title: form.title,
+        year: Number(form.year),
+        month: Number(form.month),
+        totalAmount: Number(form.totalAmount),
+      });
+
+      if (res.data?.success) {
+        toast.success("🎉 Fund created successfully!");
+        setShowCreateModal(false);
+        setForm({
+          title: "",
+          year: new Date().getFullYear(),
+          month: new Date().getMonth() + 1,
+          totalAmount: "",
+        });
+        await fetchFunds();
+      } else {
+        toast.error(res.data?.message || "Failed to create fund");
+      }
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Failed to create fund");
+    } finally {
+      setCreateLoading(false);
+    }
+  };
 
   /* FILTERED + SORTED */
   const filteredFunds = useMemo(() => {
@@ -87,31 +142,19 @@ const FundSummary = () => {
   }, [filteredFunds]);
 
   /* LOADING */
-  if (loading) {
+  if (loading && !funds.length) {
     return <div className="min-h-screen bg-white p-6 text-slate-500 font-bold">Loading fund summary...</div>;
-  }
-
-  if (!funds.length) {
-    return (
-      <div className="min-h-screen bg-white p-6 flex items-center justify-center">
-        <div 
-          className="p-8 text-center text-rose-600 font-extrabold rounded-3xl w-full max-w-md border border-slate-200 shadow-md bg-white"
-        >
-          No fund data available
-        </div>
-      </div>
-    );
   }
 
   return (
     <div className="min-h-screen bg-slate-50/30 p-4 sm:p-8 space-y-6 text-slate-800 font-sans">
       <div className="max-w-6xl mx-auto space-y-6">
         
-        {/* HEADER + FILTER */}
+        {/* HEADER + FILTER + CREATE BUTTON */}
         <div className="flex flex-col items-center text-center sm:flex-row justify-between sm:items-center sm:text-left gap-4 px-1">
           <div className="flex flex-col items-center sm:items-start">
             <h2 className="text-xl font-semibold text-slate-800 flex items-center gap-2">
-              <Coins className="text-primary" size={22} />
+              <Coins className="text-teal-600" size={22} />
               Fund Summary
             </h2>
             <p className="text-slate-400 text-xs mt-0.5 font-medium">Overview of budget allocations and remaining balance</p>
@@ -136,6 +179,15 @@ const FundSummary = () => {
                 <option key={i} value={i + 1}>{m}</option>
               ))}
             </FilterSelect>
+
+            {/* CREATE FUND BUTTON RIGHT HERE */}
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="flex items-center gap-1.5 bg-cyan-600 hover:bg-cyan-700 active:scale-95 text-white font-bold text-xs px-3.5 py-2 rounded-lg shadow-sm transition-all duration-150 cursor-pointer"
+            >
+              <Plus size={15} />
+              <span>Create Fund</span>
+            </button>
           </div>
         </div>
 
@@ -179,7 +231,7 @@ const FundSummary = () => {
                 
                 return (
                   <div
-                    key={fund._id}
+                    key={fund._id || fund.id}
                     className="p-5 rounded-xl border border-slate-200/50 bg-white hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 flex flex-col justify-between space-y-4"
                   >
                     <div className="flex justify-between items-start gap-4">
@@ -215,7 +267,7 @@ const FundSummary = () => {
                               ? 'bg-gradient-to-r from-rose-500 to-red-500' 
                               : percentUsed > 75 
                               ? 'bg-gradient-to-r from-amber-400 to-amber-500' 
-                              : 'bg-gradient-to-r from-primary to-teal-500'
+                              : 'bg-gradient-to-r from-teal-500 to-cyan-500'
                           }`}
                           style={{ width: `${percentUsed}%` }}
                         />
@@ -246,9 +298,16 @@ const FundSummary = () => {
               })}
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center p-12 text-center border border-dashed border-slate-200 rounded-xl bg-slate-50/20">
-              <Coins size={32} className="text-slate-300 mb-2" />
-              <p className="text-slate-400 font-medium text-sm">No fund matching the filters</p>
+            <div className="flex flex-col items-center justify-center p-12 text-center border border-dashed border-slate-200 rounded-xl bg-white space-y-3">
+              <Coins size={36} className="text-slate-300" />
+              <p className="text-slate-500 font-bold text-sm">No fund data available</p>
+              <button
+                onClick={() => setShowCreateModal(true)}
+                className="flex items-center gap-1.5 bg-cyan-600 text-white font-bold text-xs px-4 py-2 rounded-lg shadow-sm hover:bg-cyan-700 transition cursor-pointer"
+              >
+                <Plus size={14} />
+                <span>Create New Fund</span>
+              </button>
             </div>
           )}
 
@@ -272,6 +331,115 @@ const FundSummary = () => {
           )}
         </div>
       </div>
+
+      {/* SLEEK CREATE FUND MODAL */}
+      {showCreateModal && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full space-y-6 border border-slate-200 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
+            
+            {/* Modal Header */}
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-xl bg-cyan-50 border border-cyan-100 text-cyan-600">
+                  <Landmark size={20} />
+                </div>
+                <div>
+                  <h3 className="text-lg font-extrabold text-slate-800 tracking-tight">Create New Fund</h3>
+                  <p className="text-xs text-slate-400 font-medium">Initialize a new monthly budget allocation</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowCreateModal(false)}
+                className="p-1.5 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition cursor-pointer"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Modal Form */}
+            <form onSubmit={handleCreateFund} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
+                  Fund Title <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="title"
+                  value={form.title}
+                  onChange={handleFormChange}
+                  placeholder="e.g., Medical Relief Fund"
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/10 outline-none text-xs font-semibold text-slate-800 transition"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
+                    Year <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    name="year"
+                    value={form.year}
+                    onChange={handleFormChange}
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-cyan-500 outline-none text-xs font-semibold text-slate-800 transition"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
+                    Month <span className="text-rose-500">*</span>
+                  </label>
+                  <select
+                    name="month"
+                    value={form.month}
+                    onChange={handleFormChange}
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-cyan-500 outline-none text-xs font-semibold text-slate-800 transition cursor-pointer"
+                  >
+                    {monthNames.map((m, i) => (
+                      <option key={i} value={i + 1}>
+                        {m}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
+                  Total Amount (₹) <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  name="totalAmount"
+                  value={form.totalAmount}
+                  onChange={handleFormChange}
+                  placeholder="e.g., 50000"
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-cyan-500 outline-none text-xs font-semibold text-slate-800 transition"
+                />
+              </div>
+
+              {/* Modal Buttons */}
+              <div className="flex items-center justify-end gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowCreateModal(false)}
+                  className="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-50 transition cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={createLoading}
+                  className="px-5 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-700 active:scale-95 text-white font-bold text-xs shadow-sm transition disabled:opacity-50 cursor-pointer"
+                >
+                  {createLoading ? "Creating..." : "Create Fund"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -294,7 +462,7 @@ const SummaryCard = ({ icon, label, value, accentColor }) => {
   const colorMap = {
     primary: {
       bg: "bg-gradient-to-br from-teal-50 to-cyan-50/30",
-      text: "text-primary border-teal-100/70",
+      text: "text-teal-600 border-teal-100/70",
       valText: "text-slate-800"
     },
     rose: {

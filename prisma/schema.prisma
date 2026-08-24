@@ -54,3 +54,45 @@ model Donation {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }
+
+model Fund {
+  id              String      @id @default(uuid())
+  title           String
+  year            Int
+  month           Int
+  totalAmount     Float
+  usedAmount      Float       @default(0)
+  remainingAmount Float
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  usages          FundUsage[]
+}
+
+model FundUsage {
+  id          String   @id @default(uuid())
+  fundId      String
+  fund        Fund     @relation(fields: [fundId], references: [id], onDelete: Cascade)
+  amount      Float
+  note        String
+  usedById    String?
+  usedByName  String?
+  usedByRole  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model FundRequest {
+  id             String   @id @default(uuid())
+  name           String
+  mobile         String
+  role           String   @default("USER")
+  userId         String?
+  amount         Float
+  reason         String
+  photo          String?
+  status         String   @default("Pending") // "Pending", "Approved", "Rejected"
+  reviewedById   String?
+  reviewedByName String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}

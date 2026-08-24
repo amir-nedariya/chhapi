@@ -4,16 +4,19 @@ import { toast } from "react-hot-toast";
 import { Landmark, Check, X, Clock } from "lucide-react";
 import Table from "../../../../components/common/Table";
 import Button from "../../../../components/common/Button";
+import { getFundRequestsAPI, updateFundRequestStatusAPI } from "../../../../api/fund.api";
 
 const FundRequestsSuperAdminPage = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchRequests = () => {
+  const fetchRequests = async () => {
     try {
       setLoading(true);
-      const data = JSON.parse(localStorage.getItem("chhapi_fund_requests") || "[]");
-      setRequests(data);
+      const res = await getFundRequestsAPI();
+      if (res.data?.success) {
+        setRequests(res.data.data || []);
+      }
     } catch (error) {
       toast.error("Failed to load fund requests");
     } finally {
@@ -32,29 +35,18 @@ const FundRequestsSuperAdminPage = () => {
     return () => window.removeEventListener("chhapi_new_fund_request", handleNewRequest);
   }, []);
 
-  const handleAction = (requestId, status) => {
+  const handleAction = async (requestId, status) => {
     try {
-      const existingRequests = JSON.parse(localStorage.getItem("chhapi_fund_requests") || "[]");
-      const updated = existingRequests.map((req) => {
-        if (req._id === requestId) {
-          return { ...req, status };
-        }
-        return req;
-      });
-
-      localStorage.setItem("chhapi_fund_requests", JSON.stringify(updated));
-      setRequests(updated);
-
-      // Dispatch event to update counts/badges in real-time
-      window.dispatchEvent(new Event("chhapi_new_fund_request"));
-
-      if (status === "Approved") {
-        toast.success("✅ Fund request approved successfully!");
+      const res = await updateFundRequestStatusAPI(requestId, status);
+      if (res.data?.success) {
+        toast.success(`✅ Fund request ${status.toLowerCase()} successfully!`);
+        fetchRequests();
+        window.dispatchEvent(new Event("chhapi_new_fund_request"));
       } else {
-        toast.error("❌ Fund request rejected.");
+        toast.error(res.data?.message || "Failed to update fund request");
       }
     } catch (error) {
-      toast.error("Failed to update fund request");
+      toast.error(error?.response?.data?.message || "Failed to update fund request");
     }
   };
 

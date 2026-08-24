@@ -32,6 +32,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useState, useEffect, useRef } from "react";
 import { useSidebarColor } from "../../hooks/useSidebarColor";
 import { applyTheme, initTheme } from "../../utils/theme";
+import { getFundRequestsAPI } from "../../api/fund.api";
 
 const Sidebar = ({ collapsed, setCollapsed, mobile, sidebarOpen, setSidebarOpen }) => {
   const { user } = useAuth();
@@ -49,12 +50,14 @@ const Sidebar = ({ collapsed, setCollapsed, mobile, sidebarOpen, setSidebarOpen 
   const [openMenus, setOpenMenus] = useState([]);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
 
-  const updatePendingCount = () => {
+  const updatePendingCount = async () => {
     if (role !== "SUPER_ADMIN") return;
     try {
-      const data = JSON.parse(localStorage.getItem("chhapi_fund_requests") || "[]");
-      const pending = data.filter((req) => req.status === "Pending");
-      setPendingRequestsCount(pending.length);
+      const res = await getFundRequestsAPI();
+      if (res.data?.success && Array.isArray(res.data.data)) {
+        const pending = res.data.data.filter((req) => req.status === "Pending");
+        setPendingRequestsCount(pending.length);
+      }
     } catch {
       setPendingRequestsCount(0);
     }
@@ -146,9 +149,6 @@ const Sidebar = ({ collapsed, setCollapsed, mobile, sidebarOpen, setSidebarOpen 
     });
 
     const fundMgmtChildren = [];
-    if (role === "SUPER_ADMIN") {
-      fundMgmtChildren.push({ name: "Create Fund", path: `${pathPrefix}/createfund` });
-    }
     fundMgmtChildren.push({ name: "Fund Summary", path: `${pathPrefix}/fundSummary` });
     if (role === "SUPER_ADMIN") {
       fundMgmtChildren.push({ name: "Use Fund", path: `${pathPrefix}/useFund` });

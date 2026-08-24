@@ -4,6 +4,8 @@ import { useAuth } from "../../../../context/AuthContext";
 import { toast } from "react-hot-toast";
 import { Landmark, Send, IndianRupee, FileText, Camera } from "lucide-react";
 
+import { createFundRequestAPI } from "../../../../api/fund.api";
+
 const FundRequestPage = () => {
   const { user } = useAuth();
   const [formData, setFormData] = useState({
@@ -26,7 +28,6 @@ const FundRequestPage = () => {
         video: { facingMode: "environment" }
       });
       streamRef.current = stream;
-      // Allow some time for video ref to mount
       setTimeout(() => {
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
@@ -85,7 +86,7 @@ const FundRequestPage = () => {
     }
   }, [user]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (!formData.name.trim()) return toast.error("Please enter applicant name");
@@ -96,38 +97,30 @@ const FundRequestPage = () => {
     setSubmitting(true);
 
     try {
-      // Fetch existing requests from localStorage
-      const existingRequests = JSON.parse(localStorage.getItem("chhapi_fund_requests") || "[]");
-
-      const newRequest = {
-        _id: "req_" + Date.now(),
+      const res = await createFundRequestAPI({
         name: formData.name,
         mobile: formData.mobile,
         amount: Number(formData.amount),
         reason: formData.reason,
         photo: photo || "",
-        role: user?.role || "USER",
-        status: "Pending",
-        createdAt: new Date().toISOString(),
-      };
-
-      existingRequests.unshift(newRequest);
-      localStorage.setItem("chhapi_fund_requests", JSON.stringify(existingRequests));
-
-      // Trigger custom event so sidebar/notifications can update in real-time
-      window.dispatchEvent(new Event("chhapi_new_fund_request"));
-
-      toast.success("🚀 Fund request submitted successfully!");
-      setFormData({
-        name: "",
-        mobile: "",
-        amount: "",
-        reason: "",
       });
-      setPhoto("");
-      setFileKey(Date.now());
+
+      if (res.data?.success) {
+        window.dispatchEvent(new Event("chhapi_new_fund_request"));
+        toast.success("🚀 Fund request submitted successfully!");
+        setFormData({
+          name: "",
+          mobile: "",
+          amount: "",
+          reason: "",
+        });
+        setPhoto("");
+        setFileKey(Date.now());
+      } else {
+        toast.error(res.data?.message || "Failed to submit fund request");
+      }
     } catch (error) {
-      toast.error("❌ Failed to submit fund request");
+      toast.error(error?.response?.data?.message || "Failed to submit fund request");
     } finally {
       setSubmitting(false);
     }
