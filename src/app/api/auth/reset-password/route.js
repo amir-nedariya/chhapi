@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "../../../../lib/prisma";
-import bcrypt from "bcryptjs";
+import { encryptPassword } from "../../../../lib/encryption";
 
 export async function POST(req) {
   try {
@@ -54,14 +54,14 @@ export async function POST(req) {
       );
     }
 
-    // Hash the new password
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    // Encrypt the new password
+    const encryptedPassword = encryptPassword(newPassword);
 
     // Update user password and clear OTP fields
     await prisma.user.update({
       where: { id: user.id },
       data: {
-        password: hashedPassword,
+        password: encryptedPassword,
         resetOtp: null,
         resetOtpExpiry: null,
       },
@@ -78,3 +78,4 @@ export async function POST(req) {
     );
   }
 }
+

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "../../../../lib/prisma";
-import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { encryptPassword, decryptPassword } from "../../../../lib/encryption";
 
 const JWT_SECRET = process.env.JWT_SECRET || "default_super_secret_key_12345";
 
@@ -68,11 +68,14 @@ export async function GET(req) {
       prisma.user.count({ where: whereClause })
     ]);
 
-    // Remove passwords and map id to _id for frontend compatibility
+    const isSuperAdmin = decoded.role === "SUPER_ADMIN";
+
+    // Format safe users & decrypt password for SUPER_ADMIN
     const safeUsers = users.map(user => {
       const { password, ...userWithoutPassword } = user;
       return {
         ...userWithoutPassword,
+        password: isSuperAdmin ? decryptPassword(user.password) : undefined,
         _id: user.id
       };
     });
@@ -156,14 +159,14 @@ export async function POST(req) {
       }
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const encryptedPass = encryptPassword(password);
 
     const newUser = await prisma.user.create({
       data: {
         name,
         mobile,
         email: cleanEmail,
-        password: hashedPassword,
+        password: encryptedPass,
         role,
         createdBy: creatorName,
       },
@@ -182,3 +185,4 @@ export async function POST(req) {
     return NextResponse.json({ message: error.message || "Failed to create user" }, { status: 500 });
   }
 }
+

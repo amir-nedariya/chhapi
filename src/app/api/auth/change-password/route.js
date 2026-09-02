@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "../../../../lib/prisma";
-import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { verifyPassword, encryptPassword } from "../../../../lib/encryption";
 
 const JWT_SECRET = process.env.JWT_SECRET || "default_super_secret_key_12345";
 
@@ -35,17 +35,17 @@ export async function POST(req) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
 
-    const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+    const isPasswordValid = await verifyPassword(oldPassword, user.password);
 
     if (!isPasswordValid) {
       return NextResponse.json({ message: "Incorrect old password" }, { status: 400 });
     }
 
-    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+    const encryptedNewPassword = encryptPassword(newPassword);
 
     await prisma.user.update({
       where: { id: user.id },
-      data: { password: hashedNewPassword },
+      data: { password: encryptedNewPassword },
     });
 
     return NextResponse.json({
@@ -57,3 +57,4 @@ export async function POST(req) {
     return NextResponse.json({ message: error.message || "Failed to change password" }, { status: 500 });
   }
 }
+
